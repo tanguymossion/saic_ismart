@@ -564,6 +564,7 @@ Confirmed by running against VIN `LSJXXXXXXXXXXXXXXX`.
 | `extendedData2` | `-128` | **Not available** sentinel — treat as null |
 | `elecRangeStdA`, `elecRangeStdB`, `elecRangeDspMode`, `fuelRangeElec` | `-128` | EV-only fields — `-128` is the null sentinel for fields absent on non-BEV powertrains |
 | `tyrePressure` fields | `61`, `65`, `69`, `70` | Unit unknown — likely kPa × 0.1 or PSI × 2; needs further investigation |
+| `driverWindow` / window fields | `0`, `1000` | `0` = closed (confirmed). `1000` observed — does not map to any known `WindowStatus` value (0=closed, 1=open). Meaning unknown — possibly a bitmask encoding all 4 windows state (e.g. `1000` = front-left open, others closed), or a model-specific flag. `WindowStatus.fromRaw(1000)` returns `null` — treat as unknown until confirmed on other vehicles. |
 | `lockStatus` | `1` | **Locked** (confirmed on a physically locked vehicle) |
 | `handBrake` | `1` | **Handbrake applied** (confirmed, car was parked) |
 | `canBusActive` | `1` | Active |
