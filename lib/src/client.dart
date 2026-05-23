@@ -14,6 +14,7 @@ import 'package:http/http.dart' as http;
 import 'auth.dart';
 import 'exceptions.dart';
 import 'models/vehicle.dart';
+import 'models/vehicle_status.dart';
 import 'utils/crypto_utils.dart';
 
 // ── Internal HTTP layer ───────────────────────────────────────────────────────
@@ -256,5 +257,27 @@ class SaicClient {
     return data
         .map((e) => Vehicle.fromJson(e as Map<String, dynamic>))
         .toList();
+  }
+
+  /// Returns a real-time status snapshot for the vehicle identified by [vin].
+  ///
+  /// The [vin] is hashed with SHA-256 before being sent — the raw VIN is never
+  /// transmitted (TECHNICAL_REFERENCE.md §2 — VIN hashing).
+  ///
+  /// `vehStatusReqType=2` is always hardcoded (quirk #11).
+  /// The full request path including the query string is used for key
+  /// derivation (quirk #10).
+  ///
+  /// Endpoint: `GET /vehicle/status?vin={sha256Hex(vin)}&vehStatusReqType=2`
+  /// Source: `api/vehicle/__init__.py:get_vehicle_status()`
+  Future<VehicleStatus> getVehicleStatus(String vin) async {
+    final data = await _http.get(
+      '/vehicle/status',
+      params: {
+        'vin': sha256Hex(vin),
+        'vehStatusReqType': '2',
+      },
+    ) as Map<String, dynamic>;
+    return VehicleStatus.fromJson(data);
   }
 }
