@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![Dart](https://img.shields.io/badge/Dart-pure-0553B1?style=flat-square&logo=dart)](https://dart.dev)
 
-**Work in progress — v0.1 in active development. Not yet published on pub.dev.**
+**v0.1 — tested in production on a real MG3 Hybrid EU.**
 
 ---
 
@@ -32,22 +32,20 @@ EV-specific features (SoC, charging management, climate) require a contributor w
 
 ---
 
-## Features (v0.1 — in progress)
+## Features (v0.1)
 
-- [ ] Authentication & token refresh
-- [ ] List vehicles linked to account
-- [ ] `getVehicleStatus(vin)` — GPS location, lock state, mileage
-- [ ] Built-in cache with configurable TTL + 600 s cooldown enforcement
-- [ ] Single-session conflict detection & handling
-- [ ] EU region support (`gateway-mg-eu.soimt.com`)
+- ✅ Authentication & token refresh
+- ✅ List vehicles linked to account
+- ✅ `getVehicleStatus(vin)` — GPS location, lock state, mileage
+- ✅ Built-in cache with configurable TTL + 600 s cooldown enforcement
+- ✅ Single-session conflict detection & handling
+- ✅ EU region support (`gateway-mg-eu.soimt.com`)
 
 See the full [roadmap](#roadmap) below.
 
 ---
 
 ## Quick start
-
-> Not yet published. This documents the planned API.
 
 ```yaml
 # pubspec.yaml
@@ -76,6 +74,25 @@ print(status.mileage);    // 3240 km
 
 ---
 
+## Real-world output
+
+```
+✓ Logged in as user@example.com, token expires at 2026-11-19 15:33:12
+✓ Found 1 vehicle(s)
+  - MG MG3 2023 (VIN: LSJXXXXXXXXXXXXXXX)
+✓ Vehicle status:
+  Locked: 1
+  Engine running: false
+  Parked: true
+  Mileage: 243790
+  Fuel level: 45%
+  Location: 47.XXXXXX, -1.XXXXXX
+  GPS status: GpsStatus.fix2d
+  Status time: 1779548697
+```
+
+---
+
 ## Important: API constraints
 
 **Single session** — The SAIC API allows only one active session at a time. Calling this package will pause the official iSmart app for ~900 seconds. The client handles this automatically, but be aware of it if you use the official app alongside.
@@ -88,7 +105,7 @@ print(status.mileage);    // 3240 km
 
 ## Roadmap
 
-### v0.1 — Foundations
+### ✅ v0.1 — Foundations
 - Auth + token refresh
 - `getVehicles()`, `getVehicleStatus(vin)`
 - Cache/cooldown + session conflict handling
