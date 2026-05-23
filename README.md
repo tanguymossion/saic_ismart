@@ -2,11 +2,11 @@
 
 > Dart client for the SAIC iSmart API — MG, Roewe, Maxus/LDV connected vehicles.
 
-[![pub.dev](https://img.shields.io/badge/pub.dev-coming%20soon-grey?style=flat-square)](https://pub.dev)
+[![pub.dev](https://img.shields.io/badge/pub.dev-0.2.0--dev-grey?style=flat-square)](https://pub.dev)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![Dart](https://img.shields.io/badge/Dart-pure-0553B1?style=flat-square&logo=dart)](https://dart.dev)
 
-**v0.1 — tested in production on a real MG3 Hybrid EU.**
+**v0.1.0 released — tested in production on a real MG3 Hybrid EU.**
 
 ---
 
@@ -105,14 +105,14 @@ print(status.mileage);    // 3240 km
 
 ## Roadmap
 
-### ✅ v0.1 — Foundations
+### ✅ v0.1.0 — Foundations · released 2026-05-23
 - Auth + token refresh
 - `getVehicles()`, `getVehicleStatus(vin)`
 - Cache/cooldown + session conflict handling
 - EU region
 - Tested on MG3 Hybrid EU
 
-### v0.2 — Extended data
+### v0.2.0 — Extended data & multi-region
 - Tyre pressure, window & door state
 - Engine status, vehicle alerts
 - Multi-region (AU, IN, TR…)
