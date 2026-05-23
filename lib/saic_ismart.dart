@@ -20,3 +20,4 @@ export 'src/client.dart';
 export 'src/exceptions.dart';
 export 'src/models/vehicle.dart';
 export 'src/models/vehicle_status.dart';
+export 'src/utils/unit_utils.dart';

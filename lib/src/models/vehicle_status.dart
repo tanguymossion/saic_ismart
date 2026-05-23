@@ -8,6 +8,8 @@
 /// Source: `api/vehicle/schema.py`, `api/schema.py`
 library;
 
+import '../utils/unit_utils.dart' as unit_utils;
+
 // ── GpsStatus ─────────────────────────────────────────────────────────────────
 
 /// GPS signal quality levels returned in [GpsPosition.gpsStatus].
@@ -399,6 +401,32 @@ class BasicVehicleStatus {
   ///
   /// Source: `api/vehicle/schema.py:BasicVehicleStatus.is_engine_running`
   bool get isEngineRunning => engineStatus == 1;
+
+  /// Mileage in kilometres (`null` when [mileage] is `null`).
+  double? get mileageKm => mileage == null ? null : unit_utils.mileageToKm(mileage!);
+
+  /// Mileage in miles (`null` when [mileage] is `null`).
+  double? get mileageMiles =>
+      mileage == null ? null : unit_utils.mileageToMiles(mileage!);
+
+  /// Fuel range in kilometres (`null` when [fuelRange] is `null`).
+  double? get fuelRangeKm =>
+      fuelRange == null ? null : unit_utils.fuelRangeToKm(fuelRange!);
+
+  /// Exterior temperature in °C; `null` when not available (-128 sentinel).
+  int? get exteriorTemperatureCelsius => exteriorTemperature == null
+      ? null
+      : unit_utils.temperatureCelsius(exteriorTemperature!);
+
+  /// Interior temperature in °C; `null` when not available (-128 sentinel).
+  int? get interiorTemperatureCelsius => interiorTemperature == null
+      ? null
+      : unit_utils.temperatureCelsius(interiorTemperature!);
+
+  /// Battery voltage raw value; `null` when not available (-128 sentinel).
+  int? get batteryVoltageValue => batteryVoltage == null
+      ? null
+      : unit_utils.batteryVoltageSensor(batteryVoltage!);
 
   /// Parses a [BasicVehicleStatus] from the `basicVehicleStatus` JSON object.
   factory BasicVehicleStatus.fromJson(Map<String, dynamic> json) =>
