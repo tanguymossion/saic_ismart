@@ -7,7 +7,9 @@
 /// Source: `net/crypto.py`, `net/httpx/__init__.py`, `api/base.py`
 library;
 
+import 'dart:async' show TimeoutException;
 import 'dart:convert';
+import 'dart:io' show SocketException;
 
 import 'package:http/http.dart' as http;
 
@@ -69,8 +71,14 @@ class _SaicHttpClient {
     );
     headers['event-id'] = eventId;
 
-    final response = await rawClient.get(uri, headers: headers);
-    return _parseResponse(response);
+    try {
+      final response = await rawClient.get(uri, headers: headers);
+      return _parseResponse(response);
+    } on SocketException catch (e) {
+      throw SaicNetworkException(message: e.message);
+    } on TimeoutException catch (e) {
+      throw SaicNetworkException(message: e.message ?? 'Request timed out');
+    }
   }
 
   /// Executes a POST request at [path] with AES-encrypted [jsonBody].
@@ -100,12 +108,18 @@ class _SaicHttpClient {
       encryptedBody: encryptedBody,
     );
 
-    final response = await rawClient.post(
-      uri,
-      headers: headers,
-      body: encryptedBody,
-    );
-    return _parseResponse(response);
+    try {
+      final response = await rawClient.post(
+        uri,
+        headers: headers,
+        body: encryptedBody,
+      );
+      return _parseResponse(response);
+    } on SocketException catch (e) {
+      throw SaicNetworkException(message: e.message);
+    } on TimeoutException catch (e) {
+      throw SaicNetworkException(message: e.message ?? 'Request timed out');
+    }
   }
 
   // ── Private helpers ─────────────────────────────────────────────────────────
@@ -184,14 +198,14 @@ class _SaicHttpClient {
       // taken the session — surface this as a conflict, not a plain auth error.
       if (userToken.isNotEmpty) {
         throw SaicSessionConflictException(
-          statusCode: response.statusCode,
+          code: response.statusCode,
           message:
               'Session conflict — another client may have authenticated with '
               'the same credentials (TECHNICAL_REFERENCE.md §4)',
         );
       }
       throw SaicAuthException(
-        statusCode: response.statusCode,
+        code: response.statusCode,
         message: 'HTTP ${response.statusCode}',
       );
     }
@@ -214,7 +228,7 @@ class _SaicHttpClient {
       json = jsonDecode(body) as Map<String, dynamic>;
     } catch (_) {
       throw SaicApiException(
-        statusCode: response.statusCode,
+        code: response.statusCode,
         message: 'Non-JSON response: $body',
       );
     }
@@ -222,19 +236,19 @@ class _SaicHttpClient {
     final code = json['code'];
     if (code == 401 || code == 403) {
       throw SaicAuthException(
-        statusCode: code as int,
+        code: code as int,
         message: json['message'] as String? ?? 'Auth error',
       );
     }
     if (code == 2 || code == 3 || code == 7) {
       throw SaicApiException(
-        statusCode: code as int,
+        code: code as int,
         message: json['message'] as String? ?? 'Fatal API error',
       );
     }
     if (code != 0) {
       throw SaicApiException(
-        statusCode: code as int? ?? -1,
+        code: code as int?,
         message: json['message'] as String? ?? 'API error',
       );
     }
@@ -365,8 +379,7 @@ class SaicClient {
         return status;
       } on _SaicEventIdRetryException catch (e) {
         if (DateTime.now().isAfter(deadline)) {
-          throw SaicApiException(
-            statusCode: -1,
+          throw SaicTimeoutException(
             message: 'getVehicleStatus timed out after 30 s '
                 '(event-id: ${e.eventId})',
           );

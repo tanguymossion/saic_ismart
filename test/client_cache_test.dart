@@ -264,10 +264,12 @@ void main() {
       );
     });
 
-    test('SaicSessionConflictException is a SaicAuthException', () {
-      const e = SaicSessionConflictException(statusCode: 401, message: 'x');
+    test('SaicSessionConflictException is a SaicAuthException and SaicException',
+        () {
+      const e = SaicSessionConflictException(code: 401, message: 'x');
       expect(e, isA<SaicAuthException>());
-      expect(e, isA<SaicApiException>());
+      expect(e, isA<SaicException>());
+      expect(e.code, 401);
     });
   });
 }

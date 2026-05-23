@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io' show SocketException;
 
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -227,6 +228,20 @@ void main() {
       expect(client.getVehicles(), throwsA(isA<SaicAuthException>()));
     });
 
+    test('SaicAuthException carries HTTP 401 code', () async {
+      final client = SaicClient(
+        _config,
+        httpClient: _mockWith(
+          onApi: (_) async => http.Response('Unauthorized', 401),
+        ),
+      );
+      await client.login();
+      expect(
+        client.getVehicles(),
+        throwsA(isA<SaicAuthException>().having((e) => e.code, 'code', 401)),
+      );
+    });
+
     test('throws SaicAuthException on HTTP 403', () async {
       final client = SaicClient(
         _config,
@@ -273,6 +288,33 @@ void main() {
       );
       await client.login();
       expect(client.getVehicles(), throwsA(isA<SaicApiException>()));
+    });
+
+    test('SaicApiException carries JSON code 7', () async {
+      final client = SaicClient(
+        _config,
+        httpClient: _mockWith(
+          onApi: (_) async =>
+              _encryptedResponse('{"code":7,"message":"Fatal"}'),
+        ),
+      );
+      await client.login();
+      expect(
+        client.getVehicles(),
+        throwsA(isA<SaicApiException>().having((e) => e.code, 'code', 7)),
+      );
+    });
+
+    test('throws SaicNetworkException on SocketException', () async {
+      final client = SaicClient(
+        _config,
+        httpClient: _mockWith(
+          onApi: (_) async =>
+              throw const SocketException('Connection refused'),
+        ),
+      );
+      await client.login();
+      expect(client.getVehicles(), throwsA(isA<SaicNetworkException>()));
     });
   });
 

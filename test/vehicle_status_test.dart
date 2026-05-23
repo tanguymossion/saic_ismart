@@ -449,7 +449,8 @@ void main() {
       expect(sentEventIds[1], 'evt-xyz');
     });
 
-    test('throws SaicApiException when retry timeout is exhausted', () async {
+    test('throws SaicTimeoutException when retry timeout is exhausted',
+        () async {
       final c = SaicClient(
         const SaicConfig(username: 'test@example.com', password: 'pw'),
         httpClient: MockClient((req) async {
@@ -462,7 +463,7 @@ void main() {
         statusRetryTimeout: Duration.zero, // deadline is already past on first retry
       );
       await c.login();
-      expect(c.getVehicleStatus(_vin), throwsA(isA<SaicApiException>()));
+      expect(c.getVehicleStatus(_vin), throwsA(isA<SaicTimeoutException>()));
     });
   });
 

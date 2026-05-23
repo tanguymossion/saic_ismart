@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io' show SocketException;
 
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -273,6 +274,34 @@ void main() {
       expect(
         () => SaicAuth(httpClient: client).login(bad),
         throwsA(isA<SaicAuthException>()),
+      );
+    });
+
+    test('SaicAuthException carries HTTP 401 code', () async {
+      final client =
+          MockClient((_) async => http.Response('Unauthorized', 401));
+      expect(
+        () => SaicAuth(httpClient: client).login(emailConfig),
+        throwsA(isA<SaicAuthException>().having((e) => e.code, 'code', 401)),
+      );
+    });
+
+    test('SaicApiException carries JSON code 7', () async {
+      final client = MockClient((_) async => _encryptedLoginResponse(
+            '{"code":7,"message":"Fatal error"}',
+          ));
+      expect(
+        () => SaicAuth(httpClient: client).login(emailConfig),
+        throwsA(isA<SaicApiException>().having((e) => e.code, 'code', 7)),
+      );
+    });
+
+    test('throws SaicNetworkException on SocketException', () {
+      final client = MockClient(
+          (_) async => throw const SocketException('Connection refused'));
+      expect(
+        () => SaicAuth(httpClient: client).login(emailConfig),
+        throwsA(isA<SaicNetworkException>()),
       );
     });
   });

@@ -60,15 +60,15 @@ Future<void> main() async {
     print('  GPS status: ${gps?.gpsStatus}');
     print('  Status time: ${status.statusTime}');
   } on SaicSessionConflictException catch (e) {
-    stderr.writeln('Session conflict (${e.statusCode}): ${e.message}');
+    stderr.writeln('Session conflict (${e.code}): ${e.message}');
     stderr.writeln('Another client may be using the same credentials. '
         'Wait ~15 minutes before retrying.');
     exit(2);
   } on SaicAuthException catch (e) {
-    stderr.writeln('Authentication error (${e.statusCode}): ${e.message}');
+    stderr.writeln('Authentication error (${e.code}): ${e.message}');
     exit(2);
   } on SaicApiException catch (e) {
-    stderr.writeln('API error (${e.statusCode}): ${e.message}');
+    stderr.writeln('API error (${e.code}): ${e.message}');
     exit(3);
   } catch (e, st) {
     stderr.writeln('Unexpected error: $e');

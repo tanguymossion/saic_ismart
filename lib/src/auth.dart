@@ -5,7 +5,9 @@
 /// selection. All details from `src/saic_ismart_client_ng/api/base.py:login()`.
 library;
 
+import 'dart:async' show TimeoutException;
 import 'dart:convert';
+import 'dart:io' show SocketException;
 
 import 'package:http/http.dart' as http;
 
@@ -164,28 +166,35 @@ class SaicAuth {
       encryptedBody,
     );
 
-    final response = await _client.post(
-      uri,
-      headers: {
-        'Content-Type': contentType,
-        'Accept': 'application/json',
-        'Authorization': _basicAuth,
-        'tenant-id': config.region.tenantId,
-        'User-Agent': 'Europe/2.1.0 (iPad; iOS 18.5; Scale/2.00)',
-        'REGION': config.region.regionHeader,
-        'APP-LANGUAGE-TYPE': 'en',
-        'User-Type': 'app',
-        'APP-SEND-DATE': timestampMs,
-        'ORIGINAL-CONTENT-TYPE': contentType,
-        'APP-CONTENT-ENCRYPTED': '1',
-        'APP-VERIFICATION-STRING': hmac,
-      },
-      body: encryptedBody,
-    );
+    final http.Response response;
+    try {
+      response = await _client.post(
+        uri,
+        headers: {
+          'Content-Type': contentType,
+          'Accept': 'application/json',
+          'Authorization': _basicAuth,
+          'tenant-id': config.region.tenantId,
+          'User-Agent': 'Europe/2.1.0 (iPad; iOS 18.5; Scale/2.00)',
+          'REGION': config.region.regionHeader,
+          'APP-LANGUAGE-TYPE': 'en',
+          'User-Type': 'app',
+          'APP-SEND-DATE': timestampMs,
+          'ORIGINAL-CONTENT-TYPE': contentType,
+          'APP-CONTENT-ENCRYPTED': '1',
+          'APP-VERIFICATION-STRING': hmac,
+        },
+        body: encryptedBody,
+      );
+    } on SocketException catch (e) {
+      throw SaicNetworkException(message: e.message);
+    } on TimeoutException catch (e) {
+      throw SaicNetworkException(message: e.message ?? 'Request timed out');
+    }
 
     if (response.statusCode == 401 || response.statusCode == 403) {
       throw SaicAuthException(
-        statusCode: response.statusCode,
+        code: response.statusCode,
         message: 'HTTP ${response.statusCode}',
       );
     }
@@ -209,7 +218,7 @@ class SaicAuth {
       json = jsonDecode(responseBody) as Map<String, dynamic>;
     } catch (_) {
       throw SaicApiException(
-        statusCode: response.statusCode,
+        code: response.statusCode,
         message: 'Invalid JSON response: $responseBody',
       );
     }
@@ -217,13 +226,13 @@ class SaicAuth {
     final code = json['code'];
     if (code == 401 || code == 403) {
       throw SaicAuthException(
-        statusCode: code as int,
+        code: code as int,
         message: json['message'] as String? ?? 'Authentication failed',
       );
     }
     if (code != 0) {
       throw SaicApiException(
-        statusCode: code as int? ?? -1,
+        code: code as int?,
         message: json['message'] as String? ?? 'API error',
       );
     }
@@ -257,10 +266,8 @@ class SaicAuth {
       body['loginType'] = '1';
       body['countryCode'] = config.phoneCountryCode!;
     } else {
-      throw SaicAuthException(
-        statusCode: 0,
-        message:
-            'phoneCountryCode is required when usernameIsEmail is false',
+      throw const SaicAuthException(
+        message: 'phoneCountryCode is required when usernameIsEmail is false',
       );
     }
 
