@@ -550,6 +550,41 @@ The API returns a unified response for all vehicle types. Fields that will be nu
 
 No explicit vehicle-type flag is present in `VehicleStatusResp`. Vehicle type must be inferred from `VinInfo.modelName` or `vehicleModelConfiguration` from the `/vehicle/list` response.
 
+### Real-world observations (MG3 Hybrid EU, 2023)
+
+Confirmed by running against VIN `LSJXXXXXXXXXXXXXXX`.
+
+#### Field units and values
+
+| Field | Observed value | Interpretation |
+|---|---|---|
+| `mileage` | `243790` | **Decimeters** — divide by 10 for meters, by 10,000 for km (= 24,379 km) |
+| `fuelRange` | `3870` | Likely also decimeters (= 387 km range) — same scale as `mileage` |
+| `exteriorTemperature` | `-128` | **Sensor not available** sentinel on this model — treat as null |
+| `extendedData2` | `-128` | **Not available** sentinel — treat as null |
+| `elecRangeStdA`, `elecRangeStdB`, `elecRangeDspMode`, `fuelRangeElec` | `-128` | EV-only fields — `-128` is the null sentinel for fields absent on non-BEV powertrains |
+| `tyrePressure` fields | `61`, `65`, `69`, `70` | Unit unknown — likely kPa × 0.1 or PSI × 2; needs further investigation |
+| `lockStatus` | `1` | **Locked** (confirmed on a physically locked vehicle) |
+| `handBrake` | `1` | **Handbrake applied** (confirmed, car was parked) |
+| `canBusActive` | `1` | Active |
+| `sunroofStatus` | `1` | MG3 has no sunroof — meaning unclear, possibly moonroof/panoramic roof flag |
+| `interiorTemperature` | `40` | Plausible °C for a car parked in sun |
+| `batteryVoltage` | `125` | Likely **× 0.1 V** = 12.5 V (12 V battery, plausible) |
+| `vehicleAlarmStatus` | `2` | Meaning unknown |
+| `extendedData1` | `69` | Meaning unknown |
+
+#### GPS
+
+- `latitude` and `longitude` are raw integers — divide by **1,000,000** for decimal degrees.
+  Confirmed: `{latitude_raw}` → `{latitude_raw} / 1_000_000 °N`, `{longitude_raw}` → `{longitude_raw} / 1_000_000 °E`.
+- `gpsStatus: 2` = `FIX_2D` with 9 satellites confirmed working.
+
+#### event-id polling
+
+- First `/vehicle/status` response: `{"code":0,"message":"success"}` with **no `data` field** and an `event-id` **response header** (e.g. `1222202291`). This is the async trigger — the server has queued the request.
+- Second call with the `event-id` header set to that value returns the full `data` object.
+- The event-id travels in the **HTTP response header**, not in the JSON body.
+
 ---
 
 ## 6. Charging Status & Control Schema
