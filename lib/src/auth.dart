@@ -149,6 +149,7 @@ class SaicAuth {
   Future<LoginResponse> login(SaicConfig config) async {
     final body = _buildFormBody(config);
     final uri = Uri.parse('${config.region.baseUri}oauth/token');
+    final timestampMs = DateTime.now().millisecondsSinceEpoch.toString();
 
     final response = await _client.post(
       uri,
@@ -156,6 +157,12 @@ class SaicAuth {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Accept': 'application/json',
         'Authorization': _basicAuth,
+        'tenant-id': config.region.tenantId,
+        'User-Agent': 'Europe/2.1.0 (iPad; iOS 18.5; Scale/2.00)',
+        'REGION': config.region.regionHeader,
+        'APP-LANGUAGE-TYPE': 'en',
+        'User-Type': 'app',
+        'APP-SEND-DATE': timestampMs,
       },
       body: body,
     );

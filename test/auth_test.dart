@@ -102,6 +102,35 @@ void main() {
       expect(captured.headers['Content-Type'], 'application/x-www-form-urlencoded');
     });
 
+    test('sends tenant-id for the configured region', () {
+      expect(captured.headers['tenant-id'], '459771');
+    });
+
+    test('sends User-Agent matching the mobile app string', () {
+      expect(
+        captured.headers['User-Agent'],
+        'Europe/2.1.0 (iPad; iOS 18.5; Scale/2.00)',
+      );
+    });
+
+    test('sends REGION: eu for EU config', () {
+      expect(captured.headers['REGION'], 'eu');
+    });
+
+    test('sends APP-LANGUAGE-TYPE: en', () {
+      expect(captured.headers['APP-LANGUAGE-TYPE'], 'en');
+    });
+
+    test('sends User-Type: app', () {
+      expect(captured.headers['User-Type'], 'app');
+    });
+
+    test('sends APP-SEND-DATE as numeric millisecond string', () {
+      final ts = int.tryParse(captured.headers['APP-SEND-DATE']!);
+      expect(ts, isNotNull);
+      expect(ts, greaterThan(0));
+    });
+
     test('sends loginType 2 for email login', () {
       final params = Uri.splitQueryString(captured.body);
       expect(params['loginType'], '2');
