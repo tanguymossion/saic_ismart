@@ -2,7 +2,7 @@
 
 > Dart client for the SAIC iSmart API — MG, Roewe, Maxus/LDV connected vehicles.
 
-[![pub.dev](https://img.shields.io/badge/pub.dev-0.2.0--dev-grey?style=flat-square)](https://pub.dev)
+[![pub.dev](https://img.shields.io/badge/pub.dev-coming%20soon-grey?style=flat-square)](https://pub.dev)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![Dart](https://img.shields.io/badge/Dart-pure-0553B1?style=flat-square&logo=dart)](https://dart.dev)
 
@@ -57,19 +57,17 @@ dependencies:
 import 'package:saic_ismart/saic_ismart.dart';
 
 final client = SaicClient(
-  username: 'you@example.com',
-  password: '••••••••',
-  region: SaicRegion.europe,
+  SaicConfig(username: 'you@example.com', password: '••••••••'),
 );
 
 await client.login();
 
 final vehicles = await client.getVehicles();
-final status  = await client.getVehicleStatus(vehicles.first.vin);
+final status   = await client.getVehicleStatus(vehicles.first.vin);
 
-print(status.isLocked);   // true
-print(status.location);   // LatLng(47.99, 0.19)
-print(status.mileage);    // 3240 km
+print(status.basicVehicleStatus?.lockStatus);            // 1 = locked
+print(status.basicVehicleStatus?.mileage);               // raw decimeters
+print(status.gpsPosition?.wayPoint?.position?.latitude); // raw integer ÷ 1,000,000 = degrees
 ```
 
 ---
@@ -90,6 +88,8 @@ print(status.mileage);    // 3240 km
   GPS status: GpsStatus.fix2d
   Status time: 1779548697
 ```
+
+> Note: mileage is returned in decimeters (243790 = ~24 km). Unit conversion helpers are planned for v0.2.0.
 
 ---
 
@@ -118,7 +118,7 @@ print(status.mileage);    // 3240 km
 - Multi-region (AU, IN, TR…)
 - Structured errors — `SaicException`
 
-### v1.0 — Remote actions + pub.dev release
+### v1.0.0 — Remote actions + pub.dev release
 - Remote lock/unlock
 - Find my car
 - Horn & lights trigger
