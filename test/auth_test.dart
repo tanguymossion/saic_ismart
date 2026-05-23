@@ -1,0 +1,242 @@
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
+import 'package:saic_ismart/src/auth.dart';
+import 'package:saic_ismart/src/exceptions.dart';
+import 'package:test/test.dart';
+
+// Minimal successful login payload matching LoginResp schema (section 1).
+String _successBody({
+  String accessToken = 'tok_abc123',
+  String tokenType = 'bearer',
+  int expiresIn = 3600,
+  String userId = 'user-001',
+  String userName = 'test@example.com',
+}) =>
+    jsonEncode({
+      'code': 0,
+      'message': 'success',
+      'data': {
+        'access_token': accessToken,
+        'token_type': tokenType,
+        'expires_in': expiresIn,
+        'user_id': userId,
+        'user_name': userName,
+      },
+    });
+
+void main() {
+  const emailConfig = SaicConfig(
+    username: 'test@example.com',
+    password: 'hunter2',
+  );
+
+  const phoneConfig = SaicConfig(
+    username: '+447700900000',
+    password: 'hunter2',
+    usernameIsEmail: false,
+    phoneCountryCode: '44',
+  );
+
+  // ── LoginResponse parsing ──────────────────────────────────────────────────
+
+  group('LoginResponse.fromJson', () {
+    test('parses all fields correctly', () async {
+      final client = MockClient(
+        (_) async => http.Response(_successBody(), 200),
+      );
+      final response = await SaicAuth(httpClient: client).login(emailConfig);
+
+      expect(response.accessToken, 'tok_abc123');
+      expect(response.tokenType, 'bearer');
+      expect(response.expiresIn, 3600);
+      expect(response.userId, 'user-001');
+      expect(response.userName, 'test@example.com');
+    });
+
+    test('sets tokenExpiration approximately expiresIn seconds from now', () async {
+      final before = DateTime.now();
+      final client = MockClient(
+        (_) async => http.Response(_successBody(expiresIn: 7200), 200),
+      );
+      final response = await SaicAuth(httpClient: client).login(emailConfig);
+      final after = DateTime.now();
+
+      expect(
+        response.tokenExpiration.isAfter(before.add(const Duration(seconds: 7199))),
+        isTrue,
+      );
+      expect(
+        response.tokenExpiration.isBefore(after.add(const Duration(seconds: 7201))),
+        isTrue,
+      );
+    });
+  });
+
+  // ── Request construction ───────────────────────────────────────────────────
+
+  group('SaicAuth.login request', () {
+    late http.Request captured;
+
+    setUp(() async {
+      final client = MockClient((req) async {
+        captured = req;
+        return http.Response(_successBody(), 200);
+      });
+      await SaicAuth(httpClient: client).login(emailConfig);
+    });
+
+    test('sends to correct EU endpoint', () {
+      expect(
+        captured.url.toString(),
+        'https://gateway-mg-eu.soimt.com/api.app/v1/oauth/token',
+      );
+    });
+
+    test('sends hardcoded Authorization header', () {
+      expect(captured.headers['Authorization'], 'Basic c3dvcmQ6c3dvcmRfc2VjcmV0');
+    });
+
+    test('sends Content-Type application/x-www-form-urlencoded', () {
+      expect(captured.headers['Content-Type'], 'application/x-www-form-urlencoded');
+    });
+
+    test('sends loginType 2 for email login', () {
+      final params = Uri.splitQueryString(captured.body);
+      expect(params['loginType'], '2');
+    });
+
+    test('sends grant_type password and scope all', () {
+      final params = Uri.splitQueryString(captured.body);
+      expect(params['grant_type'], 'password');
+      expect(params['scope'], 'all');
+    });
+
+    test('sends SHA-1 hashed password, not plaintext', () {
+      final params = Uri.splitQueryString(captured.body);
+      // SHA-1("hunter2") = f3bbbd66a63d4bf1747940578ec3d0103530e21d
+      expect(params['password'], 'f3bbbd66a63d4bf1747940578ec3d0103530e21d');
+      expect(params['password'], isNot('hunter2'));
+    });
+
+    test('sends deviceId matching expected pattern', () {
+      final params = Uri.splitQueryString(captured.body);
+      final deviceId = params['deviceId']!;
+      expect(deviceId, startsWith('simulator${'*' * 45}'));
+      expect(deviceId, endsWith('###com.saicmotor.europecar'));
+    });
+  });
+
+  group('SaicAuth.login phone login', () {
+    test('sends loginType 1 and countryCode for phone config', () async {
+      http.Request? captured;
+      final client = MockClient((req) async {
+        captured = req;
+        return http.Response(_successBody(), 200);
+      });
+      await SaicAuth(httpClient: client).login(phoneConfig);
+      final params = Uri.splitQueryString(captured!.body);
+      expect(params['loginType'], '1');
+      expect(params['countryCode'], '44');
+    });
+  });
+
+  // ── Error handling ─────────────────────────────────────────────────────────
+
+  group('SaicAuth.login error handling', () {
+    test('throws SaicAuthException on HTTP 401', () async {
+      final client = MockClient((_) async => http.Response('Unauthorized', 401));
+      expect(
+        () => SaicAuth(httpClient: client).login(emailConfig),
+        throwsA(isA<SaicAuthException>()),
+      );
+    });
+
+    test('throws SaicAuthException on HTTP 403', () async {
+      final client = MockClient((_) async => http.Response('Forbidden', 403));
+      expect(
+        () => SaicAuth(httpClient: client).login(emailConfig),
+        throwsA(isA<SaicAuthException>()),
+      );
+    });
+
+    test('throws SaicAuthException on JSON code 401', () async {
+      final client = MockClient(
+        (_) async => http.Response(
+          '{"code":401,"message":"Unauthorized","data":null}',
+          200,
+        ),
+      );
+      expect(
+        () => SaicAuth(httpClient: client).login(emailConfig),
+        throwsA(isA<SaicAuthException>()),
+      );
+    });
+
+    test('throws SaicAuthException on JSON code 403', () async {
+      final client = MockClient(
+        (_) async => http.Response(
+          '{"code":403,"message":"Forbidden","data":null}',
+          200,
+        ),
+      );
+      expect(
+        () => SaicAuth(httpClient: client).login(emailConfig),
+        throwsA(isA<SaicAuthException>()),
+      );
+    });
+
+    test('throws SaicApiException on other non-zero JSON code', () async {
+      final client = MockClient(
+        (_) async => http.Response('{"code":7,"message":"Fatal error"}', 200),
+      );
+      expect(
+        () => SaicAuth(httpClient: client).login(emailConfig),
+        throwsA(isA<SaicApiException>()),
+      );
+    });
+
+    test('throws SaicAuthException when phone config has no country code', () {
+      const bad = SaicConfig(
+        username: '+447700900000',
+        password: 'pw',
+        usernameIsEmail: false,
+        // phoneCountryCode intentionally omitted
+      );
+      final client = MockClient((_) async => http.Response('{}', 200));
+      expect(
+        () => SaicAuth(httpClient: client).login(bad),
+        throwsA(isA<SaicAuthException>()),
+      );
+    });
+  });
+
+  // ── Token expiration ───────────────────────────────────────────────────────
+
+  group('SaicAuth.isTokenExpired', () {
+    test('returns true when expiration is in the past', () {
+      expect(
+        SaicAuth.isTokenExpired(
+          DateTime.now().subtract(const Duration(seconds: 1)),
+        ),
+        isTrue,
+      );
+    });
+
+    test('returns false when expiration is in the future', () {
+      expect(
+        SaicAuth.isTokenExpired(
+          DateTime.now().add(const Duration(hours: 1)),
+        ),
+        isFalse,
+      );
+    });
+
+    test('returns true when expiration is exactly now', () {
+      // DateTime.now() called twice; subtract 1µs to ensure "now" passes.
+      final past = DateTime.now().subtract(const Duration(microseconds: 1));
+      expect(SaicAuth.isTokenExpired(past), isTrue);
+    });
+  });
+}

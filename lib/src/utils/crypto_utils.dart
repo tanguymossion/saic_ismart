@@ -12,6 +12,12 @@ import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as enc;
 
+/// Returns the lowercase SHA-1 hex digest of [input] (UTF-8 encoded).
+///
+/// Used to hash the plaintext password before sending it in the login request.
+/// Source: `base.py:login()` — `sha1(plaintext_password).hexdigest()`
+String sha1Hex(String input) => sha1.convert(utf8.encode(input)).toString();
+
 /// Returns the lowercase SHA-256 hex digest of [input] (UTF-8 encoded).
 ///
 /// Used to hash the VIN before every API call.

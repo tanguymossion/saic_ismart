@@ -2,6 +2,18 @@ import 'package:saic_ismart/src/utils/crypto_utils.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('sha1Hex', () {
+    test('produces lowercase hex digest', () {
+      // echo -n "hello" | sha1sum
+      expect(sha1Hex('hello'), 'aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d');
+    });
+
+    test('hashes empty string', () {
+      // echo -n "" | sha1sum
+      expect(sha1Hex(''), 'da39a3ee5e6b4b0d3255bfef95601890afd80709');
+    });
+  });
+
   group('sha256Hex', () {
     test('produces lowercase hex digest', () {
       // echo -n "hello" | sha256sum
