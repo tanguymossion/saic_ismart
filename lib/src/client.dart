@@ -12,6 +12,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'auth.dart';
+import 'cache.dart';
 import 'exceptions.dart';
 import 'models/vehicle.dart';
 import 'models/vehicle_status.dart';
@@ -150,7 +151,8 @@ class _SaicHttpClient {
 
   /// Decrypts and parses an API response, throwing on any error condition.
   ///
-  /// - HTTP 401/403 → [SaicAuthException] (body not decrypted, quirk #5).
+  /// - HTTP 401/403 with an active session → [SaicSessionConflictException].
+  /// - HTTP 401/403 without a session → [SaicAuthException].
   /// - JSON code 401/403 → [SaicAuthException].
   /// - JSON code 2/3/7 → [SaicApiException] (fatal, no retry).
   /// - Any other non-zero code → [SaicApiException].
@@ -159,6 +161,16 @@ class _SaicHttpClient {
   /// Source: `base.py:__deserialize()`, `net/httpx/__init__.py:decrypt_httpx_response()`
   dynamic _parseResponse(http.Response response) {
     if (response.statusCode == 401 || response.statusCode == 403) {
+      // A 401/403 while holding an active token means another client has
+      // taken the session — surface this as a conflict, not a plain auth error.
+      if (userToken.isNotEmpty) {
+        throw SaicSessionConflictException(
+          statusCode: response.statusCode,
+          message:
+              'Session conflict — another client may have authenticated with '
+              'the same credentials (TECHNICAL_REFERENCE.md §4)',
+        );
+      }
       throw SaicAuthException(
         statusCode: response.statusCode,
         message: 'HTTP ${response.statusCode}',
@@ -222,21 +234,35 @@ class _SaicHttpClient {
 /// );
 /// await client.login();
 /// final vehicles = await client.getVehicles();
+/// final status  = await client.getVehicleStatus(vehicles.first.vin);
 /// ```
 ///
-/// Inject [httpClient] to use a mock in tests.
+/// Inject [httpClient] to use a [http.MockClient] in tests.
+/// Inject [cache] to override the default 600 s cooldown TTL.
 class SaicClient {
   final SaicConfig _config;
   final _SaicHttpClient _http;
+  final SaicCache _cache;
   LoginResponse? _session;
 
   // ignore: public_member_api_docs
-  SaicClient(SaicConfig config, {http.Client? httpClient})
-      : _config = config,
+  SaicClient(
+    SaicConfig config, {
+    http.Client? httpClient,
+    SaicCache? cache,
+  })  : _config = config,
         _http = _SaicHttpClient(
           httpClient ?? http.Client(),
           config.region,
-        );
+        ),
+        _cache = cache ?? SaicCache();
+
+  /// `true` if [login] has been called successfully and the token has not
+  /// yet expired.
+  bool get isSessionActive {
+    final s = _session;
+    return s != null && !SaicAuth.isTokenExpired(s.tokenExpiration);
+  }
 
   /// Authenticates and stores the session token.
   ///
@@ -259,18 +285,26 @@ class SaicClient {
         .toList();
   }
 
-  /// Returns a real-time status snapshot for the vehicle identified by [vin].
+  /// Returns a real-time status snapshot for [vin], serving from the cache
+  /// when the last fetch was less than the configured TTL ago.
+  ///
+  /// **Cache behaviour:** if [SaicCache.isCoolingDown] is true for [vin],
+  /// the cached [VehicleStatus] is returned immediately and no HTTP call is
+  /// made. Otherwise a fresh value is fetched, stored in the cache, and
+  /// returned.
   ///
   /// The [vin] is hashed with SHA-256 before being sent — the raw VIN is never
   /// transmitted (TECHNICAL_REFERENCE.md §2 — VIN hashing).
   ///
   /// `vehStatusReqType=2` is always hardcoded (quirk #11).
-  /// The full request path including the query string is used for key
-  /// derivation (quirk #10).
   ///
   /// Endpoint: `GET /vehicle/status?vin={sha256Hex(vin)}&vehStatusReqType=2`
   /// Source: `api/vehicle/__init__.py:get_vehicle_status()`
   Future<VehicleStatus> getVehicleStatus(String vin) async {
+    if (_cache.isCoolingDown(vin)) {
+      return _cache.get(vin)!; // guaranteed non-null when isCoolingDown
+    }
+
     final data = await _http.get(
       '/vehicle/status',
       params: {
@@ -278,6 +312,16 @@ class SaicClient {
         'vehStatusReqType': '2',
       },
     ) as Map<String, dynamic>;
-    return VehicleStatus.fromJson(data);
+
+    final status = VehicleStatus.fromJson(data);
+    _cache.set(vin, status);
+    return status;
   }
+
+  /// Clears all cached vehicle status entries, forcing fresh fetches.
+  void clearCache() => _cache.clear();
+
+  /// Clears the cached status for [vin] only, forcing a fresh fetch for
+  /// that vehicle on the next call to [getVehicleStatus].
+  void clearCacheFor(String vin) => _cache.clearFor(vin);
 }
