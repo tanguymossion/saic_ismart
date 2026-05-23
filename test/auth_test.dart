@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:saic_ismart/src/auth.dart';
 import 'package:saic_ismart/src/exceptions.dart';
+import 'package:saic_ismart/src/utils/crypto_utils.dart';
 import 'package:test/test.dart';
 
 // Minimal successful login payload matching LoginResp schema (section 1).
@@ -78,6 +79,8 @@ void main() {
 
   group('SaicAuth.login request', () {
     late http.Request captured;
+    // Decrypted form fields — populated in setUp after decrypting the body.
+    late Map<String, String> capturedBodyParams;
 
     setUp(() async {
       final client = MockClient((req) async {
@@ -85,6 +88,14 @@ void main() {
         return http.Response(_successBody(), 200);
       });
       await SaicAuth(httpClient: client).login(emailConfig);
+
+      // Decrypt using request-side key derivation (userToken = '' at login time).
+      final ts = captured.headers['APP-SEND-DATE']!;
+      final keyHex = deriveRequestKey(
+        '/oauth/token', '459771', '', ts, 'application/x-www-form-urlencoded',
+      );
+      final plain = decryptBody(captured.body, keyHex, deriveRequestIv(ts));
+      capturedBodyParams = Uri.splitQueryString(plain);
     });
 
     test('sends to correct EU endpoint', () {
@@ -131,27 +142,37 @@ void main() {
       expect(ts, greaterThan(0));
     });
 
+    test('sends ORIGINAL-CONTENT-TYPE: application/x-www-form-urlencoded', () {
+      expect(captured.headers['ORIGINAL-CONTENT-TYPE'], 'application/x-www-form-urlencoded');
+    });
+
+    test('sends APP-CONTENT-ENCRYPTED: 1', () {
+      expect(captured.headers['APP-CONTENT-ENCRYPTED'], '1');
+    });
+
+    test('sends APP-VERIFICATION-STRING as 64-char lowercase hex', () {
+      final sig = captured.headers['APP-VERIFICATION-STRING'];
+      expect(sig, isNotNull);
+      expect(sig, matches(RegExp(r'^[0-9a-f]{64}$')));
+    });
+
     test('sends loginType 2 for email login', () {
-      final params = Uri.splitQueryString(captured.body);
-      expect(params['loginType'], '2');
+      expect(capturedBodyParams['loginType'], '2');
     });
 
     test('sends grant_type password and scope all', () {
-      final params = Uri.splitQueryString(captured.body);
-      expect(params['grant_type'], 'password');
-      expect(params['scope'], 'all');
+      expect(capturedBodyParams['grant_type'], 'password');
+      expect(capturedBodyParams['scope'], 'all');
     });
 
     test('sends SHA-1 hashed password, not plaintext', () {
-      final params = Uri.splitQueryString(captured.body);
       // SHA-1("hunter2") = f3bbbd66a63d4bf1747940578ec3d0103530e21d
-      expect(params['password'], 'f3bbbd66a63d4bf1747940578ec3d0103530e21d');
-      expect(params['password'], isNot('hunter2'));
+      expect(capturedBodyParams['password'], 'f3bbbd66a63d4bf1747940578ec3d0103530e21d');
+      expect(capturedBodyParams['password'], isNot('hunter2'));
     });
 
     test('sends deviceId matching expected pattern', () {
-      final params = Uri.splitQueryString(captured.body);
-      final deviceId = params['deviceId']!;
+      final deviceId = capturedBodyParams['deviceId']!;
       expect(deviceId, startsWith('simulator${'*' * 45}'));
       expect(deviceId, endsWith('###com.saicmotor.europecar'));
     });
@@ -165,7 +186,13 @@ void main() {
         return http.Response(_successBody(), 200);
       });
       await SaicAuth(httpClient: client).login(phoneConfig);
-      final params = Uri.splitQueryString(captured!.body);
+      final req = captured!;
+      final ts = req.headers['APP-SEND-DATE']!;
+      final keyHex = deriveRequestKey(
+        '/oauth/token', '459771', '', ts, 'application/x-www-form-urlencoded',
+      );
+      final plain = decryptBody(req.body, keyHex, deriveRequestIv(ts));
+      final params = Uri.splitQueryString(plain);
       expect(params['loginType'], '1');
       expect(params['countryCode'], '44');
     });
@@ -233,6 +260,7 @@ void main() {
         usernameIsEmail: false,
         // phoneCountryCode intentionally omitted
       );
+      // Exception is thrown before the HTTP call; mock response is irrelevant.
       final client = MockClient((_) async => http.Response('{}', 200));
       expect(
         () => SaicAuth(httpClient: client).login(bad),

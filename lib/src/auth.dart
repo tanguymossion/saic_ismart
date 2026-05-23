@@ -144,17 +144,30 @@ class SaicAuth {
   /// - The JSON `code` field is 401 or 403.
   /// - [config] has `usernameIsEmail == false` but no [SaicConfig.phoneCountryCode].
   ///
-  /// The login POST is **not** AES-encrypted — it is a plain
-  /// `application/x-www-form-urlencoded` request. Source: `base.py:login()`
   Future<LoginResponse> login(SaicConfig config) async {
-    final body = _buildFormBody(config);
+    final bodyMap = _buildFormBody(config);
     final uri = Uri.parse('${config.region.baseUri}oauth/token');
+    const requestPath = '/oauth/token';
+    const contentType = 'application/x-www-form-urlencoded';
     final timestampMs = DateTime.now().millisecondsSinceEpoch.toString();
+
+    // URL-encode the form fields, then apply the standard AES-CBC pipeline.
+    // userToken is empty at login time — the key formula uses '' in its place.
+    final plainBody = Uri(queryParameters: bodyMap).query;
+    final keyHex = deriveRequestKey(
+      requestPath, config.region.tenantId, '', timestampMs, contentType,
+    );
+    final ivHex = deriveRequestIv(timestampMs);
+    final encryptedBody = encryptBody(plainBody, keyHex, ivHex);
+    final hmac = computeHmac(
+      requestPath, config.region.tenantId, '', timestampMs, contentType,
+      encryptedBody,
+    );
 
     final response = await _client.post(
       uri,
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': contentType,
         'Accept': 'application/json',
         'Authorization': _basicAuth,
         'tenant-id': config.region.tenantId,
@@ -163,8 +176,11 @@ class SaicAuth {
         'APP-LANGUAGE-TYPE': 'en',
         'User-Type': 'app',
         'APP-SEND-DATE': timestampMs,
+        'ORIGINAL-CONTENT-TYPE': contentType,
+        'APP-CONTENT-ENCRYPTED': '1',
+        'APP-VERIFICATION-STRING': hmac,
       },
-      body: body,
+      body: encryptedBody,
     );
 
     if (response.statusCode == 401 || response.statusCode == 403) {
