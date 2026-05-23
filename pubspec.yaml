@@ -8,7 +8,8 @@ environment:
 
 dependencies:
   http: ^1.2.0
-  asn1lib: ^1.5.0
+  encrypt: ^5.0.3
+  crypto: ^3.0.3
 
 dev_dependencies:
   lints: ^3.0.0
