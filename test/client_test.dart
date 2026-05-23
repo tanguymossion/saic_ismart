@@ -52,7 +52,7 @@ MockClient _mockWith({
 }) {
   return MockClient((req) async {
     if (req.url.path.endsWith('/oauth/token')) {
-      return http.Response(_loginBody(token: loginToken), 200);
+      return _encryptedResponse(_loginBody(token: loginToken));
     }
     return onApi(req);
   });
@@ -143,7 +143,7 @@ void main() {
     setUp(() async {
       final mock = MockClient((req) async {
         if (req.url.path.endsWith('/oauth/token')) {
-          return http.Response(_loginBody(), 200);
+          return _encryptedResponse(_loginBody());
         }
         captured = req;
         return _encryptedApiResponse([]);
@@ -281,7 +281,7 @@ void main() {
       final client = SaicClient(
         _config,
         httpClient: MockClient(
-          (_) async => http.Response(_loginBody(), 200),
+          (_) async => _encryptedResponse(_loginBody()),
         ),
       );
       await client.login();
@@ -298,7 +298,7 @@ void main() {
       http.Request? captured;
       final mock = MockClient((req) async {
         if (req.url.path.endsWith('/oauth/token')) {
-          return http.Response(_loginBody(), 200);
+          return _encryptedResponse(_loginBody());
         }
         captured = req;
         return _encryptedApiResponse([]);

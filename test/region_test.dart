@@ -40,7 +40,7 @@ Future<Map<String, String>> _headersFor(SaicRegion region) async {
 
   final mock = MockClient((req) async {
     if (req.url.path.endsWith('/oauth/token')) {
-      return http.Response(_loginBody(), 200);
+      return _encryptedResponse(_loginBody());
     }
     if (!captured.isCompleted) {
       captured.complete(Map.unmodifiable(req.headers));

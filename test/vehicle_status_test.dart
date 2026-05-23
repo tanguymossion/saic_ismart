@@ -51,7 +51,7 @@ Future<SaicClient> _client(
 ) async {
   final mock = MockClient((req) async {
     if (req.url.path.endsWith('/oauth/token')) {
-      return http.Response(_loginBody(), 200);
+      return _encryptedResponse(_loginBody());
     }
     return onApi(req);
   });
@@ -372,7 +372,7 @@ void main() {
     setUp(() async {
       final mock = MockClient((req) async {
         if (req.url.path.endsWith('/oauth/token')) {
-          return http.Response(_loginBody(), 200);
+          return _encryptedResponse(_loginBody());
         }
         captured = req;
         return _statusResponse(_fullStatusData);

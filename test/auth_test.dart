@@ -27,6 +27,19 @@ String _successBody({
       },
     });
 
+/// Returns an AES-encrypted 200 response for [plain], with the headers the
+/// client needs to decrypt it.
+http.Response _encryptedLoginResponse(String plain) {
+  const appSendDate = '1700000000000';
+  const ct = 'application/json';
+  return http.Response(
+    encryptBody(plain, deriveResponseKey(appSendDate, ct),
+        deriveResponseIv(appSendDate)),
+    200,
+    headers: {'app-send-date': appSendDate, 'original-content-type': ct},
+  );
+}
+
 void main() {
   const emailConfig = SaicConfig(
     username: 'test@example.com',
@@ -45,7 +58,7 @@ void main() {
   group('LoginResponse.fromJson', () {
     test('parses all fields correctly', () async {
       final client = MockClient(
-        (_) async => http.Response(_successBody(), 200),
+        (_) async => _encryptedLoginResponse(_successBody()),
       );
       final response = await SaicAuth(httpClient: client).login(emailConfig);
 
@@ -59,7 +72,7 @@ void main() {
     test('sets tokenExpiration approximately expiresIn seconds from now', () async {
       final before = DateTime.now();
       final client = MockClient(
-        (_) async => http.Response(_successBody(expiresIn: 7200), 200),
+        (_) async => _encryptedLoginResponse(_successBody(expiresIn: 7200)),
       );
       final response = await SaicAuth(httpClient: client).login(emailConfig);
       final after = DateTime.now();
@@ -85,7 +98,7 @@ void main() {
     setUp(() async {
       final client = MockClient((req) async {
         captured = req;
-        return http.Response(_successBody(), 200);
+        return _encryptedLoginResponse(_successBody());
       });
       await SaicAuth(httpClient: client).login(emailConfig);
 
@@ -183,7 +196,7 @@ void main() {
       http.Request? captured;
       final client = MockClient((req) async {
         captured = req;
-        return http.Response(_successBody(), 200);
+        return _encryptedLoginResponse(_successBody());
       });
       await SaicAuth(httpClient: client).login(phoneConfig);
       final req = captured!;
@@ -202,6 +215,7 @@ void main() {
 
   group('SaicAuth.login error handling', () {
     test('throws SaicAuthException on HTTP 401', () async {
+      // Non-2xx: decryption is skipped, body is not read.
       final client = MockClient((_) async => http.Response('Unauthorized', 401));
       expect(
         () => SaicAuth(httpClient: client).login(emailConfig),
@@ -218,12 +232,9 @@ void main() {
     });
 
     test('throws SaicAuthException on JSON code 401', () async {
-      final client = MockClient(
-        (_) async => http.Response(
-          '{"code":401,"message":"Unauthorized","data":null}',
-          200,
-        ),
-      );
+      final client = MockClient((_) async => _encryptedLoginResponse(
+            '{"code":401,"message":"Unauthorized","data":null}',
+          ));
       expect(
         () => SaicAuth(httpClient: client).login(emailConfig),
         throwsA(isA<SaicAuthException>()),
@@ -231,12 +242,9 @@ void main() {
     });
 
     test('throws SaicAuthException on JSON code 403', () async {
-      final client = MockClient(
-        (_) async => http.Response(
-          '{"code":403,"message":"Forbidden","data":null}',
-          200,
-        ),
-      );
+      final client = MockClient((_) async => _encryptedLoginResponse(
+            '{"code":403,"message":"Forbidden","data":null}',
+          ));
       expect(
         () => SaicAuth(httpClient: client).login(emailConfig),
         throwsA(isA<SaicAuthException>()),
@@ -244,9 +252,9 @@ void main() {
     });
 
     test('throws SaicApiException on other non-zero JSON code', () async {
-      final client = MockClient(
-        (_) async => http.Response('{"code":7,"message":"Fatal error"}', 200),
-      );
+      final client = MockClient((_) async => _encryptedLoginResponse(
+            '{"code":7,"message":"Fatal error"}',
+          ));
       expect(
         () => SaicAuth(httpClient: client).login(emailConfig),
         throwsA(isA<SaicApiException>()),

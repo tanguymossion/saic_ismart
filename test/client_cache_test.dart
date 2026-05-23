@@ -60,7 +60,7 @@ Future<(SaicClient, SaicCache, void Function(Duration))> _makeClient({
   var callCount = 0;
   final mock = MockClient((req) async {
     if (req.url.path.endsWith('/oauth/token')) {
-      return http.Response(_loginBody(), 200);
+      return _encryptedResponse(_loginBody());
     }
     if (req.url.path.endsWith('/vehicle/status')) {
       callCount++;
@@ -223,7 +223,7 @@ void main() {
 
     test('true after successful login', () async {
       final mock = MockClient(
-        (_) async => http.Response(_loginBody(), 200),
+        (_) async => _encryptedResponse(_loginBody()),
       );
       final client = SaicClient(_config, httpClient: mock);
       await client.login();
@@ -237,7 +237,7 @@ void main() {
     test('thrown on 401 when an active session token is held', () async {
       final mock = MockClient((req) async {
         if (req.url.path.endsWith('/oauth/token')) {
-          return http.Response(_loginBody(), 200);
+          return _encryptedResponse(_loginBody());
         }
         return http.Response('Unauthorized', 401);
       });
@@ -252,7 +252,7 @@ void main() {
     test('thrown on 403 when an active session token is held', () async {
       final mock = MockClient((req) async {
         if (req.url.path.endsWith('/oauth/token')) {
-          return http.Response(_loginBody(), 200);
+          return _encryptedResponse(_loginBody());
         }
         return http.Response('Forbidden', 403);
       });

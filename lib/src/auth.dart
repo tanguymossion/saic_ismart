@@ -190,13 +190,27 @@ class SaicAuth {
       );
     }
 
+    final String responseBody;
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      final appSendDate = response.headers['app-send-date'] ?? '';
+      final originalCt =
+          response.headers['original-content-type'] ?? 'application/json';
+      responseBody = decryptBody(
+        response.body,
+        deriveResponseKey(appSendDate, originalCt),
+        deriveResponseIv(appSendDate),
+      );
+    } else {
+      responseBody = response.body;
+    }
+
     final Map<String, dynamic> json;
     try {
-      json = jsonDecode(response.body) as Map<String, dynamic>;
+      json = jsonDecode(responseBody) as Map<String, dynamic>;
     } catch (_) {
       throw SaicApiException(
         statusCode: response.statusCode,
-        message: 'Invalid JSON response: ${response.body}',
+        message: 'Invalid JSON response: $responseBody',
       );
     }
 
