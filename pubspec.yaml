@@ -10,6 +10,7 @@ dependencies:
   http: ^1.2.0
   encrypt: ^5.0.3
   crypto: ^3.0.3
+  convert: ^3.1.1
 
 dev_dependencies:
   lints: ^3.0.0
