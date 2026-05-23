@@ -9,6 +9,7 @@
 library;
 
 import '../utils/unit_utils.dart' as unit_utils;
+import 'enums.dart';
 
 // ── GpsStatus ─────────────────────────────────────────────────────────────────
 
@@ -427,6 +428,20 @@ class BasicVehicleStatus {
   int? get batteryVoltageValue => batteryVoltage == null
       ? null
       : unit_utils.batteryVoltageSensor(batteryVoltage!);
+
+  DoorStatus? get driverDoorStatus => DoorStatus.fromRaw(driverDoor);
+  DoorStatus? get passengerDoorStatus => DoorStatus.fromRaw(passengerDoor);
+  DoorStatus? get rearLeftDoorStatus => DoorStatus.fromRaw(rearLeftDoor);
+  DoorStatus? get rearRightDoorStatus => DoorStatus.fromRaw(rearRightDoor);
+  WindowStatus? get driverWindowStatus => WindowStatus.fromRaw(driverWindow);
+  WindowStatus? get passengerWindowStatus =>
+      WindowStatus.fromRaw(passengerWindow);
+  WindowStatus? get rearLeftWindowStatus => WindowStatus.fromRaw(rearLeftWindow);
+  WindowStatus? get rearRightWindowStatus =>
+      WindowStatus.fromRaw(rearRightWindow);
+  LockStatus? get lockState => LockStatus.fromRaw(lockStatus);
+  BonnetStatus? get bonnetState => BonnetStatus.fromRaw(bonnetStatus);
+  BootStatus? get bootState => BootStatus.fromRaw(bootStatus);
 
   /// Parses a [BasicVehicleStatus] from the `basicVehicleStatus` JSON object.
   factory BasicVehicleStatus.fromJson(Map<String, dynamic> json) =>
