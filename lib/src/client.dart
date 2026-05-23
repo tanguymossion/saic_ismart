@@ -257,6 +257,10 @@ class SaicClient {
         ),
         _cache = cache ?? SaicCache();
 
+  /// The [LoginResponse] from the most recent successful [login] call, or
+  /// `null` if [login] has not been called yet.
+  LoginResponse? get session => _session;
+
   /// `true` if [login] has been called successfully and the token has not
   /// yet expired.
   bool get isSessionActive {

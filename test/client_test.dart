@@ -269,6 +269,28 @@ void main() {
     });
   });
 
+  // ── session getter ────────────────────────────────────────────────────────────
+
+  group('SaicClient.session', () {
+    test('is null before login', () {
+      final client = SaicClient(_config);
+      expect(client.session, isNull);
+    });
+
+    test('is non-null after successful login', () async {
+      final client = SaicClient(
+        _config,
+        httpClient: MockClient(
+          (_) async => http.Response(_loginBody(), 200),
+        ),
+      );
+      await client.login();
+      expect(client.session, isNotNull);
+      expect(client.session!.accessToken, 'test_token');
+      expect(client.session!.userName, 'test@example.com');
+    });
+  });
+
   // ── Request URL ───────────────────────────────────────────────────────────────
 
   group('SaicClient.getVehicles — request URL', () {
