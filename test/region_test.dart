@@ -45,7 +45,8 @@ Future<Map<String, String>> _headersFor(SaicRegion region) async {
     if (!captured.isCompleted) {
       captured.complete(Map.unmodifiable(req.headers));
     }
-    return _encryptedResponse(jsonEncode({'code': 0, 'data': <dynamic>[]}));
+    return _encryptedResponse(
+        jsonEncode({'code': 0, 'data': {'vinList': []}}));
   });
 
   final config = SaicConfig(

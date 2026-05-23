@@ -18,6 +18,16 @@ import 'models/vehicle.dart';
 import 'models/vehicle_status.dart';
 import 'utils/crypto_utils.dart';
 
+// ── Event-id retry signal ─────────────────────────────────────────────────────
+
+/// Thrown by [_SaicHttpClient._parseResponse] when the server returns code 0
+/// with no `data` field and an `event-id` response header, indicating the
+/// request is being processed asynchronously (TECHNICAL_REFERENCE.md §4).
+class _SaicEventIdRetryException implements Exception {
+  final String eventId;
+  const _SaicEventIdRetryException(this.eventId);
+}
+
 // ── Internal HTTP layer ───────────────────────────────────────────────────────
 
 /// Handles the AES-128-CBC + HMAC-SHA-256 pipeline for every API request.
@@ -40,7 +50,13 @@ class _SaicHttpClient {
   /// set on every request (quirk #9 — TECHNICAL_REFERENCE.md §8).
   /// [params] are appended as query parameters; the full path + query string
   /// is used for key derivation (quirk #10).
-  Future<dynamic> get(String path, {Map<String, String>? params}) async {
+  /// [eventId] is sent as `event-id` header; defaults to `'0'` for the
+  /// initial request in the event-id polling pattern (TECHNICAL_REFERENCE.md §4).
+  Future<dynamic> get(
+    String path, {
+    Map<String, String>? params,
+    String eventId = '0',
+  }) async {
     final uri = _buildUri(path, params);
     final requestPath = _requestPathFromUri(uri);
     final timestampMs = DateTime.now().millisecondsSinceEpoch.toString();
@@ -51,6 +67,7 @@ class _SaicHttpClient {
       contentType: _kJson,
       encryptedBody: '', // GET: no body; HMAC still computed over empty string
     );
+    headers['event-id'] = eventId;
 
     final response = await rawClient.get(uri, headers: headers);
     return _parseResponse(response);
@@ -156,6 +173,8 @@ class _SaicHttpClient {
   /// - JSON code 401/403 → [SaicAuthException].
   /// - JSON code 2/3/7 → [SaicApiException] (fatal, no retry).
   /// - Any other non-zero code → [SaicApiException].
+  /// - code 0 with no `data` key + `event-id` response header →
+  ///   [_SaicEventIdRetryException] (caller must retry with the new event-id).
   /// - Returns the `data` field of a successful (code == 0) response.
   ///
   /// Source: `base.py:__deserialize()`, `net/httpx/__init__.py:decrypt_httpx_response()`
@@ -220,6 +239,15 @@ class _SaicHttpClient {
       );
     }
 
+    // Detect event-id retry: server returns code 0 with no data field while
+    // processing the request asynchronously (TECHNICAL_REFERENCE.md §4).
+    if (!json.containsKey('data') || json['data'] == null) {
+      final eventIdHeader = response.headers['event-id'];
+      if (eventIdHeader != null) {
+        throw _SaicEventIdRetryException(eventIdHeader);
+      }
+    }
+
     return json['data'];
   }
 }
@@ -243,6 +271,8 @@ class SaicClient {
   final SaicConfig _config;
   final _SaicHttpClient _http;
   final SaicCache _cache;
+  final Duration _statusRetryDelay;
+  final Duration _statusRetryTimeout;
   LoginResponse? _session;
 
   // ignore: public_member_api_docs
@@ -250,12 +280,16 @@ class SaicClient {
     SaicConfig config, {
     http.Client? httpClient,
     SaicCache? cache,
+    Duration statusRetryDelay = const Duration(seconds: 3),
+    Duration statusRetryTimeout = const Duration(seconds: 30),
   })  : _config = config,
         _http = _SaicHttpClient(
           httpClient ?? http.Client(),
           config.region,
         ),
-        _cache = cache ?? SaicCache();
+        _cache = cache ?? SaicCache(),
+        _statusRetryDelay = statusRetryDelay,
+        _statusRetryTimeout = statusRetryTimeout;
 
   /// The [LoginResponse] from the most recent successful [login] call, or
   /// `null` if [login] has not been called yet.
@@ -283,8 +317,9 @@ class SaicClient {
   /// Endpoint: `GET /vehicle/list` — no query parameters.
   /// Source: `api/vehicle/__init__.py:vehicle_list()`
   Future<List<Vehicle>> getVehicles() async {
-    final data = await _http.get('/vehicle/list') as List<dynamic>;
-    return data
+    final data = await _http.get('/vehicle/list') as Map<String, dynamic>;
+    final vinList = (data['vinList'] as List<dynamic>?) ?? [];
+    return vinList
         .map((e) => Vehicle.fromJson(e as Map<String, dynamic>))
         .toList();
   }
@@ -302,6 +337,11 @@ class SaicClient {
   ///
   /// `vehStatusReqType=2` is always hardcoded (quirk #11).
   ///
+  /// The server processes this request asynchronously: the first response
+  /// carries `code 0` with no `data` field and an `event-id` header.
+  /// The client retries with that event-id until `data` arrives, timing out
+  /// after 30 s (TECHNICAL_REFERENCE.md §4 — event-id retry pattern).
+  ///
   /// Endpoint: `GET /vehicle/status?vin={sha256Hex(vin)}&vehStatusReqType=2`
   /// Source: `api/vehicle/__init__.py:get_vehicle_status()`
   Future<VehicleStatus> getVehicleStatus(String vin) async {
@@ -309,17 +349,32 @@ class SaicClient {
       return _cache.get(vin)!; // guaranteed non-null when isCoolingDown
     }
 
-    final data = await _http.get(
-      '/vehicle/status',
-      params: {
-        'vin': sha256Hex(vin),
-        'vehStatusReqType': '2',
-      },
-    ) as Map<String, dynamic>;
+    var eventId = '0';
+    final deadline = DateTime.now().add(_statusRetryTimeout);
 
-    final status = VehicleStatus.fromJson(data);
-    _cache.set(vin, status);
-    return status;
+    while (true) {
+      try {
+        final rawData = await _http.get(
+          '/vehicle/status',
+          params: {'vin': sha256Hex(vin), 'vehStatusReqType': '2'},
+          eventId: eventId,
+        );
+        final data = rawData as Map<String, dynamic>;
+        final status = VehicleStatus.fromJson(data);
+        _cache.set(vin, status);
+        return status;
+      } on _SaicEventIdRetryException catch (e) {
+        if (DateTime.now().isAfter(deadline)) {
+          throw SaicApiException(
+            statusCode: -1,
+            message: 'getVehicleStatus timed out after 30 s '
+                '(event-id: ${e.eventId})',
+          );
+        }
+        eventId = e.eventId;
+        await Future.delayed(_statusRetryDelay);
+      }
+    }
   }
 
   /// Clears all cached vehicle status entries, forcing fresh fetches.

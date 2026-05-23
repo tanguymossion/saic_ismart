@@ -68,15 +68,17 @@ void main() {
       final client = SaicClient(
         _config,
         httpClient: _mockWith(
-          onApi: (_) async => _encryptedApiResponse([
-            {
-              'vin': 'LSJA24B19NB123456',
-              'modelName': 'MG ZS EV',
-              'modelYear': '2023',
-              'brandName': 'MG',
-              'vehicleName': 'My MG',
-            }
-          ]),
+          onApi: (_) async => _encryptedApiResponse({
+            'vinList': [
+              {
+                'vin': 'LSJA24B19NB123456',
+                'modelName': 'MG ZS EV',
+                'modelYear': '2023',
+                'brandName': 'MG',
+                'vehicleName': 'My MG',
+              }
+            ],
+          }),
         ),
       );
       await client.login();
@@ -95,10 +97,12 @@ void main() {
       final client = SaicClient(
         _config,
         httpClient: _mockWith(
-          onApi: (_) async => _encryptedApiResponse([
-            {'vin': 'VIN1', 'modelName': 'MG ZS EV'},
-            {'vin': 'VIN2', 'modelName': 'MG HS PHEV'},
-          ]),
+          onApi: (_) async => _encryptedApiResponse({
+            'vinList': [
+              {'vin': 'VIN1', 'modelName': 'MG ZS EV'},
+              {'vin': 'VIN2', 'modelName': 'MG HS PHEV'},
+            ],
+          }),
         ),
       );
       await client.login();
@@ -110,7 +114,8 @@ void main() {
     test('returns empty list when data array is empty', () async {
       final client = SaicClient(
         _config,
-        httpClient: _mockWith(onApi: (_) async => _encryptedApiResponse([])),
+        httpClient: _mockWith(
+            onApi: (_) async => _encryptedApiResponse({'vinList': []})),
       );
       await client.login();
       final vehicles = await client.getVehicles();
@@ -122,9 +127,11 @@ void main() {
       final client = SaicClient(
         _config,
         httpClient: _mockWith(
-          onApi: (_) async => _encryptedApiResponse([
-            {'vin': 'VIN1', 'modelName': 'MG ZS EV'},
-          ]),
+          onApi: (_) async => _encryptedApiResponse({
+            'vinList': [
+              {'vin': 'VIN1', 'modelName': 'MG ZS EV'},
+            ],
+          }),
         ),
       );
       await client.login();
@@ -146,7 +153,7 @@ void main() {
           return _encryptedResponse(_loginBody());
         }
         captured = req;
-        return _encryptedApiResponse([]);
+        return _encryptedApiResponse({'vinList': []});
       });
       final client = SaicClient(_config, httpClient: mock);
       await client.login();
@@ -301,7 +308,7 @@ void main() {
           return _encryptedResponse(_loginBody());
         }
         captured = req;
-        return _encryptedApiResponse([]);
+        return _encryptedApiResponse({'vinList': []});
       });
       final client = SaicClient(_config, httpClient: mock);
       await client.login();

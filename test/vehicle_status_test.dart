@@ -28,6 +28,7 @@ String _loginBody() => jsonEncode({
 http.Response _encryptedResponse(
   String plainJson, {
   String appSendDate = '1700000000000',
+  Map<String, String> extraHeaders = const {},
 }) {
   const ct = 'application/json';
   final body = encryptBody(
@@ -38,17 +39,29 @@ http.Response _encryptedResponse(
   return http.Response(body, 200, headers: {
     'app-send-date': appSendDate,
     'original-content-type': ct,
+    ...extraHeaders,
   });
 }
+
+/// Returns an encrypted response with no `data` field and the given [eventId]
+/// header, simulating the server's first async-processing reply.
+http.Response _pendingResponse(String eventId) => _encryptedResponse(
+      '{"code":0}',
+      extraHeaders: {'event-id': eventId},
+    );
 
 http.Response _statusResponse(Map<String, dynamic> data) =>
     _encryptedResponse(jsonEncode({'code': 0, 'data': data}));
 
 /// Builds a [SaicClient] backed by a [MockClient] that responds to login and
 /// delegates all other requests to [onApi].
+///
+/// [statusRetryDelay] is forwarded to [SaicClient] so tests can pass
+/// [Duration.zero] and avoid real sleeps between event-id retries.
 Future<SaicClient> _client(
-  Future<http.Response> Function(http.Request) onApi,
-) async {
+  Future<http.Response> Function(http.Request) onApi, {
+  Duration statusRetryDelay = Duration.zero,
+}) async {
   final mock = MockClient((req) async {
     if (req.url.path.endsWith('/oauth/token')) {
       return _encryptedResponse(_loginBody());
@@ -58,6 +71,7 @@ Future<SaicClient> _client(
   final client = SaicClient(
     const SaicConfig(username: 'test@example.com', password: 'pw'),
     httpClient: mock,
+    statusRetryDelay: statusRetryDelay,
   );
   await client.login();
   return client;
@@ -380,6 +394,7 @@ void main() {
       final client = SaicClient(
         const SaicConfig(username: 'test@example.com', password: 'pw'),
         httpClient: mock,
+        statusRetryDelay: Duration.zero,
       );
       await client.login();
       await client.getVehicleStatus(_vin);
@@ -398,6 +413,56 @@ void main() {
 
     test('calls correct EU endpoint path', () {
       expect(captured.url.path, contains('/vehicle/status'));
+    });
+
+    test('sends event-id: 0 on initial request', () {
+      expect(captured.headers['event-id'], '0');
+    });
+  });
+
+  // ── Event-id retry ───────────────────────────────────────────────────────────
+
+  group('getVehicleStatus — event-id retry', () {
+    test('retries after pending response and returns data on second call',
+        () async {
+      var callCount = 0;
+      final c = await _client((_) async {
+        callCount++;
+        if (callCount == 1) return _pendingResponse('evt-001');
+        return _statusResponse(_fullStatusData);
+      });
+      final status = await c.getVehicleStatus(_vin);
+      expect(callCount, 2);
+      expect(status.statusTime, 1700000000);
+    });
+
+    test('sends the event-id from the pending response on the retry request',
+        () async {
+      final sentEventIds = <String>[];
+      final c = await _client((req) async {
+        sentEventIds.add(req.headers['event-id'] ?? '');
+        if (sentEventIds.length == 1) return _pendingResponse('evt-xyz');
+        return _statusResponse(_fullStatusData);
+      });
+      await c.getVehicleStatus(_vin);
+      expect(sentEventIds[0], '0');
+      expect(sentEventIds[1], 'evt-xyz');
+    });
+
+    test('throws SaicApiException when retry timeout is exhausted', () async {
+      final c = SaicClient(
+        const SaicConfig(username: 'test@example.com', password: 'pw'),
+        httpClient: MockClient((req) async {
+          if (req.url.path.endsWith('/oauth/token')) {
+            return _encryptedResponse(_loginBody());
+          }
+          return _pendingResponse('evt-loop');
+        }),
+        statusRetryDelay: Duration.zero,
+        statusRetryTimeout: Duration.zero, // deadline is already past on first retry
+      );
+      await c.login();
+      expect(c.getVehicleStatus(_vin), throwsA(isA<SaicApiException>()));
     });
   });
 
