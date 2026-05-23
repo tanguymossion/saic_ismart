@@ -22,6 +22,13 @@ enum SaicRegion {
     baseUri: 'https://gateway-mg-eu.soimt.com/api.app/v1/',
     tenantId: '459771',
     regionHeader: 'eu',
+  ),
+
+  /// Placeholder — untested, no device available to verify.
+  china(
+    baseUri: 'https://gateway-mg-cn.soimt.com/api.app/v1/',
+    tenantId: '459771',
+    regionHeader: 'cn',
   );
 
   // ignore: public_member_api_docs
