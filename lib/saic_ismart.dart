@@ -1,13 +1,15 @@
 /// Dart client for the SAIC iSmart connected-vehicle API.
 ///
 /// Supports MG, Roewe, and Maxus/LDV vehicles. Import this library
-/// to access [ISmartClient], the primary entry point.
+/// to access [SaicClient], the primary entry point.
 ///
 /// ```dart
 /// import 'package:saic_ismart/saic_ismart.dart';
 ///
-/// final client = ISmartClient();
-/// await client.login(username: 'user@example.com', password: 's3cr3t');
+/// final client = SaicClient(
+///   SaicConfig(username: 'user@example.com', password: 's3cr3t'),
+/// );
+/// await client.login();
 /// final vehicles = await client.getVehicles();
 /// ```
 library saic_ismart;
