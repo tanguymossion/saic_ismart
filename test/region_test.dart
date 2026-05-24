@@ -83,8 +83,46 @@ void main() {
     test('regionHeader', () => expect(SaicRegion.china.regionHeader, 'cn'));
   });
 
-  test('SaicRegion has exactly two values', () {
-    expect(SaicRegion.values.length, 2);
+  group('SaicRegion.australia', () {
+    test('baseUri', () {
+      expect(SaicRegion.australia.baseUri,
+          'https://gateway-mg-au.soimt.com/api.app/v1/');
+    });
+    test('tenantId', () => expect(SaicRegion.australia.tenantId, '459771'));
+    test('regionHeader',
+        () => expect(SaicRegion.australia.regionHeader, 'au'));
+  });
+
+  group('SaicRegion.india', () {
+    test('baseUri', () {
+      expect(SaicRegion.india.baseUri,
+          'https://gateway-mg-in.soimt.com/api.app/v1/');
+    });
+    test('tenantId', () => expect(SaicRegion.india.tenantId, '459771'));
+    test('regionHeader', () => expect(SaicRegion.india.regionHeader, 'in'));
+  });
+
+  group('SaicRegion.turkey', () {
+    test('baseUri', () {
+      expect(SaicRegion.turkey.baseUri,
+          'https://gateway-mg-tr.soimt.com/api.app/v1/');
+    });
+    test('tenantId', () => expect(SaicRegion.turkey.tenantId, '459771'));
+    test('regionHeader', () => expect(SaicRegion.turkey.regionHeader, 'tr'));
+  });
+
+  group('SaicRegion.restOfWorld', () {
+    test('baseUri', () {
+      expect(SaicRegion.restOfWorld.baseUri,
+          'https://gateway-mg-row.soimt.com/api.app/v1/');
+    });
+    test('tenantId', () => expect(SaicRegion.restOfWorld.tenantId, '459771'));
+    test('regionHeader',
+        () => expect(SaicRegion.restOfWorld.regionHeader, 'row'));
+  });
+
+  test('SaicRegion has exactly six values', () {
+    expect(SaicRegion.values.length, 6);
   });
 
   // ── Header propagation ───────────────────────────────────────────────────────

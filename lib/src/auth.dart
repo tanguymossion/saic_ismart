@@ -31,6 +31,34 @@ enum SaicRegion {
     baseUri: 'https://gateway-mg-cn.soimt.com/api.app/v1/',
     tenantId: '459771',
     regionHeader: 'cn',
+  ),
+
+  /// Placeholder — untested, no device available to verify.
+  australia(
+    baseUri: 'https://gateway-mg-au.soimt.com/api.app/v1/',
+    tenantId: '459771',
+    regionHeader: 'au',
+  ),
+
+  /// Placeholder — untested, no device available to verify.
+  india(
+    baseUri: 'https://gateway-mg-in.soimt.com/api.app/v1/',
+    tenantId: '459771',
+    regionHeader: 'in',
+  ),
+
+  /// Placeholder — untested, no device available to verify.
+  turkey(
+    baseUri: 'https://gateway-mg-tr.soimt.com/api.app/v1/',
+    tenantId: '459771',
+    regionHeader: 'tr',
+  ),
+
+  /// Placeholder — untested, no device available to verify.
+  restOfWorld(
+    baseUri: 'https://gateway-mg-row.soimt.com/api.app/v1/',
+    tenantId: '459771',
+    regionHeader: 'row',
   );
 
   // ignore: public_member_api_docs

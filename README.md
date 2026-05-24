@@ -22,11 +22,11 @@ Pure Dart — no Kotlin, no Swift, no native code. Works in Flutter mobile, Wear
 
 ## Supported vehicles
 
-| Brand | Models | Status |
-|---|---|---|
-| **MG** | MG3 Hybrid, MG4 EV, MG5 EV, MG ZS EV, MG HS Plug-in… | MG3 Hybrid tested (dev device) |
-| **Roewe** | RX5 eMax, ei6 MAX… | Expected — needs contributor |
-| **Maxus / LDV** | eT60, eDeliver… | Expected — needs contributor |
+| Brand | Models | Regions | Status |
+|---|---|---|---|
+| **MG** | MG3 Hybrid, MG4 EV, MG5 EV, MG ZS EV, MG HS Plug-in… | EU (tested), AU, IN, TR, Rest of World (untested — community welcome) | MG3 Hybrid tested (dev device) |
+| **Roewe** | RX5 eMax, ei6 MAX… | EU, CN | Expected — needs contributor |
+| **Maxus / LDV** | eT60, eDeliver… | EU | Expected — needs contributor |
 
 EV-specific features (SoC, charging management, climate) require a contributor with the right hardware. See [Contributing](#contributing).
 
@@ -115,7 +115,7 @@ print(status.gpsPosition?.wayPoint?.position?.latitude); // raw integer ÷ 1,000
 ### v0.2.0 — Extended data & multi-region
 - Tyre pressure, window & door state
 - Engine status, vehicle alerts
-- Multi-region (AU, IN, TR…)
+- ✅ Multi-region (AU, IN, TR, Rest of World)
 - Structured errors — `SaicException`
 
 ### v1.0.0 — Remote actions + pub.dev release
