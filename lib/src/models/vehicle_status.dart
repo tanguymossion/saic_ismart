@@ -682,26 +682,36 @@ class VehicleAlertInfo {
 ///
 /// Each element of [alertDataSum] is a [VehicleAlertInfo] with an opaque `id`
 /// and `value` (both 0–255). The mapping of specific id/value pairs to human-
-/// readable meanings is undocumented; no non-empty real-world sample is
-/// available. The list holds 0–64 entries per the ASN.1 schema.
+/// readable meanings is undocumented. The list holds 0–64 entries per the
+/// ASN.1 schema.
 ///
 /// Source: `api/vehicle/schema.py:ExtendedVehicleStatus`,
 /// `ASN.1 schema/v2_1/ApplicationData.asn1:RvsExtStatus`
 class ExtendedVehicleStatus {
   /// List of active vehicle alerts (0–64 entries). Each entry has an opaque
-  /// `id` and `value` (see [VehicleAlertInfo]); semantics are undocumented —
-  /// no non-empty real-world sample is available.
+  /// `id` and `value` (see [VehicleAlertInfo]); semantics are undocumented.
+  ///
+  /// Two wire formats are handled by [fromJson]:
+  /// - `[{"id": x, "value": y}, ...]` — ASN.1 object form (schema-conformant).
+  /// - `[x, y, ...]` — flat integer list observed on MG3 Hybrid EU; each
+  ///   integer is stored as `VehicleAlertInfo(id: x, value: 0)`.
   final List<VehicleAlertInfo> alertDataSum;
 
   const ExtendedVehicleStatus({this.alertDataSum = const []});
 
   /// Parses an [ExtendedVehicleStatus] from the `extendedVehicleStatus` JSON object.
+  ///
+  /// Handles both the ASN.1 object form (`List<Map>`) and the flat integer
+  /// list form (`List<int>`) observed on MG3 Hybrid EU hardware.
   factory ExtendedVehicleStatus.fromJson(Map<String, dynamic> json) {
     final raw = json['alertDataSum'] as List<dynamic>? ?? const [];
     return ExtendedVehicleStatus(
-      alertDataSum: raw
-          .map((e) => VehicleAlertInfo.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      alertDataSum: raw.map((e) {
+        if (e is Map<String, dynamic>) return VehicleAlertInfo.fromJson(e);
+        // Flat integer list observed on MG3 Hybrid EU: treat each int as id,
+        // value unknown so stored as 0.
+        return VehicleAlertInfo(id: e as int, value: 0);
+      }).toList(),
     );
   }
 

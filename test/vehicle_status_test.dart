@@ -439,6 +439,39 @@ void main() {
       final s = ExtendedVehicleStatus.fromJson({});
       expect(s.alertDataSum, isEmpty);
     });
+
+    // Flat integer list observed on MG3 Hybrid EU.
+    test('ExtendedVehicleStatus parses flat int list (MG3 Hybrid EU format)',
+        () {
+      final s = ExtendedVehicleStatus.fromJson({
+        'alertDataSum': [0, 0, 0, 0],
+      });
+      expect(s.alertDataSum, hasLength(4));
+      for (final a in s.alertDataSum) {
+        expect(a.id, 0);
+        expect(a.value, 0);
+      }
+    });
+
+    test('ExtendedVehicleStatus flat int list preserves id values', () {
+      final s = ExtendedVehicleStatus.fromJson({
+        'alertDataSum': [5, 12, 255],
+      });
+      expect(s.alertDataSum[0], const VehicleAlertInfo(id: 5, value: 0));
+      expect(s.alertDataSum[1], const VehicleAlertInfo(id: 12, value: 0));
+      expect(s.alertDataSum[2], const VehicleAlertInfo(id: 255, value: 0));
+    });
+
+    test('ExtendedVehicleStatus object list still parses (ASN.1 form)', () {
+      final s = ExtendedVehicleStatus.fromJson({
+        'alertDataSum': [
+          {'id': 3, 'value': 1},
+          {'id': 7, 'value': 255},
+        ],
+      });
+      expect(s.alertDataSum[0], const VehicleAlertInfo(id: 3, value: 1));
+      expect(s.alertDataSum[1], const VehicleAlertInfo(id: 7, value: 255));
+    });
   });
 
   // ── Request — VIN hashing and query params ──────────────────────────────────

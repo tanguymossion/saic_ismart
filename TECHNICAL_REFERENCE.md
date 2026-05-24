@@ -533,7 +533,7 @@ Source: `api/schema.py:GpsPosition`
 Source: `api/vehicle/schema.py:ExtendedVehicleStatus`,
 confirmed against `ASN.1 schema/v2_1/ApplicationData.asn1:RvsExtStatus` in `saic-java-client`.
 
-`alertDataSum` is a list of 0–64 `VehicleAlertInfo` objects:
+`alertDataSum` is a list of 0–64 `VehicleAlertInfo` objects per the ASN.1 schema:
 
 ```
 RvsExtStatus ::= SEQUENCE {
@@ -546,7 +546,9 @@ VehicleAlertInfo ::= SEQUENCE {
 }
 ```
 
-Each element deserialises to `{ "id": <int>, "value": <int> }`. The mapping of specific `id`/`value` pairs to human-readable meanings is **undocumented** in every publicly available SAIC client implementation. No non-empty real-world sample has been captured. Neither the Python nor the Java client reads or processes this field after parsing.
+The schema-conformant wire format is `[{"id": <int>, "value": <int>}, ...]`. The mapping of specific `id`/`value` pairs to human-readable meanings is **undocumented** in every publicly available SAIC client implementation. Neither the Python nor the Java client reads or processes this field after parsing.
+
+**Real-world observation (MG3 Hybrid EU):** the API returns `alertDataSum` as a **flat list of integers** (e.g. `[0, 0, 0, 0, ...]`), not a list of objects. The library handles both formats: integers are stored as `VehicleAlertInfo(id: <int>, value: 0)`. The ASN.1 object form may only appear for non-zero alerts or on other hardware variants.
 
 ### BEV vs. PHEV vs. ICE Differences
 
