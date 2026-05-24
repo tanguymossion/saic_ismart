@@ -440,6 +440,37 @@ class SaicClient {
         RvcParam(paramId: 255, paramValue: 'AAAAAA=='), // terminator
       ]);
 
+  /// Starts remote climate control on [vin].
+  ///
+  /// [temperatureIndex] is 0–15. Meaning of each index is undocumented —
+  /// index 8 is the observed default in the Python client.
+  ///
+  /// Endpoint: `POST /vehicle/control`
+  /// Source: `api/vehicle/climate/__init__.py:start_ac()`
+  Future<VehicleControlResponse> startClimate(
+    String vin, {
+    int temperatureIndex = 8,
+    ClimateMode mode = ClimateMode.normal,
+  }) =>
+      _vehicleControl(vin, RvcReqType.climate, [
+        RvcParam(paramId: 19, paramValue: _b64Byte(mode.raw)),
+        RvcParam(paramId: 20, paramValue: _b64Byte(temperatureIndex)),
+        RvcParam(paramId: 255, paramValue: 'AAAAAA=='),
+      ]);
+
+  /// Stops remote climate control on [vin].
+  ///
+  /// Endpoint: `POST /vehicle/control`
+  /// Source: `api/vehicle/climate/__init__.py:stop_ac()`
+  Future<VehicleControlResponse> stopClimate(String vin) =>
+      _vehicleControl(vin, RvcReqType.climate, [
+        RvcParam(paramId: 19, paramValue: _b64Byte(ClimateMode.off.raw)),
+        RvcParam(paramId: 255, paramValue: 'AAAAAA=='),
+      ]);
+
+  /// Base64-encodes a single byte [v] (0–255).
+  static String _b64Byte(int v) => base64Encode([v]);
+
   Future<VehicleControlResponse> _vehicleControl(
     String vin,
     RvcReqType reqType,

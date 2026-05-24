@@ -378,6 +378,139 @@ void main() {
     });
   });
 
+  // ── startClimate ─────────────────────────────────────────────────────────────
+
+  group('startClimate — defaults (normal mode, index 8)', () {
+    late Map<String, dynamic> body;
+
+    setUp(() async {
+      final (client, requests) = await _makeClient(
+        onApi: (_) async => _controlResponse(),
+      );
+      await client.startClimate(_vin);
+      body = _decryptRequestBody(requests.first);
+    });
+
+    test('sends rvcReqType "6"', () => expect(body['rvcReqType'], '6'));
+
+    test('hashes VIN with SHA-256', () {
+      expect(body['vin'], sha256Hex(_vin));
+      expect(body['vin'], isNot(_vin));
+    });
+
+    test('sends exactly 3 params', () {
+      expect((body['rvcParams'] as List).length, 3);
+    });
+
+    test('FAN_SPEED param (id=19) has value "Ag==" (normal=2)', () {
+      final params = body['rvcParams'] as List;
+      expect(params[0]['paramId'], 19);
+      expect(params[0]['paramValue'], 'Ag==');
+    });
+
+    test('TEMPERATURE param (id=20) has value "CA==" (index 8)', () {
+      final params = body['rvcParams'] as List;
+      expect(params[1]['paramId'], 20);
+      expect(params[1]['paramValue'], 'CA==');
+    });
+
+    test('terminator (id=255) has value "AAAAAA=="', () {
+      final params = body['rvcParams'] as List;
+      expect(params[2]['paramId'], 255);
+      expect(params[2]['paramValue'], 'AAAAAA==');
+    });
+  });
+
+  group('startClimate — custom temperatureIndex and mode', () {
+    test('temperatureIndex 0 → "AA=="', () async {
+      final (client, requests) = await _makeClient(
+        onApi: (_) async => _controlResponse(),
+      );
+      await client.startClimate(_vin, temperatureIndex: 0);
+      final params =
+          (_decryptRequestBody(requests.first)['rvcParams'] as List);
+      expect(params[1]['paramValue'], 'AA==');
+    });
+
+    test('temperatureIndex 15 → "Dw=="', () async {
+      final (client, requests) = await _makeClient(
+        onApi: (_) async => _controlResponse(),
+      );
+      await client.startClimate(_vin, temperatureIndex: 15);
+      final params =
+          (_decryptRequestBody(requests.first)['rvcParams'] as List);
+      expect(params[1]['paramValue'], 'Dw==');
+    });
+
+    test('ClimateMode.defrost → fan speed "BQ==" (5)', () async {
+      final (client, requests) = await _makeClient(
+        onApi: (_) async => _controlResponse(),
+      );
+      await client.startClimate(_vin, mode: ClimateMode.defrost);
+      final params =
+          (_decryptRequestBody(requests.first)['rvcParams'] as List);
+      expect(params[0]['paramValue'], 'BQ==');
+    });
+
+    test('ClimateMode.blow → fan speed "AQ==" (1)', () async {
+      final (client, requests) = await _makeClient(
+        onApi: (_) async => _controlResponse(),
+      );
+      await client.startClimate(_vin, mode: ClimateMode.blow);
+      final params =
+          (_decryptRequestBody(requests.first)['rvcParams'] as List);
+      expect(params[0]['paramValue'], 'AQ==');
+    });
+  });
+
+  // ── stopClimate ───────────────────────────────────────────────────────────────
+
+  group('stopClimate', () {
+    late Map<String, dynamic> body;
+
+    setUp(() async {
+      final (client, requests) = await _makeClient(
+        onApi: (_) async => _controlResponse(),
+      );
+      await client.stopClimate(_vin);
+      body = _decryptRequestBody(requests.first);
+    });
+
+    test('sends rvcReqType "6"', () => expect(body['rvcReqType'], '6'));
+
+    test('hashes VIN with SHA-256', () => expect(body['vin'], sha256Hex(_vin)));
+
+    test('sends exactly 2 params (no temperature)', () {
+      expect((body['rvcParams'] as List).length, 2);
+    });
+
+    test('FAN_SPEED param (id=19) has value "AA==" (off=0)', () {
+      final params = body['rvcParams'] as List;
+      expect(params[0]['paramId'], 19);
+      expect(params[0]['paramValue'], 'AA==');
+    });
+
+    test('terminator (id=255) has value "AAAAAA=="', () {
+      final params = body['rvcParams'] as List;
+      expect(params[1]['paramId'], 255);
+      expect(params[1]['paramValue'], 'AAAAAA==');
+    });
+
+    test('no TEMPERATURE param present', () {
+      final params = body['rvcParams'] as List;
+      expect(params.any((p) => p['paramId'] == 20), isFalse);
+    });
+  });
+
+  // ── ClimateMode enum ──────────────────────────────────────────────────────────
+
+  group('ClimateMode', () {
+    test('off raw is 0', () => expect(ClimateMode.off.raw, 0));
+    test('blow raw is 1', () => expect(ClimateMode.blow.raw, 1));
+    test('normal raw is 2', () => expect(ClimateMode.normal.raw, 2));
+    test('defrost raw is 5', () => expect(ClimateMode.defrost.raw, 5));
+  });
+
   // ── RvcParamsId enum ──────────────────────────────────────────────────────────
 
   group('RvcParamsId', () {

@@ -64,6 +64,21 @@ enum RvcParamsId {
   const RvcParamsId(this.value);
 }
 
+// ── ClimateMode ───────────────────────────────────────────────────────────────
+
+/// Fan speed mode for [SaicClient.startClimate].
+///
+/// Source: `RvcParamsId.FAN_SPEED` values in TECHNICAL_REFERENCE.md §7.
+enum ClimateMode {
+  off(0),
+  blow(1),
+  normal(2),
+  defrost(5);
+
+  final int raw;
+  const ClimateMode(this.raw);
+}
+
 // ── RvcParam ──────────────────────────────────────────────────────────────────
 
 /// A single parameter in the `rvcParams` list.
