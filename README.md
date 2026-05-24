@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![Dart](https://img.shields.io/badge/Dart-pure-0553B1?style=flat-square&logo=dart)](https://dart.dev)
 
-**v0.1.0 released — tested in production on a real MG3 Hybrid EU.**
+**v0.2.0 released — v1.0.0 in active development.**
 
 ---
 
@@ -32,14 +32,24 @@ EV-specific features (SoC, charging management, climate) require a contributor w
 
 ---
 
-## Features (v0.1)
+## Features (v0.2)
 
+### v0.1.0
 - ✅ Authentication & token refresh
 - ✅ List vehicles linked to account
 - ✅ `getVehicleStatus(vin)` — GPS location, lock state, mileage
 - ✅ Built-in cache with configurable TTL + 600 s cooldown enforcement
 - ✅ Single-session conflict detection & handling
 - ✅ EU region support (`gateway-mg-eu.soimt.com`)
+
+### Added in v0.2.0
+- ✅ Tyre pressure conversion helpers (confirmed PSI×2 unit, MG3-validated)
+- ✅ Door, window, lock, bonnet and boot state enums
+- ✅ Typed `VehicleAlertInfo` model (ASN.1-confirmed schema)
+- ✅ Multi-region: `australia`, `india`, `turkey`, `restOfWorld`
+- ✅ Structured exception hierarchy (`SaicException` and subclasses)
+- ✅ Unit conversion helpers (`mileageToKm`, `fuelRangeToKm`, `temperatureCelsius`…)
+- ✅ Convenience getters on `BasicVehicleStatus` (`mileageKm`, `lockState`, `driverDoorStatus`, `frontLeftTyrePressureBar`…)
 
 See the full [roadmap](#roadmap) below.
 
@@ -50,7 +60,7 @@ See the full [roadmap](#roadmap) below.
 ```yaml
 # pubspec.yaml
 dependencies:
-  saic_ismart: ^0.1.0
+  saic_ismart: ^0.2.0
 ```
 
 ```dart
@@ -89,7 +99,7 @@ print(status.gpsPosition?.wayPoint?.position?.latitude); // raw integer ÷ 1,000
   Status time: 1779548697
 ```
 
-> Note: mileage is returned in decimeters (243790 = ~24 km). Unit conversion helpers are planned for v0.2.0.
+> Note: mileage is returned in decimeters (243790 = ~24 km). Use `status.basicVehicleStatus?.mileageKm` for a converted value.
 
 ---
 
@@ -112,11 +122,12 @@ print(status.gpsPosition?.wayPoint?.position?.latitude); // raw integer ÷ 1,000
 - EU region
 - Tested on MG3 Hybrid EU
 
-### v0.2.0 — Extended data & multi-region
+### ✅ v0.2.0 — Extended data & multi-region · released 2026-05-24
 - Tyre pressure, window & door state
-- Engine status, vehicle alerts
+- Vehicle alert model (`VehicleAlertInfo`)
 - ✅ Multi-region (AU, IN, TR, Rest of World)
 - Structured errors — `SaicException`
+- Unit conversion helpers & convenience getters
 
 ### v1.0.0 — Remote actions + pub.dev release
 - Remote lock/unlock
