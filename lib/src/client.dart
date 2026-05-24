@@ -17,6 +17,7 @@ import 'auth.dart';
 import 'cache.dart';
 import 'exceptions.dart';
 import 'models/vehicle.dart';
+import 'models/vehicle_control.dart';
 import 'models/vehicle_status.dart';
 import 'utils/crypto_utils.dart';
 
@@ -82,10 +83,13 @@ class _SaicHttpClient {
   }
 
   /// Executes a POST request at [path] with AES-encrypted [jsonBody].
+  ///
+  /// [eventId] is sent as `event-id` header for the event-id polling pattern.
   Future<dynamic> post(
     String path,
     String jsonBody, {
     Map<String, String>? params,
+    String eventId = '0',
   }) async {
     final uri = _buildUri(path, params);
     final requestPath = _requestPathFromUri(uri);
@@ -107,6 +111,7 @@ class _SaicHttpClient {
       contentType: _kJson,
       encryptedBody: encryptedBody,
     );
+    headers['event-id'] = eventId;
 
     try {
       final response = await rawClient.post(
@@ -396,4 +401,66 @@ class SaicClient {
   /// Clears the cached status for [vin] only, forcing a fresh fetch for
   /// that vehicle on the next call to [getVehicleStatus].
   void clearCacheFor(String vin) => _cache.clearFor(vin);
+
+  /// Locks all doors on [vin].
+  ///
+  /// POSTs `rvcReqType: "1"` with `rvcParams: null`.
+  /// Uses the event-id polling pattern (same as [getVehicleStatus]).
+  ///
+  /// Endpoint: `POST /vehicle/control`
+  /// Source: `api/vehicle/locks/__init__.py:lock_vehicle()`
+  Future<VehicleControlResponse> lockVehicle(String vin) =>
+      _vehicleControl(vin, RvcReqType.closeLocks, null);
+
+  /// Unlocks all doors on [vin].
+  ///
+  /// POSTs `rvcReqType: "2"` with the five unlock params from section 7.
+  /// Uses the event-id polling pattern (same as [getVehicleStatus]).
+  ///
+  /// Endpoint: `POST /vehicle/control`
+  /// Source: `api/vehicle/locks/__init__.py:unlock_vehicle()`
+  Future<VehicleControlResponse> unlockVehicle(String vin) =>
+      _vehicleControl(vin, RvcReqType.openLocks, [
+        RvcParam(paramId: 4, paramValue: 'AA=='),
+        RvcParam(paramId: 5, paramValue: 'AA=='),
+        RvcParam(paramId: 6, paramValue: 'AA=='),
+        RvcParam(paramId: 7, paramValue: 'Aw=='), // VehicleLockId.DOORS = 3
+        RvcParam(paramId: 255, paramValue: 'AAAAAA=='), // terminator
+      ]);
+
+  Future<VehicleControlResponse> _vehicleControl(
+    String vin,
+    RvcReqType reqType,
+    List<RvcParam>? params,
+  ) async {
+    final body = jsonEncode({
+      'vin': sha256Hex(vin),
+      'rvcReqType': reqType.value,
+      'rvcParams': params?.map((p) => p.toJson()).toList(),
+    });
+
+    var eventId = '0';
+    final deadline = DateTime.now().add(_statusRetryTimeout);
+
+    while (true) {
+      try {
+        final rawData = await _http.post(
+          '/vehicle/control',
+          body,
+          eventId: eventId,
+        );
+        return VehicleControlResponse.fromJson(
+            rawData as Map<String, dynamic>);
+      } on _SaicEventIdRetryException catch (e) {
+        if (DateTime.now().isAfter(deadline)) {
+          throw SaicTimeoutException(
+            message: 'vehicleControl timed out after 30 s '
+                '(event-id: ${e.eventId})',
+          );
+        }
+        eventId = e.eventId;
+        await Future.delayed(_statusRetryDelay);
+      }
+    }
+  }
 }
