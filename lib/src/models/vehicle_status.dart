@@ -429,6 +429,30 @@ class BasicVehicleStatus {
       ? null
       : unit_utils.batteryVoltageSensor(batteryVoltage!);
 
+  /// Front-left tyre pressure in bar (`null` when unavailable).
+  double? get frontLeftTyrePressureBar =>
+      frontLeftTyrePressure == null
+          ? null
+          : unit_utils.tyrePressureToBar(frontLeftTyrePressure!);
+
+  /// Front-right tyre pressure in bar (`null` when unavailable).
+  double? get frontRightTyrePressureBar =>
+      frontRightTyrePressure == null
+          ? null
+          : unit_utils.tyrePressureToBar(frontRightTyrePressure!);
+
+  /// Rear-left tyre pressure in bar (`null` when unavailable).
+  double? get rearLeftTyrePressureBar =>
+      rearLeftTyrePressure == null
+          ? null
+          : unit_utils.tyrePressureToBar(rearLeftTyrePressure!);
+
+  /// Rear-right tyre pressure in bar (`null` when unavailable).
+  double? get rearRightTyrePressureBar =>
+      rearRightTyrePressure == null
+          ? null
+          : unit_utils.tyrePressureToBar(rearRightTyrePressure!);
+
   DoorStatus? get driverDoorStatus => DoorStatus.fromRaw(driverDoor);
   DoorStatus? get passengerDoorStatus => DoorStatus.fromRaw(passengerDoor);
   DoorStatus? get rearLeftDoorStatus => DoorStatus.fromRaw(rearLeftDoor);

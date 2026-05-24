@@ -59,17 +59,45 @@ void main() {
     });
   });
 
-  // ── tyrePressureSensor ────────────────────────────────────────────────────────
+  // ── tyrePressureToBar ─────────────────────────────────────────────────────────
 
-  group('tyrePressureSensor', () {
-    test('returns null for sentinel -128', () {
-      expect(tyrePressureSensor(-128), isNull);
-    });
+  group('tyrePressureToBar', () {
+    test('returns null for sentinel -128',
+        () => expect(tyrePressureToBar(-128), isNull));
+    test('returns null for sentinel 0',
+        () => expect(tyrePressureToBar(0), isNull));
+    test('converts raw 69 → ~2.38 bar (MG3 FL real-world)',
+        () => expect(tyrePressureToBar(69), closeTo(2.378, 0.001)));
+    test('converts raw 70 → ~2.41 bar (MG3 FR real-world)',
+        () => expect(tyrePressureToBar(70), closeTo(2.413, 0.001)));
+    test('converts raw 65 → ~2.24 bar (MG3 RL real-world)',
+        () => expect(tyrePressureToBar(65), closeTo(2.241, 0.001)));
+    test('converts raw 61 → ~2.10 bar (MG3 RR real-world)',
+        () => expect(tyrePressureToBar(61), closeTo(2.103, 0.001)));
+  });
 
-    test('returns value unchanged for normal values', () {
-      expect(tyrePressureSensor(250), 250);
-      expect(tyrePressureSensor(0), 0);
-    });
+  // ── tyrePressureToKpa ─────────────────────────────────────────────────────────
+
+  group('tyrePressureToKpa', () {
+    test('returns null for sentinel -128',
+        () => expect(tyrePressureToKpa(-128), isNull));
+    test('returns null for sentinel 0',
+        () => expect(tyrePressureToKpa(0), isNull));
+    test('converts raw 69 → ~237.8 kPa',
+        () => expect(tyrePressureToKpa(69), closeTo(237.77, 0.1)));
+  });
+
+  // ── tyrePressureToPsi ─────────────────────────────────────────────────────────
+
+  group('tyrePressureToPsi', () {
+    test('returns null for sentinel -128',
+        () => expect(tyrePressureToPsi(-128), isNull));
+    test('returns null for sentinel 0',
+        () => expect(tyrePressureToPsi(0), isNull));
+    test('converts raw 69 → 34.5 PSI',
+        () => expect(tyrePressureToPsi(69), closeTo(34.5, 1e-9)));
+    test('converts raw 66 → 33.0 PSI',
+        () => expect(tyrePressureToPsi(66), closeTo(33.0, 1e-9)));
   });
 
   // ── batteryVoltageSensor ──────────────────────────────────────────────────────
@@ -94,6 +122,10 @@ void main() {
       int? exteriorTemperature,
       int? interiorTemperature,
       int? batteryVoltage,
+      int? frontLeftTyrePressure,
+      int? frontRightTyrePressure,
+      int? rearLeftTyrePressure,
+      int? rearRightTyrePressure,
     }) =>
         BasicVehicleStatus(
           mileage: mileage,
@@ -101,6 +133,10 @@ void main() {
           exteriorTemperature: exteriorTemperature,
           interiorTemperature: interiorTemperature,
           batteryVoltage: batteryVoltage,
+          frontLeftTyrePressure: frontLeftTyrePressure,
+          frontRightTyrePressure: frontRightTyrePressure,
+          rearLeftTyrePressure: rearLeftTyrePressure,
+          rearRightTyrePressure: rearRightTyrePressure,
         );
 
     test('mileageKm converts correctly', () {
@@ -164,5 +200,35 @@ void main() {
     test('batteryVoltageValue is null when batteryVoltage is null', () {
       expect(makeStatus().batteryVoltageValue, isNull);
     });
+
+    test('frontLeftTyrePressureBar converts MG3 real-world value (raw=69→~2.38 bar)',
+        () => expect(
+            makeStatus(frontLeftTyrePressure: 69).frontLeftTyrePressureBar,
+            closeTo(2.378, 0.001)));
+    test('frontLeftTyrePressureBar null when field is null',
+        () => expect(makeStatus().frontLeftTyrePressureBar, isNull));
+    test('frontLeftTyrePressureBar null for sentinel 0',
+        () => expect(
+            makeStatus(frontLeftTyrePressure: 0).frontLeftTyrePressureBar,
+            isNull));
+    test('frontLeftTyrePressureBar null for sentinel -128',
+        () => expect(
+            makeStatus(frontLeftTyrePressure: -128).frontLeftTyrePressureBar,
+            isNull));
+
+    test('frontRightTyrePressureBar converts MG3 real-world value (raw=70→~2.41 bar)',
+        () => expect(
+            makeStatus(frontRightTyrePressure: 70).frontRightTyrePressureBar,
+            closeTo(2.413, 0.001)));
+
+    test('rearLeftTyrePressureBar converts MG3 real-world value (raw=65→~2.24 bar)',
+        () => expect(
+            makeStatus(rearLeftTyrePressure: 65).rearLeftTyrePressureBar,
+            closeTo(2.241, 0.001)));
+
+    test('rearRightTyrePressureBar converts MG3 real-world value (raw=61→~2.10 bar)',
+        () => expect(
+            makeStatus(rearRightTyrePressure: 61).rearRightTyrePressureBar,
+            closeTo(2.103, 0.001)));
   });
 }

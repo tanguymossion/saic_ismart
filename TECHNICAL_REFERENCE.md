@@ -563,7 +563,7 @@ Confirmed by running against VIN `LSJXXXXXXXXXXXXXXX`.
 | `exteriorTemperature` | `-128` | **Sensor not available** sentinel on this model — treat as null |
 | `extendedData2` | `-128` | **Not available** sentinel — treat as null |
 | `elecRangeStdA`, `elecRangeStdB`, `elecRangeDspMode`, `fuelRangeElec` | `-128` | EV-only fields — `-128` is the null sentinel for fields absent on non-BEV powertrains |
-| `tyrePressure` fields | `61`, `65`, `69`, `70` | Unit unknown — likely kPa × 0.1 or PSI × 2; needs further investigation |
+| `tyrePressure` fields | `61`, `65`, `69`, `70` | **PSI × 2** — divide raw by 2 for PSI. Confirmed: FL=69→34.5 PSI/2.38 bar, FR=70→35.0 PSI/2.41 bar, RL=65→32.5 PSI/2.24 bar, RR=61→30.5 PSI/2.10 bar. Consistent with MG3 recommended 2.3 bar / 33 PSI. Sentinel `0` = no sensor; `-128` = not available. |
 | `driverWindow` / window fields | `0`, `1000` | `0` = closed (confirmed). `1000` observed — does not map to any known `WindowStatus` value (0=closed, 1=open). Meaning unknown — possibly a bitmask encoding all 4 windows state (e.g. `1000` = front-left open, others closed), or a model-specific flag. `WindowStatus.fromRaw(1000)` returns `null` — treat as unknown until confirmed on other vehicles. |
 | `lockStatus` | `1` | **Locked** (confirmed on a physically locked vehicle) |
 | `handBrake` | `1` | **Handbrake applied** (confirmed, car was parked) |
