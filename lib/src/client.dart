@@ -38,7 +38,7 @@ class _SaicEventIdRetryException implements Exception {
 /// All standard headers (section 2 of TECHNICAL_REFERENCE.md) are set here.
 /// Callers use [get] and [post]; they never construct headers directly.
 class _SaicHttpClient {
-  /// Underlying HTTP client — inject a [http.MockClient] in tests.
+  /// Underlying HTTP client — inject a `MockClient` in tests.
   final http.Client rawClient;
   final SaicRegion _region;
 
@@ -284,7 +284,7 @@ class _SaicHttpClient {
 /// final status  = await client.getVehicleStatus(vehicles.first.vin);
 /// ```
 ///
-/// Inject [httpClient] to use a [http.MockClient] in tests.
+/// Inject [httpClient] to use a `MockClient` (from `package:http/testing.dart`) in tests.
 /// Inject [cache] to override the default 600 s cooldown TTL.
 class SaicClient {
   final SaicConfig _config;

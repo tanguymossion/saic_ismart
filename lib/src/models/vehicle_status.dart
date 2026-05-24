@@ -453,18 +453,39 @@ class BasicVehicleStatus {
           ? null
           : unit_utils.tyrePressureToBar(rearRightTyrePressure!);
 
+  /// Driver door state, or `null` if absent or unrecognised.
   DoorStatus? get driverDoorStatus => DoorStatus.fromRaw(driverDoor);
+
+  /// Front passenger door state, or `null` if absent or unrecognised.
   DoorStatus? get passengerDoorStatus => DoorStatus.fromRaw(passengerDoor);
+
+  /// Rear-left door state, or `null` if absent or unrecognised.
   DoorStatus? get rearLeftDoorStatus => DoorStatus.fromRaw(rearLeftDoor);
+
+  /// Rear-right door state, or `null` if absent or unrecognised.
   DoorStatus? get rearRightDoorStatus => DoorStatus.fromRaw(rearRightDoor);
+
+  /// Driver window state, or `null` if absent or unrecognised.
   WindowStatus? get driverWindowStatus => WindowStatus.fromRaw(driverWindow);
+
+  /// Front passenger window state, or `null` if absent or unrecognised.
   WindowStatus? get passengerWindowStatus =>
       WindowStatus.fromRaw(passengerWindow);
+
+  /// Rear-left window state, or `null` if absent or unrecognised.
   WindowStatus? get rearLeftWindowStatus => WindowStatus.fromRaw(rearLeftWindow);
+
+  /// Rear-right window state, or `null` if absent or unrecognised.
   WindowStatus? get rearRightWindowStatus =>
       WindowStatus.fromRaw(rearRightWindow);
+
+  /// Central lock state, or `null` if absent or unrecognised.
   LockStatus? get lockState => LockStatus.fromRaw(lockStatus);
+
+  /// Bonnet (front hood) state, or `null` if absent or unrecognised.
   BonnetStatus? get bonnetState => BonnetStatus.fromRaw(bonnetStatus);
+
+  /// Boot (rear trunk/tailgate) state, or `null` if absent or unrecognised.
   BootStatus? get bootState => BootStatus.fromRaw(bootStatus);
 
   /// Parses a [BasicVehicleStatus] from the `basicVehicleStatus` JSON object.
@@ -632,7 +653,10 @@ class BasicVehicleStatus {
 /// Schema confirmed from ASN.1 v2.1 definition in `saic-java-client`:
 /// `VehicleAlertInfo ::= SEQUENCE { id INTEGER(0..255), value INTEGER(0..255) }`
 class VehicleAlertInfo {
+  /// Opaque alert identifier (0–255). Meaning of specific values is undocumented.
   final int id;
+
+  /// Opaque alert value (0–255). Meaning of specific values is undocumented.
   final int value;
 
   const VehicleAlertInfo({required this.id, required this.value});
@@ -656,14 +680,17 @@ class VehicleAlertInfo {
 
 /// Extended vehicle status containing alert data.
 ///
-/// Each element of [alertDataSum] is a [VehicleAlertInfo] with an opaque [id]
-/// and [value] (both 0–255). The mapping of specific id/value pairs to human-
+/// Each element of [alertDataSum] is a [VehicleAlertInfo] with an opaque `id`
+/// and `value` (both 0–255). The mapping of specific id/value pairs to human-
 /// readable meanings is undocumented; no non-empty real-world sample is
 /// available. The list holds 0–64 entries per the ASN.1 schema.
 ///
 /// Source: `api/vehicle/schema.py:ExtendedVehicleStatus`,
 /// `ASN.1 schema/v2_1/ApplicationData.asn1:RvsExtStatus`
 class ExtendedVehicleStatus {
+  /// List of active vehicle alerts (0–64 entries). Each entry has an opaque
+  /// `id` and `value` (see [VehicleAlertInfo]); semantics are undocumented —
+  /// no non-empty real-world sample is available.
   final List<VehicleAlertInfo> alertDataSum;
 
   const ExtendedVehicleStatus({this.alertDataSum = const []});

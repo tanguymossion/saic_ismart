@@ -69,7 +69,7 @@ class SaicApiException extends SaicException {
   String toString() => 'SaicApiException(code: $code, message: $message)';
 }
 
-/// Thrown when the event-id polling loop for [getVehicleStatus] exceeds its
+/// Thrown when the event-id polling loop for [SaicClient.getVehicleStatus] exceeds its
 /// timeout (default 30 s — TECHNICAL_REFERENCE.md §4).
 class SaicTimeoutException extends SaicException {
   // ignore: public_member_api_docs

@@ -15,21 +15,49 @@ import 'vehicle_status.dart' show BasicVehicleStatus, GpsPosition;
 ///
 /// Source: `api/vehicle/schema.py:RvcReqType`
 enum RvcReqType {
+  /// Activate the find-my-car feature (horn + lights).
   findMyCar('0'),
+
+  /// Lock all doors.
   closeLocks('1'),
+
+  /// Unlock all doors.
   openLocks('2'),
+
+  /// Control windows and sunroof.
   windows('3'),
+
+  /// Key management command.
   keyManagement('4'),
+
+  /// Heated seat control.
   heatedSeats('5'),
+
+  /// Climate (A/C / heat) control.
   climate('6'),
+
+  /// Air ioniser / clean-air mode.
   airClean('7'),
+
+  /// Remote engine start/stop.
   engineControl('17'),
+
+  /// Force a status refresh from the vehicle.
   remoteRefresh('18'),
+
+  /// Remote immobiliser control.
   remoteImmobilizer('19'),
+
+  /// Rear-window heater control.
   remoteHeatRearWindow('32'),
+
+  /// Sentinel maximum value — not a real command type.
   maxValue('597');
 
+  /// Raw string value sent in `rvcReqType`.
   final String value;
+
+  // ignore: public_member_api_docs
   const RvcReqType(this.value);
 }
 
@@ -39,28 +67,70 @@ enum RvcReqType {
 ///
 /// Source: `api/vehicle/schema.py:RvcParamsId`
 enum RvcParamsId {
+  /// Enable flag for find-my-car (1 = enable).
   findMyCarEnable(1),
+
+  /// Horn activation for find-my-car.
   findMyCarHorn(2),
+
+  /// Lights activation for find-my-car.
   findMyCarLights(3),
+
+  /// Unknown parameter 4.
   unk4(4),
+
+  /// Unknown parameter 5.
   unk5(5),
+
+  /// Unknown parameter 6.
   unk6(6),
+
+  /// Lock command identifier (1 = lock, 2 = unlock).
   lockId(7),
+
+  /// Sunroof control.
   windowSunroof(8),
+
+  /// Driver window control.
   windowDriver(9),
+
+  /// Second window control.
   window2(10),
+
+  /// Third window control.
   window3(11),
+
+  /// Fourth window control.
   window4(12),
+
+  /// Open/close flag for window commands (0 = close, 1 = open).
   windowOpenClose(13),
+
+  /// Driver heated seat level.
   heatedSeatDriver(17),
+
+  /// Passenger heated seat level.
   heatedSeatPassenger(18),
+
+  /// Climate fan speed / mode — see [ClimateMode].
   fanSpeed(19),
+
+  /// Climate temperature index (0–8 maps to approximately 16–28 °C).
   temperature(20),
+
+  /// A/C on/off flag (0 = off, 1 = on).
   acOnOff(22),
+
+  /// Rear-window heater control.
   remoteHeatRearWindow(23),
+
+  /// Sentinel maximum parameter ID — not a real parameter.
   paramsMax(255);
 
+  /// Raw integer value sent in `paramId`.
   final int value;
+
+  // ignore: public_member_api_docs
   const RvcParamsId(this.value);
 }
 
@@ -70,12 +140,22 @@ enum RvcParamsId {
 ///
 /// Source: `RvcParamsId.FAN_SPEED` values in TECHNICAL_REFERENCE.md §7.
 enum ClimateMode {
+  /// Climate off.
   off(0),
+
+  /// Blow mode — fan only, no heating or cooling.
   blow(1),
+
+  /// Normal A/C or heating mode.
   normal(2),
+
+  /// Defrost mode — maximum fan with windscreen heating.
   defrost(5);
 
+  /// Raw integer value sent as the `fanSpeed` parameter.
   final int raw;
+
+  // ignore: public_member_api_docs
   const ClimateMode(this.raw);
 }
 
@@ -83,9 +163,13 @@ enum ClimateMode {
 
 /// A single parameter in the `rvcParams` list.
 class RvcParam {
+  /// Parameter identifier — see [RvcParamsId] for known values.
   final int paramId;
-  final String paramValue; // Base64-encoded bytes
 
+  /// Parameter value encoded as a Base64 string (typically a single byte).
+  final String paramValue;
+
+  // ignore: public_member_api_docs
   const RvcParam({required this.paramId, required this.paramValue});
 
   Map<String, dynamic> toJson() => {
@@ -103,8 +187,13 @@ class RvcParam {
 ///
 /// Source: `api/vehicle/schema.py:VehicleControlResp`
 class VehicleControlResponse {
+  /// Vehicle status snapshot included in the control response, if present.
   final BasicVehicleStatus? basicVehicleStatus;
+
+  /// GPS position snapshot included in the control response, if present.
   final GpsPosition? gpsPosition;
+
+  /// Failure type code when the command was rejected; `null` on success.
   final int? failureType;
 
   /// Decoded request status bytes; `null` when absent or zero-length int.
