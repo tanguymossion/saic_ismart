@@ -428,6 +428,18 @@ class SaicClient {
         RvcParam(paramId: 255, paramValue: 'AAAAAA=='), // terminator
       ]);
 
+  /// Triggers the "Find My Car" function on [vin] (horn + lights).
+  ///
+  /// Endpoint: `POST /vehicle/control`
+  /// Source: `api/vehicle/__init__.py:control_find_my_car()`
+  Future<VehicleControlResponse> findMyCar(String vin) =>
+      _vehicleControl(vin, RvcReqType.findMyCar, [
+        RvcParam(paramId: 1, paramValue: 'AQ=='), // FIND_MY_CAR_ENABLE
+        RvcParam(paramId: 2, paramValue: 'AQ=='), // FIND_MY_CAR_HORN
+        RvcParam(paramId: 3, paramValue: 'AQ=='), // FIND_MY_CAR_LIGHTS
+        RvcParam(paramId: 255, paramValue: 'AAAAAA=='), // terminator
+      ]);
+
   Future<VehicleControlResponse> _vehicleControl(
     String vin,
     RvcReqType reqType,
