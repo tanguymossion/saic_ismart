@@ -143,7 +143,12 @@ const _fullGps = {
 const _fullStatusData = {
   'basicVehicleStatus': _fullBasic,
   'gpsPosition': _fullGps,
-  'extendedVehicleStatus': {'alertDataSum': []},
+  'extendedVehicleStatus': {
+    'alertDataSum': [
+      {'id': 3, 'value': 1},
+      {'id': 7, 'value': 255},
+    ],
+  },
   'statusTime': 1700000000,
 };
 
@@ -198,8 +203,22 @@ void main() {
       test('speed', () => expect(g.wayPoint!.speed, 0));
     });
 
-    test('extendedVehicleStatus alertDataSum is empty', () {
-      expect(status.extendedVehicleStatus!.alertDataSum, isEmpty);
+    group('extendedVehicleStatus', () {
+      test('alertDataSum has two entries', () {
+        expect(status.extendedVehicleStatus!.alertDataSum, hasLength(2));
+      });
+
+      test('first alert id and value', () {
+        final a = status.extendedVehicleStatus!.alertDataSum[0];
+        expect(a.id, 3);
+        expect(a.value, 1);
+      });
+
+      test('second alert id and value', () {
+        final a = status.extendedVehicleStatus!.alertDataSum[1];
+        expect(a.id, 7);
+        expect(a.value, 255);
+      });
     });
   });
 
@@ -372,9 +391,53 @@ void main() {
     });
 
     test('ExtendedVehicleStatus equality with empty lists', () {
-      final a = ExtendedVehicleStatus(alertDataSum: []);
-      final b = ExtendedVehicleStatus(alertDataSum: []);
+      const a = ExtendedVehicleStatus(alertDataSum: []);
+      const b = ExtendedVehicleStatus(alertDataSum: []);
       expect(a, equals(b));
+    });
+
+    test('ExtendedVehicleStatus equality with matching alerts', () {
+      final a = ExtendedVehicleStatus(alertDataSum: [
+        const VehicleAlertInfo(id: 3, value: 1),
+        const VehicleAlertInfo(id: 7, value: 255),
+      ]);
+      final b = ExtendedVehicleStatus(alertDataSum: [
+        const VehicleAlertInfo(id: 3, value: 1),
+        const VehicleAlertInfo(id: 7, value: 255),
+      ]);
+      expect(a, equals(b));
+      expect(a.hashCode, b.hashCode);
+    });
+
+    test('ExtendedVehicleStatus inequality when alerts differ', () {
+      final a = ExtendedVehicleStatus(
+          alertDataSum: [const VehicleAlertInfo(id: 3, value: 1)]);
+      final b = ExtendedVehicleStatus(
+          alertDataSum: [const VehicleAlertInfo(id: 3, value: 2)]);
+      expect(a, isNot(equals(b)));
+    });
+
+    test('VehicleAlertInfo equality and hashCode', () {
+      const a = VehicleAlertInfo(id: 42, value: 7);
+      const b = VehicleAlertInfo(id: 42, value: 7);
+      expect(a, equals(b));
+      expect(a.hashCode, b.hashCode);
+    });
+
+    test('VehicleAlertInfo inequality', () {
+      const a = VehicleAlertInfo(id: 1, value: 0);
+      const b = VehicleAlertInfo(id: 1, value: 1);
+      expect(a, isNot(equals(b)));
+    });
+
+    test('ExtendedVehicleStatus parses empty alertDataSum', () {
+      final s = ExtendedVehicleStatus.fromJson({'alertDataSum': []});
+      expect(s.alertDataSum, isEmpty);
+    });
+
+    test('ExtendedVehicleStatus parses absent alertDataSum as empty', () {
+      final s = ExtendedVehicleStatus.fromJson({});
+      expect(s.alertDataSum, isEmpty);
     });
   });
 

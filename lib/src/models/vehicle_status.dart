@@ -623,24 +623,60 @@ class BasicVehicleStatus {
       ]);
 }
 
+// ── VehicleAlertInfo ──────────────────────────────────────────────────────────
+
+/// Raw vehicle alert. [id] and [value] are 0–255 integers. Meaning of specific
+/// id/value pairs is undocumented — no real-world non-empty sample available.
+/// Max 64 alerts per response.
+///
+/// Schema confirmed from ASN.1 v2.1 definition in `saic-java-client`:
+/// `VehicleAlertInfo ::= SEQUENCE { id INTEGER(0..255), value INTEGER(0..255) }`
+class VehicleAlertInfo {
+  final int id;
+  final int value;
+
+  const VehicleAlertInfo({required this.id, required this.value});
+
+  factory VehicleAlertInfo.fromJson(Map<String, dynamic> json) =>
+      VehicleAlertInfo(
+        id: json['id'] as int,
+        value: json['value'] as int,
+      );
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is VehicleAlertInfo && id == other.id && value == other.value;
+
+  @override
+  int get hashCode => Object.hash(id, value);
+}
+
 // ── ExtendedVehicleStatus ─────────────────────────────────────────────────────
 
 /// Extended vehicle status containing alert data.
 ///
-/// The structure of individual alert objects in [alertDataSum] is undocumented.
-/// Source: `api/vehicle/schema.py:ExtendedVehicleStatus`
+/// Each element of [alertDataSum] is a [VehicleAlertInfo] with an opaque [id]
+/// and [value] (both 0–255). The mapping of specific id/value pairs to human-
+/// readable meanings is undocumented; no non-empty real-world sample is
+/// available. The list holds 0–64 entries per the ASN.1 schema.
+///
+/// Source: `api/vehicle/schema.py:ExtendedVehicleStatus`,
+/// `ASN.1 schema/v2_1/ApplicationData.asn1:RvsExtStatus`
 class ExtendedVehicleStatus {
-  /// List of alert objects. Structure of each element is undocumented.
-  final List<dynamic> alertDataSum;
+  final List<VehicleAlertInfo> alertDataSum;
 
-  // ignore: public_member_api_docs
   const ExtendedVehicleStatus({this.alertDataSum = const []});
 
   /// Parses an [ExtendedVehicleStatus] from the `extendedVehicleStatus` JSON object.
-  factory ExtendedVehicleStatus.fromJson(Map<String, dynamic> json) =>
-      ExtendedVehicleStatus(
-        alertDataSum: json['alertDataSum'] as List<dynamic>? ?? const [],
-      );
+  factory ExtendedVehicleStatus.fromJson(Map<String, dynamic> json) {
+    final raw = json['alertDataSum'] as List<dynamic>? ?? const [];
+    return ExtendedVehicleStatus(
+      alertDataSum: raw
+          .map((e) => VehicleAlertInfo.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
 
   @override
   bool operator ==(Object other) {

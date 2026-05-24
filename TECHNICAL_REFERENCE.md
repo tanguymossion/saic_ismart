@@ -530,11 +530,23 @@ Source: `api/schema.py:GpsPosition`
 
 ### `ExtendedVehicleStatus`
 
-Source: `api/vehicle/schema.py:ExtendedVehicleStatus`
+Source: `api/vehicle/schema.py:ExtendedVehicleStatus`,
+confirmed against `ASN.1 schema/v2_1/ApplicationData.asn1:RvsExtStatus` in `saic-java-client`.
 
-```python
-alertDataSum: list[Any]  # list of alert objects, structure undocumented
+`alertDataSum` is a list of 0–64 `VehicleAlertInfo` objects:
+
 ```
+RvsExtStatus ::= SEQUENCE {
+  vehicleAlerts SEQUENCE SIZE(0..64) OF VehicleAlertInfo
+}
+
+VehicleAlertInfo ::= SEQUENCE {
+  id    INTEGER(0..255),
+  value INTEGER(0..255)
+}
+```
+
+Each element deserialises to `{ "id": <int>, "value": <int> }`. The mapping of specific `id`/`value` pairs to human-readable meanings is **undocumented** in every publicly available SAIC client implementation. No non-empty real-world sample has been captured. Neither the Python nor the Java client reads or processes this field after parsing.
 
 ### BEV vs. PHEV vs. ICE Differences
 
