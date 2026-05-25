@@ -525,6 +525,24 @@ class SaicClient {
   Future<VehicleControlResponse> startDefrost(String vin) =>
       startClimate(vin, mode: ClimateMode.defrost);
 
+  /// Controls the heated seats on [vin].
+  ///
+  /// Pass [driverLevel] and/or [passengerLevel] to set each seat independently.
+  /// Both default to [HeatLevel.off].
+  ///
+  /// Endpoint: `POST /vehicle/control`
+  /// Source: `api/vehicle/climate/__init__.py:control_heated_seats()`
+  Future<VehicleControlResponse> controlHeatedSeats(
+    String vin, {
+    HeatLevel driverLevel = HeatLevel.off,
+    HeatLevel passengerLevel = HeatLevel.off,
+  }) =>
+      _vehicleControl(vin, RvcReqType.heatedSeats, [
+        RvcParam(paramId: 17, paramValue: _b64Byte(driverLevel.raw)),
+        RvcParam(paramId: 18, paramValue: _b64Byte(passengerLevel.raw)),
+        RvcParam(paramId: 255, paramValue: 'AAAAAA=='),
+      ]);
+
   /// Base64-encodes a single byte [v] (0–255).
   static String _b64Byte(int v) => base64Encode([v]);
 

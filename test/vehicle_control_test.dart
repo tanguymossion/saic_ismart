@@ -708,6 +708,84 @@ void main() {
     });
   });
 
+  // ── controlHeatedSeats ───────────────────────────────────────────────────────
+
+  group('controlHeatedSeats — request', () {
+    late Map<String, dynamic> body;
+
+    setUp(() async {
+      final (client, requests) = await _makeClient(
+        onApi: (_) async => _controlResponse(),
+      );
+      await client.controlHeatedSeats(
+        _vin,
+        driverLevel: HeatLevel.high,
+        passengerLevel: HeatLevel.low,
+      );
+      body = _decryptRequestBody(requests.first);
+    });
+
+    test('sends rvcReqType "5"', () {
+      expect(body['rvcReqType'], '5');
+    });
+
+    test('hashes VIN with SHA-256', () {
+      expect(body['vin'], sha256Hex(_vin));
+      expect(body['vin'], isNot(_vin));
+    });
+
+    test('sends exactly 3 params', () {
+      expect((body['rvcParams'] as List).length, 3);
+    });
+
+    test('paramId 17 carries driver level', () {
+      final params = body['rvcParams'] as List;
+      expect(params[0]['paramId'], 17);
+      expect(params[0]['paramValue'], 'Aw=='); // HeatLevel.high = 3
+    });
+
+    test('paramId 18 carries passenger level', () {
+      final params = body['rvcParams'] as List;
+      expect(params[1]['paramId'], 18);
+      expect(params[1]['paramValue'], 'AQ=='); // HeatLevel.low = 1
+    });
+
+    test('terminator paramId 255 has value "AAAAAA=="', () {
+      final params = body['rvcParams'] as List;
+      expect(params[2]['paramId'], 255);
+      expect(params[2]['paramValue'], 'AAAAAA==');
+    });
+  });
+
+  group('controlHeatedSeats — defaults (both off)', () {
+    test('default levels send "AA==" for both seats', () async {
+      final (client, requests) = await _makeClient(
+        onApi: (_) async => _controlResponse(),
+      );
+      await client.controlHeatedSeats(_vin);
+      final params =
+          (_decryptRequestBody(requests.first)['rvcParams'] as List);
+      expect(params[0]['paramValue'], 'AA=='); // HeatLevel.off = 0
+      expect(params[1]['paramValue'], 'AA==');
+    });
+  });
+
+  group('controlHeatedSeats — all HeatLevel values', () {
+    Future<String> fetchDriverParam(HeatLevel level) async {
+      final (client, requests) = await _makeClient(
+        onApi: (_) async => _controlResponse(),
+      );
+      await client.controlHeatedSeats(_vin, driverLevel: level);
+      return (_decryptRequestBody(requests.first)['rvcParams']
+          as List)[0]['paramValue'] as String;
+    }
+
+    test('off → "AA=="', () async => expect(await fetchDriverParam(HeatLevel.off), 'AA=='));
+    test('low → "AQ=="', () async => expect(await fetchDriverParam(HeatLevel.low), 'AQ=='));
+    test('medium → "Ag=="', () async => expect(await fetchDriverParam(HeatLevel.medium), 'Ag=='));
+    test('high → "Aw=="', () async => expect(await fetchDriverParam(HeatLevel.high), 'Aw=='));
+  });
+
   // ── ClimateMode enum ──────────────────────────────────────────────────────────
 
   group('ClimateMode', () {

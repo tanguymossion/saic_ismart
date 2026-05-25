@@ -61,6 +61,32 @@ enum RvcReqType {
   const RvcReqType(this.value);
 }
 
+// ── HeatLevel ────────────────────────────────────────────────────────────────
+
+/// Heat intensity level for heated seat and rear-window commands.
+///
+/// Levels are 0 (off) through 3 (high). The exact temperature corresponding
+/// to each level is undocumented and varies by vehicle trim.
+enum HeatLevel {
+  /// Heating off.
+  off(0),
+
+  /// Low heat.
+  low(1),
+
+  /// Medium heat.
+  medium(2),
+
+  /// High heat.
+  high(3);
+
+  /// Raw byte value sent as the Base64-encoded `paramValue`.
+  final int raw;
+
+  // ignore: public_member_api_docs
+  const HeatLevel(this.raw);
+}
+
 // ── VehicleLockId ─────────────────────────────────────────────────────────────
 
 /// Lock target for [RvcReqType.openLocks] commands.
