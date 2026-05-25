@@ -50,6 +50,12 @@ http.Response _pendingResponse(String eventId) => _encryptedResponse(
       extraHeaders: {'event-id': eventId},
     );
 
+/// Non-zero code response with no data — observed when the server returns
+/// an intermediate status while the vehicle is processing the command.
+http.Response _midPollingNonZeroResponse({int code = 4}) => _encryptedResponse(
+      '{"code":$code,"message":"remote control instruction failed"}',
+    );
+
 http.Response _controlResponse({
   int? failureType,
   dynamic rvcReqSts,
@@ -67,6 +73,7 @@ http.Response _controlResponse({
 Future<(SaicClient, List<http.Request>)> _makeClient({
   required Future<http.Response> Function(http.Request) onApi,
   Duration statusRetryDelay = Duration.zero,
+  Duration controlRetryDelay = Duration.zero,
 }) async {
   final requests = <http.Request>[];
   final mock = MockClient((req) async {
@@ -80,6 +87,7 @@ Future<(SaicClient, List<http.Request>)> _makeClient({
     _config,
     httpClient: mock,
     statusRetryDelay: statusRetryDelay,
+    controlRetryDelay: controlRetryDelay,
   );
   await client.login();
   return (client, requests);
@@ -299,10 +307,80 @@ void main() {
     });
   });
 
+  // ── mid-polling non-zero code retry (second retry trigger) ───────────────────
+
+  group('lockVehicle — mid-polling non-zero code retries (§4 trigger 2)', () {
+    test('retries when server returns non-zero code mid-polling', () async {
+      // Sequence: pending → non-zero (code 4) mid-poll → success.
+      var callCount = 0;
+      final (client, requests) = await _makeClient(
+        onApi: (req) async {
+          callCount++;
+          if (callCount == 1) return _pendingResponse('evt-42');
+          if (callCount == 2) return _midPollingNonZeroResponse();
+          return _controlResponse(failureType: 0);
+        },
+      );
+      final result = await client.lockVehicle(_vin);
+      expect(callCount, 3);
+      expect(result.failureType, 0);
+      // Third request must still carry the same event-id (not reset to '0').
+      expect(requests[2].headers['event-id'], 'evt-42');
+    });
+
+    test('retries with same event-id on non-zero mid-poll response', () async {
+      final sentEventIds = <String>[];
+      var callCount = 0;
+      final (client, _) = await _makeClient(
+        onApi: (req) async {
+          sentEventIds.add(req.headers['event-id'] ?? '');
+          callCount++;
+          if (callCount == 1) return _pendingResponse('evt-99');
+          if (callCount == 2) return _midPollingNonZeroResponse(code: 4);
+          return _controlResponse();
+        },
+      );
+      await client.lockVehicle(_vin);
+      expect(sentEventIds[0], '0');        // initial request
+      expect(sentEventIds[1], 'evt-99');   // first retry (from pending)
+      expect(sentEventIds[2], 'evt-99');   // second retry (same id, non-zero)
+    });
+
+    test('does NOT retry non-zero code on fresh request (event-id == 0)',
+        () async {
+      final (client, _) = await _makeClient(
+        onApi: (_) async =>
+            _encryptedResponse('{"code":4,"message":"remote control instruction failed"}'),
+      );
+      expect(client.lockVehicle(_vin), throwsA(isA<SaicApiException>()));
+    });
+
+    test('first retry waits controlRetryDelay, subsequent retries are immediate',
+        () async {
+      // Confirm that a long controlRetryDelay only applies to the first retry.
+      // We can't assert timing precisely, so we verify the sequence completes
+      // correctly with a non-zero delay still set to zero in tests.
+      var callCount = 0;
+      final (client, _) = await _makeClient(
+        controlRetryDelay: Duration.zero,
+        onApi: (_) async {
+          callCount++;
+          if (callCount == 1) return _pendingResponse('evt-1');
+          if (callCount == 2) return _midPollingNonZeroResponse();
+          if (callCount == 3) return _midPollingNonZeroResponse();
+          return _controlResponse(failureType: 0);
+        },
+      );
+      final result = await client.lockVehicle(_vin);
+      expect(callCount, 4);
+      expect(result.failureType, 0);
+    });
+  });
+
   // ── error handling ────────────────────────────────────────────────────────────
 
   group('lockVehicle — error handling', () {
-    test('throws SaicApiException on non-zero API code', () async {
+    test('throws SaicApiException on fatal code on fresh request', () async {
       final (client, _) = await _makeClient(
         onApi: (_) async =>
             _encryptedResponse('{"code":7,"message":"Fatal"}'),

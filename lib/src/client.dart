@@ -74,7 +74,7 @@ class _SaicHttpClient {
 
     try {
       final response = await rawClient.get(uri, headers: headers);
-      return _parseResponse(response);
+      return _parseResponse(response, currentEventId: eventId);
     } on SocketException catch (e) {
       throw SaicNetworkException(message: e.message);
     } on TimeoutException catch (e) {
@@ -119,7 +119,7 @@ class _SaicHttpClient {
         headers: headers,
         body: encryptedBody,
       );
-      return _parseResponse(response);
+      return _parseResponse(response, currentEventId: eventId);
     } on SocketException catch (e) {
       throw SaicNetworkException(message: e.message);
     } on TimeoutException catch (e) {
@@ -191,13 +191,17 @@ class _SaicHttpClient {
   /// - HTTP 401/403 without a session → [SaicAuthException].
   /// - JSON code 401/403 → [SaicAuthException].
   /// - JSON code 2/3/7 → [SaicApiException] (fatal, no retry).
-  /// - Any other non-zero code → [SaicApiException].
   /// - code 0 with no `data` key + `event-id` response header →
-  ///   [_SaicEventIdRetryException] (caller must retry with the new event-id).
+  ///   [_SaicEventIdRetryException] (caller retries with the new event-id).
+  /// - **code != 0 while mid-event-id polling** ([currentEventId] != `'0'`) →
+  ///   [_SaicEventIdRetryException] with the **same** event-id (retry trigger 2
+  ///   per TECHNICAL_REFERENCE.md §4 — the server returns a non-zero code while
+  ///   still processing the command; the Python client retries in this case).
+  /// - Any other non-zero code on a fresh request → [SaicApiException].
   /// - Returns the `data` field of a successful (code == 0) response.
   ///
   /// Source: `base.py:__deserialize()`, `net/httpx/__init__.py:decrypt_httpx_response()`
-  dynamic _parseResponse(http.Response response) {
+  dynamic _parseResponse(http.Response response, {String currentEventId = '0'}) {
     if (response.statusCode == 401 || response.statusCode == 403) {
       // A 401/403 while holding an active token means another client has
       // taken the session — surface this as a conflict, not a plain auth error.
@@ -251,6 +255,12 @@ class _SaicHttpClient {
         message: json['message'] as String? ?? 'Fatal API error',
       );
     }
+    // Retry trigger 2 (TECHNICAL_REFERENCE.md §4): non-zero code while
+    // mid-event-id polling means the server is still processing — retry
+    // with the same event-id, not a new one.
+    if (code != 0 && currentEventId != '0') {
+      throw _SaicEventIdRetryException(currentEventId);
+    }
     if (code != 0) {
       throw SaicApiException(
         code: code as int?,
@@ -291,6 +301,7 @@ class SaicClient {
   final _SaicHttpClient _http;
   final SaicCache _cache;
   final Duration _statusRetryDelay;
+  final Duration _controlRetryDelay;
   final Duration _statusRetryTimeout;
   LoginResponse? _session;
 
@@ -300,6 +311,7 @@ class SaicClient {
     http.Client? httpClient,
     SaicCache? cache,
     Duration statusRetryDelay = const Duration(seconds: 3),
+    Duration controlRetryDelay = const Duration(seconds: 1),
     Duration statusRetryTimeout = const Duration(seconds: 30),
   })  : _config = config,
         _http = _SaicHttpClient(
@@ -308,6 +320,7 @@ class SaicClient {
         ),
         _cache = cache ?? SaicCache(),
         _statusRetryDelay = statusRetryDelay,
+        _controlRetryDelay = controlRetryDelay,
         _statusRetryTimeout = statusRetryTimeout;
 
   /// The [LoginResponse] from the most recent successful [login] call, or
@@ -483,6 +496,7 @@ class SaicClient {
     });
 
     var eventId = '0';
+    var retryCount = 0;
     final deadline = DateTime.now().add(_statusRetryTimeout);
 
     while (true) {
@@ -502,7 +516,11 @@ class SaicClient {
           );
         }
         eventId = e.eventId;
-        await Future.delayed(_statusRetryDelay);
+        // wait_chain(wait_fixed(1s) + wait_none()): 1 s before the first
+        // retry, then immediate for subsequent retries (mirrors the Python
+        // client's per-command wait_chain — TECHNICAL_REFERENCE.md §4).
+        if (retryCount == 0) await Future.delayed(_controlRetryDelay);
+        retryCount++;
       }
     }
   }

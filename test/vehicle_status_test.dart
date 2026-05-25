@@ -561,6 +561,48 @@ void main() {
       await c.login();
       expect(c.getVehicleStatus(_vin), throwsA(isA<SaicTimeoutException>()));
     });
+
+    test('retries when server returns non-zero code mid-polling (§4 trigger 2)',
+        () async {
+      var callCount = 0;
+      final c = await _client((req) async {
+        callCount++;
+        if (callCount == 1) return _pendingResponse('evt-001');
+        if (callCount == 2) {
+          return _encryptedResponse('{"code":4,"message":"processing"}');
+        }
+        return _statusResponse(_fullStatusData);
+      });
+      final status = await c.getVehicleStatus(_vin);
+      expect(callCount, 3);
+      expect(status.statusTime, 1700000000);
+    });
+
+    test('retries with same event-id on non-zero mid-poll response', () async {
+      final sentEventIds = <String>[];
+      var callCount = 0;
+      final c = await _client((req) async {
+        sentEventIds.add(req.headers['event-id'] ?? '');
+        callCount++;
+        if (callCount == 1) return _pendingResponse('evt-abc');
+        if (callCount == 2) {
+          return _encryptedResponse('{"code":4,"message":"processing"}');
+        }
+        return _statusResponse(_fullStatusData);
+      });
+      await c.getVehicleStatus(_vin);
+      expect(sentEventIds[0], '0');        // initial request
+      expect(sentEventIds[1], 'evt-abc');  // first retry (from pending)
+      expect(sentEventIds[2], 'evt-abc');  // second retry (same id, non-zero)
+    });
+
+    test('does NOT retry non-zero code on fresh request (event-id == 0)',
+        () async {
+      final c = await _client(
+        (_) async => _encryptedResponse('{"code":4,"message":"processing"}'),
+      );
+      expect(c.getVehicleStatus(_vin), throwsA(isA<SaicApiException>()));
+    });
   });
 
   // ── Error handling ──────────────────────────────────────────────────────────
