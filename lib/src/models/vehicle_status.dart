@@ -424,10 +424,12 @@ class BasicVehicleStatus {
       ? null
       : unit_utils.temperatureCelsius(interiorTemperature!);
 
-  /// Battery voltage raw value; `null` when not available (-128 sentinel).
-  int? get batteryVoltageValue => batteryVoltage == null
+  /// Battery voltage in volts (× 0.1 V). Returns `null` when unavailable (-128 sentinel).
+  ///
+  /// Confirmed: raw `127` → `12.7 V` on MG3 Hybrid EU 12 V battery.
+  double? get batteryVoltageVolts => batteryVoltage == null
       ? null
-      : unit_utils.batteryVoltageSensor(batteryVoltage!);
+      : unit_utils.batteryVoltageToVolts(batteryVoltage!);
 
   /// Front-left tyre pressure in bar (`null` when unavailable).
   double? get frontLeftTyrePressureBar =>

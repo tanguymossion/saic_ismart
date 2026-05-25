@@ -112,7 +112,7 @@ class _DashboardTabState extends State<DashboardTab> {
     final fuel = basic?.fuelLevelPrc;
     final mileage = basic?.mileageKm;
     final interiorTemp = basic?.interiorTemperatureCelsius;
-    final batteryV = basic?.batteryVoltageValue;
+    final batteryV = basic?.batteryVoltageVolts;
     final lat = gps?.latitudeDegrees;
     final lon = gps?.longitudeDegrees;
     final flp = basic?.frontLeftTyrePressureBar;
@@ -158,7 +158,7 @@ class _DashboardTabState extends State<DashboardTab> {
         _StatusCard(
           icon: Icons.battery_charging_full_rounded,
           label: 'Battery voltage',
-          value: batteryV != null ? '$batteryV V' : 'N/A',
+          value: batteryV != null ? '${batteryV.toStringAsFixed(1)} V' : 'N/A',
         ),
         _TyrePressureCard(fl: flp, fr: frp, rl: rlp, rr: rrp),
       ],

@@ -101,16 +101,17 @@ void main() {
         () => expect(tyrePressureToPsi(66), closeTo(33.0, 1e-9)));
   });
 
-  // ── batteryVoltageSensor ──────────────────────────────────────────────────────
+  // ── batteryVoltageToVolts ─────────────────────────────────────────────────────
 
-  group('batteryVoltageSensor', () {
+  group('batteryVoltageToVolts', () {
     test('returns null for sentinel -128', () {
-      expect(batteryVoltageSensor(-128), isNull);
+      expect(batteryVoltageToVolts(-128), isNull);
     });
 
-    test('returns value unchanged for normal values', () {
-      expect(batteryVoltageSensor(120), 120);
-      expect(batteryVoltageSensor(0), 0);
+    test('converts raw to volts (× 0.1)', () {
+      expect(batteryVoltageToVolts(127), closeTo(12.7, 1e-9));
+      expect(batteryVoltageToVolts(120), closeTo(12.0, 1e-9));
+      expect(batteryVoltageToVolts(0), closeTo(0.0, 1e-9));
     });
   });
 
@@ -190,16 +191,19 @@ void main() {
       expect(makeStatus().interiorTemperatureCelsius, isNull);
     });
 
-    test('batteryVoltageValue returns raw value', () {
-      expect(makeStatus(batteryVoltage: 120).batteryVoltageValue, 120);
+    test('batteryVoltageVolts converts raw to volts', () {
+      expect(makeStatus(batteryVoltage: 127).batteryVoltageVolts,
+          closeTo(12.7, 1e-9));
+      expect(makeStatus(batteryVoltage: 120).batteryVoltageVolts,
+          closeTo(12.0, 1e-9));
     });
 
-    test('batteryVoltageValue returns null for -128 sentinel', () {
-      expect(makeStatus(batteryVoltage: -128).batteryVoltageValue, isNull);
+    test('batteryVoltageVolts returns null for -128 sentinel', () {
+      expect(makeStatus(batteryVoltage: -128).batteryVoltageVolts, isNull);
     });
 
-    test('batteryVoltageValue is null when batteryVoltage is null', () {
-      expect(makeStatus().batteryVoltageValue, isNull);
+    test('batteryVoltageVolts is null when batteryVoltage is null', () {
+      expect(makeStatus().batteryVoltageVolts, isNull);
     });
 
     test('frontLeftTyrePressureBar converts MG3 real-world value (raw=69→~2.38 bar)',

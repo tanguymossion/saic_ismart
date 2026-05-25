@@ -449,7 +449,7 @@ All fields are `int | None`. Unless noted, units/encoding are undocumented in th
 
 | Field | Type | Notes / Units |
 |---|---|---|
-| `batteryVoltage` | `int\|null` | 12V battery voltage (raw, unit unknown) |
+| `batteryVoltage` | `int\|null` | 12 V battery voltage in × 0.1 V (÷10 for volts) |
 | `bonnetStatus` | `int\|null` | Hood/bonnet: 0=closed? |
 | `bootStatus` | `int\|null` | Trunk/boot: 0=closed? |
 | `canBusActive` | `int\|null` | CAN bus activity status |
@@ -584,7 +584,7 @@ Confirmed by running against VIN `LSJXXXXXXXXXXXXXXX`.
 | `canBusActive` | `1` | Active |
 | `sunroofStatus` | `1` | MG3 has no sunroof — meaning unclear, possibly moonroof/panoramic roof flag |
 | `interiorTemperature` | `40` | Plausible °C for a car parked in sun |
-| `batteryVoltage` | `125` | Likely **× 0.1 V** = 12.5 V (12 V battery, plausible) |
+| `batteryVoltage` | `127` | **Confirmed × 0.1 V** = 12.7 V (MG3 Hybrid EU 12 V battery, confirmed real-world) |
 | `vehicleAlarmStatus` | `2` | Meaning unknown |
 | `extendedData1` | `69` | Meaning unknown |
 

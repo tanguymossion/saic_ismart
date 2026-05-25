@@ -40,5 +40,8 @@ double? tyrePressureToPsi(int raw) {
   return raw / 2.0;
 }
 
-/// Returns `null` when [raw] is the -128 sentinel, otherwise returns [raw].
-int? batteryVoltageSensor(int raw) => raw == -128 ? null : raw;
+/// Converts raw battery voltage to volts (× 0.1 V).
+///
+/// Confirmed: raw `127` → `12.7 V` on MG3 Hybrid EU 12 V battery.
+/// Returns `null` for the -128 sentinel (sensor not available).
+double? batteryVoltageToVolts(int raw) => raw == -128 ? null : raw * 0.1;
