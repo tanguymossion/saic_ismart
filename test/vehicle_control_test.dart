@@ -204,6 +204,59 @@ void main() {
     });
   });
 
+  // ── openTailgate request ──────────────────────────────────────────────────────
+
+  group('openTailgate — request', () {
+    late Map<String, dynamic> body;
+
+    setUp(() async {
+      final (client, requests) = await _makeClient(
+        onApi: (_) async => _controlResponse(),
+      );
+      await client.openTailgate(_vin);
+      body = _decryptRequestBody(requests.first);
+    });
+
+    test('sends rvcReqType "2"', () {
+      expect(body['rvcReqType'], '2');
+    });
+
+    test('hashes VIN with SHA-256', () {
+      expect(body['vin'], sha256Hex(_vin));
+      expect(body['vin'], isNot(_vin));
+    });
+
+    test('sends exactly 5 params', () {
+      expect((body['rvcParams'] as List).length, 5);
+    });
+
+    test('params are in correct order', () {
+      final params = body['rvcParams'] as List;
+      expect(params[0]['paramId'], 4);
+      expect(params[1]['paramId'], 5);
+      expect(params[2]['paramId'], 6);
+      expect(params[3]['paramId'], 7);
+      expect(params[4]['paramId'], 255);
+    });
+
+    test('paramId 4,5,6 have value "AA=="', () {
+      final params = body['rvcParams'] as List;
+      expect(params[0]['paramValue'], 'AA==');
+      expect(params[1]['paramValue'], 'AA==');
+      expect(params[2]['paramValue'], 'AA==');
+    });
+
+    test('paramId 7 has value "Ag==" (TAILGATE=2)', () {
+      final params = body['rvcParams'] as List;
+      expect(params[3]['paramValue'], 'Ag==');
+    });
+
+    test('terminator paramId 255 has value "AAAAAA=="', () {
+      final params = body['rvcParams'] as List;
+      expect(params[4]['paramValue'], 'AAAAAA==');
+    });
+  });
+
   // ── event-id polling ──────────────────────────────────────────────────────────
 
   group('lockVehicle — event-id polling', () {

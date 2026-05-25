@@ -61,6 +61,26 @@ enum RvcReqType {
   const RvcReqType(this.value);
 }
 
+// ── VehicleLockId ─────────────────────────────────────────────────────────────
+
+/// Lock target for [RvcReqType.openLocks] commands.
+///
+/// Sent as `paramId 7` (`RvcParamsId.lockId`) in the `rvcParams` list.
+/// Source: `api/vehicle/locks/__init__.py:VehicleLockId`
+enum VehicleLockId {
+  /// All passenger doors (raw value 3).
+  doors(3),
+
+  /// Tailgate / boot (raw value 2).
+  tailgate(2);
+
+  /// Raw byte value sent as the Base64-encoded `paramValue`.
+  final int raw;
+
+  // ignore: public_member_api_docs
+  const VehicleLockId(this.raw);
+}
+
 // ── RvcParamsId ───────────────────────────────────────────────────────────────
 
 /// Parameter IDs used in `rvcParams` entries.

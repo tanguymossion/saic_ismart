@@ -437,7 +437,23 @@ class SaicClient {
         RvcParam(paramId: 4, paramValue: 'AA=='),
         RvcParam(paramId: 5, paramValue: 'AA=='),
         RvcParam(paramId: 6, paramValue: 'AA=='),
-        RvcParam(paramId: 7, paramValue: 'Aw=='), // VehicleLockId.DOORS = 3
+        RvcParam(paramId: 7, paramValue: _b64Byte(VehicleLockId.doors.raw)),
+        RvcParam(paramId: 255, paramValue: 'AAAAAA=='), // terminator
+      ]);
+
+  /// Opens the tailgate/boot on [vin].
+  ///
+  /// Same `rvcReqType: "2"` as [unlockVehicle] but with `paramId 7` set to
+  /// `VehicleLockId.tailgate` (value `\x02`) instead of `\x03` for doors.
+  ///
+  /// Endpoint: `POST /vehicle/control`
+  /// Source: `api/vehicle/locks/__init__.py:open_tailgate()`
+  Future<VehicleControlResponse> openTailgate(String vin) =>
+      _vehicleControl(vin, RvcReqType.openLocks, [
+        RvcParam(paramId: 4, paramValue: 'AA=='),
+        RvcParam(paramId: 5, paramValue: 'AA=='),
+        RvcParam(paramId: 6, paramValue: 'AA=='),
+        RvcParam(paramId: 7, paramValue: _b64Byte(VehicleLockId.tailgate.raw)),
         RvcParam(paramId: 255, paramValue: 'AAAAAA=='), // terminator
       ]);
 
