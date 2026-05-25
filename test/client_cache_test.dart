@@ -213,12 +213,12 @@ void main() {
     });
   });
 
-  // ── isSessionActive ───────────────────────────────────────────────────────────
+  // ── isLoggedIn ────────────────────────────────────────────────────────────────
 
-  group('SaicClient.isSessionActive', () {
+  group('SaicClient.isLoggedIn', () {
     test('false before login', () {
       final client = SaicClient(_config);
-      expect(client.isSessionActive, isFalse);
+      expect(client.isLoggedIn, isFalse);
     });
 
     test('true after successful login', () async {
@@ -227,7 +227,7 @@ void main() {
       );
       final client = SaicClient(_config, httpClient: mock);
       await client.login();
-      expect(client.isSessionActive, isTrue);
+      expect(client.isLoggedIn, isTrue);
     });
   });
 

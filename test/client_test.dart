@@ -339,6 +339,110 @@ void main() {
     });
   });
 
+  // ── Session lifecycle ─────────────────────────────────────────────────────────
+
+  group('SaicClient.isLoggedIn', () {
+    test('false before login', () {
+      expect(SaicClient(_config).isLoggedIn, isFalse);
+    });
+
+    test('true after login', () async {
+      final client = SaicClient(
+        _config,
+        httpClient: MockClient((_) async => _encryptedResponse(_loginBody())),
+      );
+      await client.login();
+      expect(client.isLoggedIn, isTrue);
+    });
+
+    test('false after logout', () async {
+      final client = SaicClient(
+        _config,
+        httpClient: MockClient((_) async => _encryptedResponse(_loginBody())),
+      );
+      await client.login();
+      client.logout();
+      expect(client.isLoggedIn, isFalse);
+    });
+  });
+
+  group('SaicClient.tokenExpiration', () {
+    test('null before login', () {
+      expect(SaicClient(_config).tokenExpiration, isNull);
+    });
+
+    test('non-null after login', () async {
+      final client = SaicClient(
+        _config,
+        httpClient: MockClient((_) async => _encryptedResponse(_loginBody())),
+      );
+      await client.login();
+      expect(client.tokenExpiration, isNotNull);
+    });
+
+    test('null after logout', () async {
+      final client = SaicClient(
+        _config,
+        httpClient: MockClient((_) async => _encryptedResponse(_loginBody())),
+      );
+      await client.login();
+      client.logout();
+      expect(client.tokenExpiration, isNull);
+    });
+  });
+
+  group('SaicClient.logout', () {
+    test('clears session — isLoggedIn false after logout', () async {
+      final client = SaicClient(
+        _config,
+        httpClient: MockClient((_) async => _encryptedResponse(_loginBody())),
+      );
+      await client.login();
+      expect(client.isLoggedIn, isTrue);
+      client.logout();
+      expect(client.isLoggedIn, isFalse);
+    });
+
+    test('clears cache — getVehicleStatus makes a fresh call after re-login',
+        () async {
+      var apiCallCount = 0;
+      final vinListResponse = _encryptedApiResponse({
+        'vinList': [
+          {'vin': 'VIN123', 'vehicleModelConfiguration': []},
+        ],
+      });
+      final statusResponse = _encryptedApiResponse(
+        {'basicVehicleStatus': null, 'gpsPosition': null, 'statusTime': null},
+        appSendDate: '1700000000001',
+      );
+      final client = SaicClient(
+        _config,
+        httpClient: MockClient((req) async {
+          if (req.url.path.endsWith('/oauth/token')) {
+            return _encryptedResponse(_loginBody());
+          }
+          if (req.url.path.endsWith('/vehicle/list')) return vinListResponse;
+          apiCallCount++;
+          return statusResponse;
+        }),
+      );
+
+      await client.login();
+      await client.getVehicleStatus('VIN123');
+      expect(apiCallCount, 1);
+
+      // Status is now cached — second call should NOT hit the API.
+      await client.getVehicleStatus('VIN123');
+      expect(apiCallCount, 1);
+
+      // After logout + re-login, cache is cleared — next call must hit API.
+      client.logout();
+      await client.login();
+      await client.getVehicleStatus('VIN123');
+      expect(apiCallCount, 2);
+    });
+  });
+
   // ── Request URL ───────────────────────────────────────────────────────────────
 
   group('SaicClient.getVehicles — request URL', () {

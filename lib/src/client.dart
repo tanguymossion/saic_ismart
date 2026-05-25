@@ -327,11 +327,22 @@ class SaicClient {
   /// `null` if [login] has not been called yet.
   LoginResponse? get session => _session;
 
-  /// `true` if [login] has been called successfully and the token has not
-  /// yet expired.
-  bool get isSessionActive {
+  /// Returns `true` if the client has an active, non-expired session.
+  bool get isLoggedIn {
     final s = _session;
     return s != null && !SaicAuth.isTokenExpired(s.tokenExpiration);
+  }
+
+  /// The expiration time of the current access token, or `null` if not logged
+  /// in.
+  DateTime? get tokenExpiration => _session?.tokenExpiration;
+
+  /// Clears the current session. The next API call will require a new
+  /// [login].
+  void logout() {
+    _session = null;
+    _http.userToken = '';
+    _cache.clear();
   }
 
   /// Authenticates and stores the session token.
