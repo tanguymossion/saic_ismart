@@ -12,7 +12,7 @@
 /// await client.login();
 /// final vehicles = await client.getVehicles();
 /// ```
-library saic_ismart;
+library;
 
 export 'src/auth.dart';
 export 'src/cache.dart';

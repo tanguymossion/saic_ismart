@@ -3,6 +3,13 @@ description: Dart client for the SAIC iSmart API — MG, Roewe, Maxus/LDV connec
 version: 1.0.0
 repository: https://github.com/tanguymossion/saic_ismart
 
+topics:
+  - automotive
+  - iot
+  - vehicle
+  - mg-motor
+  - saic
+
 environment:
   sdk: '>=3.0.0 <4.0.0'
 
@@ -13,5 +20,5 @@ dependencies:
   convert: ^3.1.1
 
 dev_dependencies:
-  lints: ^3.0.0
+  lints: ^6.1.0
   test: ^1.24.0
