@@ -2,11 +2,11 @@
 
 > Dart client for the SAIC iSmart API — MG, Roewe, Maxus/LDV connected vehicles.
 
-[![pub.dev](https://img.shields.io/badge/pub.dev-coming%20soon-grey?style=flat-square)](https://pub.dev)
+[![pub.dev](https://img.shields.io/badge/pub.dev-v1.0.0-blue?style=flat-square)](https://pub.dev/packages/saic_ismart)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![Dart](https://img.shields.io/badge/Dart-pure-0553B1?style=flat-square&logo=dart)](https://dart.dev)
 
-**v0.2.0 released — v1.0.0 in active development.**
+**v1.0.0 — ready for pub.dev.**
 
 ---
 
@@ -32,7 +32,7 @@ EV-specific features (SoC, charging management, climate) require a contributor w
 
 ---
 
-## Features (v0.2)
+## Features
 
 ### v0.1.0
 - ✅ Authentication & token refresh
@@ -50,6 +50,18 @@ EV-specific features (SoC, charging management, climate) require a contributor w
 - ✅ Structured exception hierarchy (`SaicException` and subclasses)
 - ✅ Unit conversion helpers (`mileageToKm`, `fuelRangeToKm`, `temperatureCelsius`…)
 - ✅ Convenience getters on `BasicVehicleStatus` (`mileageKm`, `lockState`, `driverDoorStatus`, `frontLeftTyrePressureBar`…)
+
+### Added in v1.0.0
+- ✅ `lockVehicle(vin)` / `unlockVehicle(vin)` — remote door lock/unlock
+- ✅ `openTailgate(vin)` — remote tailgate release
+- ✅ `findMyCar(vin)` / `stopFindMyCar(vin)` — horn + lights trigger and stop
+- ✅ `startClimate(vin, {mode, temperatureIndex})` / `stopClimate(vin)` — remote A/C or heating
+- ✅ `startBlowing(vin)` / `startDefrost(vin)` — fan-only and defrost convenience wrappers
+- ✅ `controlHeatedSeats(vin, {driverLevel, passengerLevel})` — heated seat control with `HeatLevel` enum
+- ✅ `controlRearWindowHeat(vin, {enable})` — rear window heating element
+- ✅ `controlSunroof(vin, {open})` — remote sunroof open/close
+- ✅ `logout()` — clear session and cache
+- ✅ `isLoggedIn` / `tokenExpiration` — session lifecycle inspection
 
 See the full [roadmap](#roadmap) below.
 
@@ -129,10 +141,11 @@ print(status.gpsPosition?.wayPoint?.position?.latitude); // raw integer ÷ 1,000
 - Structured errors — `SaicException`
 - Unit conversion helpers & convenience getters
 
-### v1.0.0 — Remote actions + pub.dev release
-- Remote lock/unlock
-- Find my car
-- Horn & lights trigger
+### ✅ v1.0.0 — Remote actions · released 2026-05-25
+- Remote lock/unlock, tailgate
+- Find my car (horn + lights)
+- Remote climate: A/C, heat, blow, defrost, heated seats, rear window heat, sunroof
+- Session lifecycle: `logout()`, `isLoggedIn`, `tokenExpiration`
 - Full docs + example Flutter app
 - Published on pub.dev
 

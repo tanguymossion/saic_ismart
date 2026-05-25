@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] — 2026-05-25
+
+### Added
+- `stopFindMyCar(vin)` — silences horn and lights after a Find My Car trigger
+- `openTailgate(vin)` — opens the tailgate using `VehicleLockId.tailgate` (`\x02`)
+- `startBlowing(vin)` / `startDefrost(vin)` — convenience climate wrappers for fan-only and defrost modes
+- `controlHeatedSeats(vin, {driverLevel, passengerLevel})` — sets seat heat level via new `HeatLevel` enum (`off`, `low`, `medium`, `high`)
+- `controlRearWindowHeat(vin, {enable})` — turns the rear window heating element on or off
+- `controlSunroof(vin, {open})` — opens or closes the sunroof remotely
+- `logout()` — clears the current session token and cache; next API call requires a new `login()`
+- `isLoggedIn` — returns `true` when a non-expired session is active
+- `tokenExpiration` — exposes the current session token's expiry time
+
 ## [0.2.0] — 2026-05-24
 
 ### Added
