@@ -453,6 +453,21 @@ class SaicClient {
         RvcParam(paramId: 255, paramValue: 'AAAAAA=='), // terminator
       ]);
 
+  /// Stops the "Find My Car" function on [vin] (silences horn + lights).
+  ///
+  /// Sends the same `rvcReqType: "0"` as [findMyCar] but with all three
+  /// activation params set to `\x00` (off).
+  ///
+  /// Endpoint: `POST /vehicle/control`
+  /// Source: `api/vehicle/__init__.py:control_find_my_car(should_stop=True)`
+  Future<VehicleControlResponse> stopFindMyCar(String vin) =>
+      _vehicleControl(vin, RvcReqType.findMyCar, [
+        RvcParam(paramId: 1, paramValue: 'AA=='), // FIND_MY_CAR_ENABLE off
+        RvcParam(paramId: 2, paramValue: 'AA=='), // FIND_MY_CAR_HORN off
+        RvcParam(paramId: 3, paramValue: 'AA=='), // FIND_MY_CAR_LIGHTS off
+        RvcParam(paramId: 255, paramValue: 'AAAAAA=='), // terminator
+      ]);
+
   /// Starts remote climate control on [vin].
   ///
   /// [temperatureIndex] is 0–15. Meaning of each index is undocumented —

@@ -454,6 +454,53 @@ void main() {
     });
   });
 
+  // ── stopFindMyCar request ─────────────────────────────────────────────────────
+
+  group('stopFindMyCar — request', () {
+    late Map<String, dynamic> body;
+
+    setUp(() async {
+      final (client, requests) = await _makeClient(
+        onApi: (_) async => _controlResponse(),
+      );
+      await client.stopFindMyCar(_vin);
+      body = _decryptRequestBody(requests.first);
+    });
+
+    test('sends rvcReqType "0"', () {
+      expect(body['rvcReqType'], '0');
+    });
+
+    test('hashes VIN with SHA-256', () {
+      expect(body['vin'], sha256Hex(_vin));
+      expect(body['vin'], isNot(_vin));
+    });
+
+    test('sends exactly 4 params', () {
+      expect((body['rvcParams'] as List).length, 4);
+    });
+
+    test('params are in correct order', () {
+      final params = body['rvcParams'] as List;
+      expect(params[0]['paramId'], 1); // FIND_MY_CAR_ENABLE
+      expect(params[1]['paramId'], 2); // FIND_MY_CAR_HORN
+      expect(params[2]['paramId'], 3); // FIND_MY_CAR_LIGHTS
+      expect(params[3]['paramId'], 255); // terminator
+    });
+
+    test('paramId 1,2,3 have value "AA==" (off)', () {
+      final params = body['rvcParams'] as List;
+      expect(params[0]['paramValue'], 'AA==');
+      expect(params[1]['paramValue'], 'AA==');
+      expect(params[2]['paramValue'], 'AA==');
+    });
+
+    test('terminator paramId 255 has value "AAAAAA=="', () {
+      final params = body['rvcParams'] as List;
+      expect(params[3]['paramValue'], 'AAAAAA==');
+    });
+  });
+
   // ── startClimate ─────────────────────────────────────────────────────────────
 
   group('startClimate — defaults (normal mode, index 8)', () {
