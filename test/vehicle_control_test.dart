@@ -635,6 +635,40 @@ void main() {
     });
   });
 
+  // ── startBlowing ─────────────────────────────────────────────────────────────
+
+  group('startBlowing', () {
+    test('sends FAN_SPEED "AQ==" (blow=1) and hashes VIN', () async {
+      final (client, requests) = await _makeClient(
+        onApi: (_) async => _controlResponse(),
+      );
+      await client.startBlowing(_vin);
+      final body = _decryptRequestBody(requests.first);
+      expect(body['vin'], sha256Hex(_vin));
+      expect(body['vin'], isNot(_vin));
+      final params = body['rvcParams'] as List;
+      expect(params[0]['paramId'], 19);
+      expect(params[0]['paramValue'], 'AQ=='); // ClimateMode.blow = 1
+    });
+  });
+
+  // ── startDefrost ──────────────────────────────────────────────────────────────
+
+  group('startDefrost', () {
+    test('sends FAN_SPEED "BQ==" (defrost=5) and hashes VIN', () async {
+      final (client, requests) = await _makeClient(
+        onApi: (_) async => _controlResponse(),
+      );
+      await client.startDefrost(_vin);
+      final body = _decryptRequestBody(requests.first);
+      expect(body['vin'], sha256Hex(_vin));
+      expect(body['vin'], isNot(_vin));
+      final params = body['rvcParams'] as List;
+      expect(params[0]['paramId'], 19);
+      expect(params[0]['paramValue'], 'BQ=='); // ClimateMode.defrost = 5
+    });
+  });
+
   // ── stopClimate ───────────────────────────────────────────────────────────────
 
   group('stopClimate', () {

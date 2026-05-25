@@ -512,6 +512,19 @@ class SaicClient {
         RvcParam(paramId: 255, paramValue: 'AAAAAA=='),
       ]);
 
+  /// Starts ventilation without A/C.
+  ///
+  /// Equivalent to `startClimate(vin, mode: ClimateMode.blow)`.
+  Future<VehicleControlResponse> startBlowing(String vin) =>
+      startClimate(vin, mode: ClimateMode.blow);
+
+  /// Starts defrost mode.
+  ///
+  /// Equivalent to `startClimate(vin, mode: ClimateMode.defrost)`. Useful in
+  /// winter to clear windscreen before driving.
+  Future<VehicleControlResponse> startDefrost(String vin) =>
+      startClimate(vin, mode: ClimateMode.defrost);
+
   /// Base64-encodes a single byte [v] (0–255).
   static String _b64Byte(int v) => base64Encode([v]);
 
