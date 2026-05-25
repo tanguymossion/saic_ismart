@@ -201,7 +201,8 @@ class _SaicHttpClient {
   /// - Returns the `data` field of a successful (code == 0) response.
   ///
   /// Source: `base.py:__deserialize()`, `net/httpx/__init__.py:decrypt_httpx_response()`
-  dynamic _parseResponse(http.Response response, {String currentEventId = '0'}) {
+  dynamic _parseResponse(http.Response response,
+      {String currentEventId = '0'}) {
     if (response.statusCode == 401 || response.statusCode == 403) {
       // A 401/403 while holding an active token means another client has
       // taken the session — surface this as a conflict, not a plain auth error.
@@ -223,8 +224,7 @@ class _SaicHttpClient {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       // Decrypt using key/IV derived from response headers (section 3).
       final appSendDate = response.headers['app-send-date'] ?? '';
-      final originalCt =
-          response.headers['original-content-type'] ?? _kJson;
+      final originalCt = response.headers['original-content-type'] ?? _kJson;
       final keyHex = deriveResponseKey(appSendDate, originalCt);
       final ivHex = deriveResponseIv(appSendDate);
       body = decryptBody(response.body, keyHex, ivHex);
@@ -506,8 +506,7 @@ class SaicClient {
           body,
           eventId: eventId,
         );
-        return VehicleControlResponse.fromJson(
-            rawData as Map<String, dynamic>);
+        return VehicleControlResponse.fromJson(rawData as Map<String, dynamic>);
       } on _SaicEventIdRetryException catch (e) {
         if (DateTime.now().isAfter(deadline)) {
           throw SaicTimeoutException(

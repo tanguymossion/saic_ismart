@@ -70,7 +70,8 @@ void main() {
       expect(response.userName, 'test@example.com');
     });
 
-    test('sets tokenExpiration approximately expiresIn seconds from now', () async {
+    test('sets tokenExpiration approximately expiresIn seconds from now',
+        () async {
       final before = DateTime.now();
       final client = MockClient(
         (_) async => _encryptedLoginResponse(_successBody(expiresIn: 7200)),
@@ -79,11 +80,13 @@ void main() {
       final after = DateTime.now();
 
       expect(
-        response.tokenExpiration.isAfter(before.add(const Duration(seconds: 7199))),
+        response.tokenExpiration
+            .isAfter(before.add(const Duration(seconds: 7199))),
         isTrue,
       );
       expect(
-        response.tokenExpiration.isBefore(after.add(const Duration(seconds: 7201))),
+        response.tokenExpiration
+            .isBefore(after.add(const Duration(seconds: 7201))),
         isTrue,
       );
     });
@@ -106,7 +109,11 @@ void main() {
       // Decrypt using request-side key derivation (userToken = '' at login time).
       final ts = captured.headers['APP-SEND-DATE']!;
       final keyHex = deriveRequestKey(
-        '/oauth/token', '459771', '', ts, 'application/x-www-form-urlencoded',
+        '/oauth/token',
+        '459771',
+        '',
+        ts,
+        'application/x-www-form-urlencoded',
       );
       final plain = decryptBody(captured.body, keyHex, deriveRequestIv(ts));
       capturedBodyParams = Uri.splitQueryString(plain);
@@ -120,11 +127,13 @@ void main() {
     });
 
     test('sends hardcoded Authorization header', () {
-      expect(captured.headers['Authorization'], 'Basic c3dvcmQ6c3dvcmRfc2VjcmV0');
+      expect(
+          captured.headers['Authorization'], 'Basic c3dvcmQ6c3dvcmRfc2VjcmV0');
     });
 
     test('sends Content-Type application/x-www-form-urlencoded', () {
-      expect(captured.headers['Content-Type'], 'application/x-www-form-urlencoded');
+      expect(captured.headers['Content-Type'],
+          'application/x-www-form-urlencoded');
     });
 
     test('sends tenant-id for the configured region', () {
@@ -157,7 +166,8 @@ void main() {
     });
 
     test('sends ORIGINAL-CONTENT-TYPE: application/x-www-form-urlencoded', () {
-      expect(captured.headers['ORIGINAL-CONTENT-TYPE'], 'application/x-www-form-urlencoded');
+      expect(captured.headers['ORIGINAL-CONTENT-TYPE'],
+          'application/x-www-form-urlencoded');
     });
 
     test('sends APP-CONTENT-ENCRYPTED: 1', () {
@@ -181,7 +191,8 @@ void main() {
 
     test('sends SHA-1 hashed password, not plaintext', () {
       // SHA-1("hunter2") = f3bbbd66a63d4bf1747940578ec3d0103530e21d
-      expect(capturedBodyParams['password'], 'f3bbbd66a63d4bf1747940578ec3d0103530e21d');
+      expect(capturedBodyParams['password'],
+          'f3bbbd66a63d4bf1747940578ec3d0103530e21d');
       expect(capturedBodyParams['password'], isNot('hunter2'));
     });
 
@@ -203,7 +214,11 @@ void main() {
       final req = captured!;
       final ts = req.headers['APP-SEND-DATE']!;
       final keyHex = deriveRequestKey(
-        '/oauth/token', '459771', '', ts, 'application/x-www-form-urlencoded',
+        '/oauth/token',
+        '459771',
+        '',
+        ts,
+        'application/x-www-form-urlencoded',
       );
       final plain = decryptBody(req.body, keyHex, deriveRequestIv(ts));
       final params = Uri.splitQueryString(plain);
@@ -217,7 +232,8 @@ void main() {
   group('SaicAuth.login error handling', () {
     test('throws SaicAuthException on HTTP 401', () async {
       // Non-2xx: decryption is skipped, body is not read.
-      final client = MockClient((_) async => http.Response('Unauthorized', 401));
+      final client =
+          MockClient((_) async => http.Response('Unauthorized', 401));
       expect(
         () => SaicAuth(httpClient: client).login(emailConfig),
         throwsA(isA<SaicAuthException>()),

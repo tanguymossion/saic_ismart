@@ -39,7 +39,7 @@ http.Response _encryptedResponse(
 }
 
 http.Response _encryptedApiResponse(dynamic data,
-    {String appSendDate = '1700000000000'}) =>
+        {String appSendDate = '1700000000000'}) =>
     _encryptedResponse(
       jsonEncode({'code': 0, 'data': data}),
       appSendDate: appSendDate,
@@ -309,8 +309,7 @@ void main() {
       final client = SaicClient(
         _config,
         httpClient: _mockWith(
-          onApi: (_) async =>
-              throw const SocketException('Connection refused'),
+          onApi: (_) async => throw const SocketException('Connection refused'),
         ),
       );
       await client.login();

@@ -130,7 +130,7 @@ class LoginResponse {
   /// Username echoed back by the server.
   final String userName;
 
-  // ignore: public_member_api_docs
+  /// Creates a [LoginResponse] from token and user fields returned by the API.
   const LoginResponse({
     required this.accessToken,
     required this.tokenType,
@@ -185,12 +185,20 @@ class SaicAuth {
     // userToken is empty at login time — the key formula uses '' in its place.
     final plainBody = Uri(queryParameters: bodyMap).query;
     final keyHex = deriveRequestKey(
-      requestPath, config.region.tenantId, '', timestampMs, contentType,
+      requestPath,
+      config.region.tenantId,
+      '',
+      timestampMs,
+      contentType,
     );
     final ivHex = deriveRequestIv(timestampMs);
     final encryptedBody = encryptBody(plainBody, keyHex, ivHex);
     final hmac = computeHmac(
-      requestPath, config.region.tenantId, '', timestampMs, contentType,
+      requestPath,
+      config.region.tenantId,
+      '',
+      timestampMs,
+      contentType,
       encryptedBody,
     );
 

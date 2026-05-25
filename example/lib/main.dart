@@ -82,8 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (_) =>
-              HomeScreen(client: client, vehicle: vehicles.first),
+          builder: (_) => HomeScreen(client: client, vehicle: vehicles.first),
         ),
       );
     } on SaicException catch (e) {

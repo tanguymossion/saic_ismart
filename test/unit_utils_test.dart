@@ -166,12 +166,13 @@ void main() {
     });
 
     test('exteriorTemperatureCelsius returns value', () {
-      expect(makeStatus(exteriorTemperature: 22).exteriorTemperatureCelsius, 22);
+      expect(
+          makeStatus(exteriorTemperature: 22).exteriorTemperatureCelsius, 22);
     });
 
     test('exteriorTemperatureCelsius returns null for -128 sentinel', () {
-      expect(
-          makeStatus(exteriorTemperature: -128).exteriorTemperatureCelsius, isNull);
+      expect(makeStatus(exteriorTemperature: -128).exteriorTemperatureCelsius,
+          isNull);
     });
 
     test('exteriorTemperatureCelsius is null when field is null', () {
@@ -179,12 +180,13 @@ void main() {
     });
 
     test('interiorTemperatureCelsius returns value', () {
-      expect(makeStatus(interiorTemperature: 18).interiorTemperatureCelsius, 18);
+      expect(
+          makeStatus(interiorTemperature: 18).interiorTemperatureCelsius, 18);
     });
 
     test('interiorTemperatureCelsius returns null for -128 sentinel', () {
-      expect(
-          makeStatus(interiorTemperature: -128).interiorTemperatureCelsius, isNull);
+      expect(makeStatus(interiorTemperature: -128).interiorTemperatureCelsius,
+          isNull);
     });
 
     test('interiorTemperatureCelsius is null when field is null', () {
@@ -206,32 +208,38 @@ void main() {
       expect(makeStatus().batteryVoltageVolts, isNull);
     });
 
-    test('frontLeftTyrePressureBar converts MG3 real-world value (raw=69→~2.38 bar)',
+    test(
+        'frontLeftTyrePressureBar converts MG3 real-world value (raw=69→~2.38 bar)',
         () => expect(
             makeStatus(frontLeftTyrePressure: 69).frontLeftTyrePressureBar,
             closeTo(2.378, 0.001)));
     test('frontLeftTyrePressureBar null when field is null',
         () => expect(makeStatus().frontLeftTyrePressureBar, isNull));
-    test('frontLeftTyrePressureBar null for sentinel 0',
+    test(
+        'frontLeftTyrePressureBar null for sentinel 0',
         () => expect(
             makeStatus(frontLeftTyrePressure: 0).frontLeftTyrePressureBar,
             isNull));
-    test('frontLeftTyrePressureBar null for sentinel -128',
+    test(
+        'frontLeftTyrePressureBar null for sentinel -128',
         () => expect(
             makeStatus(frontLeftTyrePressure: -128).frontLeftTyrePressureBar,
             isNull));
 
-    test('frontRightTyrePressureBar converts MG3 real-world value (raw=70→~2.41 bar)',
+    test(
+        'frontRightTyrePressureBar converts MG3 real-world value (raw=70→~2.41 bar)',
         () => expect(
             makeStatus(frontRightTyrePressure: 70).frontRightTyrePressureBar,
             closeTo(2.413, 0.001)));
 
-    test('rearLeftTyrePressureBar converts MG3 real-world value (raw=65→~2.24 bar)',
+    test(
+        'rearLeftTyrePressureBar converts MG3 real-world value (raw=65→~2.24 bar)',
         () => expect(
             makeStatus(rearLeftTyrePressure: 65).rearLeftTyrePressureBar,
             closeTo(2.241, 0.001)));
 
-    test('rearRightTyrePressureBar converts MG3 real-world value (raw=61→~2.10 bar)',
+    test(
+        'rearRightTyrePressureBar converts MG3 real-world value (raw=61→~2.10 bar)',
         () => expect(
             makeStatus(rearRightTyrePressure: 61).rearRightTyrePressureBar,
             closeTo(2.103, 0.001)));

@@ -22,8 +22,7 @@ String sha1Hex(String input) => sha1.convert(utf8.encode(input)).toString();
 ///
 /// Used to hash the VIN before every API call.
 /// Source: `crypto_utils.py:sha256_hex_digest()`
-String sha256Hex(String input) =>
-    sha256.convert(utf8.encode(input)).toString();
+String sha256Hex(String input) => sha256.convert(utf8.encode(input)).toString();
 
 /// Returns the lowercase MD5 hex digest of [input] (UTF-8 encoded, no padding).
 ///
@@ -105,7 +104,9 @@ String computeHmac(
   final message =
       '$requestPath$tenantId${userToken}app${timestampMs}1$contentType$encryptedBody';
 
-  return Hmac(sha256, utf8.encode(hmacKey)).convert(utf8.encode(message)).toString();
+  return Hmac(sha256, utf8.encode(hmacKey))
+      .convert(utf8.encode(message))
+      .toString();
 }
 
 /// AES-128-CBC encrypts [plaintext] and returns the hex-encoded ciphertext.

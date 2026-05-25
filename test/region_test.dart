@@ -45,8 +45,10 @@ Future<Map<String, String>> _headersFor(SaicRegion region) async {
     if (!captured.isCompleted) {
       captured.complete(Map.unmodifiable(req.headers));
     }
-    return _encryptedResponse(
-        jsonEncode({'code': 0, 'data': {'vinList': []}}));
+    return _encryptedResponse(jsonEncode({
+      'code': 0,
+      'data': {'vinList': []}
+    }));
   });
 
   final config = SaicConfig(
@@ -89,8 +91,7 @@ void main() {
           'https://gateway-mg-au.soimt.com/api.app/v1/');
     });
     test('tenantId', () => expect(SaicRegion.australia.tenantId, '459771'));
-    test('regionHeader',
-        () => expect(SaicRegion.australia.regionHeader, 'au'));
+    test('regionHeader', () => expect(SaicRegion.australia.regionHeader, 'au'));
   });
 
   group('SaicRegion.india', () {

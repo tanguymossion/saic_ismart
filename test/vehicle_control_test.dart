@@ -291,8 +291,7 @@ void main() {
 
     test('rvcReqSts as multi-byte Base64 decodes correctly', () {
       // "AAAAAA==" = base64([0x00, 0x00, 0x00, 0x00])
-      final r =
-          VehicleControlResponse.fromJson({'rvcReqSts': 'AAAAAA=='});
+      final r = VehicleControlResponse.fromJson({'rvcReqSts': 'AAAAAA=='});
       expect(r.rvcReqSts, Uint8List.fromList([0x00, 0x00, 0x00, 0x00]));
     });
 
@@ -341,21 +340,22 @@ void main() {
         },
       );
       await client.lockVehicle(_vin);
-      expect(sentEventIds[0], '0');        // initial request
-      expect(sentEventIds[1], 'evt-99');   // first retry (from pending)
-      expect(sentEventIds[2], 'evt-99');   // second retry (same id, non-zero)
+      expect(sentEventIds[0], '0'); // initial request
+      expect(sentEventIds[1], 'evt-99'); // first retry (from pending)
+      expect(sentEventIds[2], 'evt-99'); // second retry (same id, non-zero)
     });
 
     test('does NOT retry non-zero code on fresh request (event-id == 0)',
         () async {
       final (client, _) = await _makeClient(
-        onApi: (_) async =>
-            _encryptedResponse('{"code":4,"message":"remote control instruction failed"}'),
+        onApi: (_) async => _encryptedResponse(
+            '{"code":4,"message":"remote control instruction failed"}'),
       );
       expect(client.lockVehicle(_vin), throwsA(isA<SaicApiException>()));
     });
 
-    test('first retry waits controlRetryDelay, subsequent retries are immediate',
+    test(
+        'first retry waits controlRetryDelay, subsequent retries are immediate',
         () async {
       // Confirm that a long controlRetryDelay only applies to the first retry.
       // We can't assert timing precisely, so we verify the sequence completes
@@ -382,8 +382,7 @@ void main() {
   group('lockVehicle — error handling', () {
     test('throws SaicApiException on fatal code on fresh request', () async {
       final (client, _) = await _makeClient(
-        onApi: (_) async =>
-            _encryptedResponse('{"code":7,"message":"Fatal"}'),
+        onApi: (_) async => _encryptedResponse('{"code":7,"message":"Fatal"}'),
       );
       expect(client.lockVehicle(_vin), throwsA(isA<SaicApiException>()));
     });
@@ -403,8 +402,7 @@ void main() {
         () => expect(RvcReqType.closeLocks.value, '1'));
     test('openLocks value is "2"',
         () => expect(RvcReqType.openLocks.value, '2'));
-    test('climate value is "6"',
-        () => expect(RvcReqType.climate.value, '6'));
+    test('climate value is "6"', () => expect(RvcReqType.climate.value, '6'));
     test('findMyCar value is "0"',
         () => expect(RvcReqType.findMyCar.value, '0'));
   });
@@ -505,8 +503,7 @@ void main() {
         onApi: (_) async => _controlResponse(),
       );
       await client.startClimate(_vin, temperatureIndex: 0);
-      final params =
-          (_decryptRequestBody(requests.first)['rvcParams'] as List);
+      final params = (_decryptRequestBody(requests.first)['rvcParams'] as List);
       expect(params[1]['paramValue'], 'AA==');
     });
 
@@ -515,8 +512,7 @@ void main() {
         onApi: (_) async => _controlResponse(),
       );
       await client.startClimate(_vin, temperatureIndex: 15);
-      final params =
-          (_decryptRequestBody(requests.first)['rvcParams'] as List);
+      final params = (_decryptRequestBody(requests.first)['rvcParams'] as List);
       expect(params[1]['paramValue'], 'Dw==');
     });
 
@@ -525,8 +521,7 @@ void main() {
         onApi: (_) async => _controlResponse(),
       );
       await client.startClimate(_vin, mode: ClimateMode.defrost);
-      final params =
-          (_decryptRequestBody(requests.first)['rvcParams'] as List);
+      final params = (_decryptRequestBody(requests.first)['rvcParams'] as List);
       expect(params[0]['paramValue'], 'BQ==');
     });
 
@@ -535,8 +530,7 @@ void main() {
         onApi: (_) async => _controlResponse(),
       );
       await client.startClimate(_vin, mode: ClimateMode.blow);
-      final params =
-          (_decryptRequestBody(requests.first)['rvcParams'] as List);
+      final params = (_decryptRequestBody(requests.first)['rvcParams'] as List);
       expect(params[0]['paramValue'], 'AQ==');
     });
   });

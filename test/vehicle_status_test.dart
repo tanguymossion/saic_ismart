@@ -181,8 +181,7 @@ void main() {
       test('handBrake', () => expect(b.handBrake, 0));
       test('exteriorTemperature', () => expect(b.exteriorTemperature, 25));
       test('interiorTemperature', () => expect(b.interiorTemperature, 22));
-      test('frontLeftTyrePressure',
-          () => expect(b.frontLeftTyrePressure, 240));
+      test('frontLeftTyrePressure', () => expect(b.frontLeftTyrePressure, 240));
       test('timeOfLastCANBUSActivity',
           () => expect(b.timeOfLastCANBUSActivity, 1700000000));
       test('vehElecRngDsp', () => expect(b.vehElecRngDsp, 300));
@@ -194,8 +193,10 @@ void main() {
 
       test('gpsStatus', () => expect(g.gpsStatus, GpsStatus.fix3d));
       test('timeStamp', () => expect(g.timeStamp, 1700000000));
-      test('raw latitude', () => expect(g.wayPoint!.position!.latitude, 51507222));
-      test('raw longitude', () => expect(g.wayPoint!.position!.longitude, 127000));
+      test('raw latitude',
+          () => expect(g.wayPoint!.position!.latitude, 51507222));
+      test('raw longitude',
+          () => expect(g.wayPoint!.position!.longitude, 127000));
       test('altitude', () => expect(g.wayPoint!.position!.altitude, 35));
       test('hdop', () => expect(g.wayPoint!.hdop, 1));
       test('heading', () => expect(g.wayPoint!.heading, 180));
@@ -268,7 +269,8 @@ void main() {
     });
 
     test('false when engineStatus != 1', () {
-      expect(const BasicVehicleStatus(engineStatus: 0).isEngineRunning, isFalse);
+      expect(
+          const BasicVehicleStatus(engineStatus: 0).isEngineRunning, isFalse);
       expect(const BasicVehicleStatus().isEngineRunning, isFalse);
     });
   });
@@ -337,10 +339,14 @@ void main() {
   // ── GpsStatus enum ──────────────────────────────────────────────────────────
 
   group('GpsStatus.fromValue', () {
-    test('maps 0 to noSignal', () => expect(GpsStatus.fromValue(0), GpsStatus.noSignal));
-    test('maps 1 to timeFix', () => expect(GpsStatus.fromValue(1), GpsStatus.timeFix));
-    test('maps 2 to fix2d', () => expect(GpsStatus.fromValue(2), GpsStatus.fix2d));
-    test('maps 3 to fix3d', () => expect(GpsStatus.fromValue(3), GpsStatus.fix3d));
+    test('maps 0 to noSignal',
+        () => expect(GpsStatus.fromValue(0), GpsStatus.noSignal));
+    test('maps 1 to timeFix',
+        () => expect(GpsStatus.fromValue(1), GpsStatus.timeFix));
+    test('maps 2 to fix2d',
+        () => expect(GpsStatus.fromValue(2), GpsStatus.fix2d));
+    test('maps 3 to fix3d',
+        () => expect(GpsStatus.fromValue(3), GpsStatus.fix3d));
     test('unknown value falls back to noSignal',
         () => expect(GpsStatus.fromValue(99), GpsStatus.noSignal));
   });
@@ -556,7 +562,8 @@ void main() {
           return _pendingResponse('evt-loop');
         }),
         statusRetryDelay: Duration.zero,
-        statusRetryTimeout: Duration.zero, // deadline is already past on first retry
+        statusRetryTimeout:
+            Duration.zero, // deadline is already past on first retry
       );
       await c.login();
       expect(c.getVehicleStatus(_vin), throwsA(isA<SaicTimeoutException>()));
@@ -591,9 +598,9 @@ void main() {
         return _statusResponse(_fullStatusData);
       });
       await c.getVehicleStatus(_vin);
-      expect(sentEventIds[0], '0');        // initial request
-      expect(sentEventIds[1], 'evt-abc');  // first retry (from pending)
-      expect(sentEventIds[2], 'evt-abc');  // second retry (same id, non-zero)
+      expect(sentEventIds[0], '0'); // initial request
+      expect(sentEventIds[1], 'evt-abc'); // first retry (from pending)
+      expect(sentEventIds[2], 'evt-abc'); // second retry (same id, non-zero)
     });
 
     test('does NOT retry non-zero code on fresh request (event-id == 0)',

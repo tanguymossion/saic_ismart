@@ -151,9 +151,7 @@ class _CommandCard extends StatelessWidget {
               Icon(
                 icon,
                 size: 24,
-                color: busy
-                    ? Colors.grey.shade400
-                    : theme.colorScheme.primary,
+                color: busy ? Colors.grey.shade400 : theme.colorScheme.primary,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -246,7 +244,9 @@ class _ClimateSheetState extends State<_ClimateSheet> {
           const SizedBox(height: 8),
           RadioGroup<ClimateMode>(
             groupValue: _mode,
-            onChanged: (v) { if (v != null) setState(() => _mode = v); },
+            onChanged: (v) {
+              if (v != null) setState(() => _mode = v);
+            },
             child: Column(
               children: ClimateMode.values
                   .where((m) => m != ClimateMode.off)

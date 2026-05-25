@@ -22,8 +22,8 @@ void main() {
     // Real-world: MG3 reports windows as 0 or 1000; 1000 is unknown → null
     test('1000 (MG3 real-world) → null',
         () => expect(WindowStatus.fromRaw(1000), isNull));
-    test('unknown value → null',
-        () => expect(WindowStatus.fromRaw(99), isNull));
+    test(
+        'unknown value → null', () => expect(WindowStatus.fromRaw(99), isNull));
   });
 
   // ── LockStatus ────────────────────────────────────────────────────────────────
@@ -43,8 +43,8 @@ void main() {
         () => expect(BonnetStatus.fromRaw(0), BonnetStatus.closed));
     test('1 → open', () => expect(BonnetStatus.fromRaw(1), BonnetStatus.open));
     test('null → null', () => expect(BonnetStatus.fromRaw(null), isNull));
-    test('unknown value → null',
-        () => expect(BonnetStatus.fromRaw(99), isNull));
+    test(
+        'unknown value → null', () => expect(BonnetStatus.fromRaw(99), isNull));
   });
 
   // ── BootStatus ────────────────────────────────────────────────────────────────
@@ -93,28 +93,44 @@ void main() {
     test('driverDoorStatus null when field is null',
         () => expect(make().driverDoorStatus, isNull));
 
-    test('passengerDoorStatus delegates correctly',
-        () => expect(make(passengerDoor: 1).passengerDoorStatus, DoorStatus.open));
-    test('rearLeftDoorStatus delegates correctly',
-        () => expect(make(rearLeftDoor: 0).rearLeftDoorStatus, DoorStatus.closed));
-    test('rearRightDoorStatus delegates correctly',
-        () => expect(make(rearRightDoor: 1).rearRightDoorStatus, DoorStatus.open));
+    test(
+        'passengerDoorStatus delegates correctly',
+        () => expect(
+            make(passengerDoor: 1).passengerDoorStatus, DoorStatus.open));
+    test(
+        'rearLeftDoorStatus delegates correctly',
+        () => expect(
+            make(rearLeftDoor: 0).rearLeftDoorStatus, DoorStatus.closed));
+    test(
+        'rearRightDoorStatus delegates correctly',
+        () => expect(
+            make(rearRightDoor: 1).rearRightDoorStatus, DoorStatus.open));
 
-    test('driverWindowStatus closed when raw=0',
-        () => expect(make(driverWindow: 0).driverWindowStatus, WindowStatus.closed));
-    test('driverWindowStatus open when raw=1',
-        () => expect(make(driverWindow: 1).driverWindowStatus, WindowStatus.open));
+    test(
+        'driverWindowStatus closed when raw=0',
+        () => expect(
+            make(driverWindow: 0).driverWindowStatus, WindowStatus.closed));
+    test(
+        'driverWindowStatus open when raw=1',
+        () => expect(
+            make(driverWindow: 1).driverWindowStatus, WindowStatus.open));
     test('driverWindowStatus null when field is null',
         () => expect(make().driverWindowStatus, isNull));
     test('driverWindowStatus null for unknown raw (e.g. 1000)',
         () => expect(make(driverWindow: 1000).driverWindowStatus, isNull));
 
-    test('passengerWindowStatus delegates correctly',
-        () => expect(make(passengerWindow: 0).passengerWindowStatus, WindowStatus.closed));
-    test('rearLeftWindowStatus delegates correctly',
-        () => expect(make(rearLeftWindow: 1).rearLeftWindowStatus, WindowStatus.open));
-    test('rearRightWindowStatus delegates correctly',
-        () => expect(make(rearRightWindow: 0).rearRightWindowStatus, WindowStatus.closed));
+    test(
+        'passengerWindowStatus delegates correctly',
+        () => expect(make(passengerWindow: 0).passengerWindowStatus,
+            WindowStatus.closed));
+    test(
+        'rearLeftWindowStatus delegates correctly',
+        () => expect(
+            make(rearLeftWindow: 1).rearLeftWindowStatus, WindowStatus.open));
+    test(
+        'rearRightWindowStatus delegates correctly',
+        () => expect(make(rearRightWindow: 0).rearRightWindowStatus,
+            WindowStatus.closed));
 
     test('lockState unlocked when raw=0',
         () => expect(make(lockStatus: 0).lockState, LockStatus.unlocked));

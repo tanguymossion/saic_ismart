@@ -139,9 +139,7 @@ class _DashboardTabState extends State<DashboardTab> {
         _StatusCard(
           icon: Icons.route_rounded,
           label: 'Mileage',
-          value: mileage != null
-              ? '${mileage.toStringAsFixed(1)} km'
-              : 'N/A',
+          value: mileage != null ? '${mileage.toStringAsFixed(1)} km' : 'N/A',
         ),
         _StatusCard(
           icon: Icons.thermostat_rounded,
@@ -182,8 +180,7 @@ class _DashboardTabState extends State<DashboardTab> {
       padding: const EdgeInsets.all(32),
       children: [
         const SizedBox(height: 80),
-        Icon(Icons.error_outline_rounded,
-            size: 48, color: Colors.red.shade300),
+        Icon(Icons.error_outline_rounded, size: 48, color: Colors.red.shade300),
         const SizedBox(height: 16),
         Text(
           _error!,
@@ -329,9 +326,10 @@ class _TyreCell extends StatelessWidget {
               color: Colors.grey.shade500,
             ),
           ),
-          Text(value, style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          )),
+          Text(value,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              )),
         ],
       ),
     );

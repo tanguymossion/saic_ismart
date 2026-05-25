@@ -264,7 +264,8 @@ void main() {
       );
     });
 
-    test('SaicSessionConflictException is a SaicAuthException and SaicException',
+    test(
+        'SaicSessionConflictException is a SaicAuthException and SaicException',
         () {
       const e = SaicSessionConflictException(code: 401, message: 'x');
       expect(e, isA<SaicAuthException>());

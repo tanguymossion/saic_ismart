@@ -59,7 +59,7 @@ class Position {
   /// Raw altitude value (unit undocumented).
   final int? altitude;
 
-  // ignore: public_member_api_docs
+  /// Creates a [Position] with the given raw coordinate values.
   const Position({this.latitude, this.longitude, this.altitude});
 
   /// Parses a [Position] from the `position` sub-object in the GPS JSON.
@@ -131,8 +131,7 @@ class WayPoint {
           speed == other.speed;
 
   @override
-  int get hashCode =>
-      Object.hash(position, hdop, heading, satellites, speed);
+  int get hashCode => Object.hash(position, hdop, heading, satellites, speed);
 }
 
 /// Vehicle GPS location and fix quality.
@@ -151,7 +150,7 @@ class GpsPosition {
   /// Waypoint data — position, heading, speed, satellites.
   final WayPoint? wayPoint;
 
-  // ignore: public_member_api_docs
+  /// Creates a [GpsPosition] with the given GPS fix data.
   const GpsPosition({this.gpsStatus, this.timeStamp, this.wayPoint});
 
   /// Latitude in decimal degrees, derived from the raw integer field
@@ -342,7 +341,7 @@ class BasicVehicleStatus {
   /// Tyre pressure monitoring system (TPMS) status.
   final int? wheelTyreMonitorStatus;
 
-  // ignore: public_member_api_docs
+  /// Creates a [BasicVehicleStatus] with the given raw field values.
   const BasicVehicleStatus({
     this.batteryVoltage,
     this.bonnetStatus,
@@ -404,7 +403,8 @@ class BasicVehicleStatus {
   bool get isEngineRunning => engineStatus == 1;
 
   /// Mileage in kilometres (`null` when [mileage] is `null`).
-  double? get mileageKm => mileage == null ? null : unit_utils.mileageToKm(mileage!);
+  double? get mileageKm =>
+      mileage == null ? null : unit_utils.mileageToKm(mileage!);
 
   /// Mileage in miles (`null` when [mileage] is `null`).
   double? get mileageMiles =>
@@ -432,28 +432,24 @@ class BasicVehicleStatus {
       : unit_utils.batteryVoltageToVolts(batteryVoltage!);
 
   /// Front-left tyre pressure in bar (`null` when unavailable).
-  double? get frontLeftTyrePressureBar =>
-      frontLeftTyrePressure == null
-          ? null
-          : unit_utils.tyrePressureToBar(frontLeftTyrePressure!);
+  double? get frontLeftTyrePressureBar => frontLeftTyrePressure == null
+      ? null
+      : unit_utils.tyrePressureToBar(frontLeftTyrePressure!);
 
   /// Front-right tyre pressure in bar (`null` when unavailable).
-  double? get frontRightTyrePressureBar =>
-      frontRightTyrePressure == null
-          ? null
-          : unit_utils.tyrePressureToBar(frontRightTyrePressure!);
+  double? get frontRightTyrePressureBar => frontRightTyrePressure == null
+      ? null
+      : unit_utils.tyrePressureToBar(frontRightTyrePressure!);
 
   /// Rear-left tyre pressure in bar (`null` when unavailable).
-  double? get rearLeftTyrePressureBar =>
-      rearLeftTyrePressure == null
-          ? null
-          : unit_utils.tyrePressureToBar(rearLeftTyrePressure!);
+  double? get rearLeftTyrePressureBar => rearLeftTyrePressure == null
+      ? null
+      : unit_utils.tyrePressureToBar(rearLeftTyrePressure!);
 
   /// Rear-right tyre pressure in bar (`null` when unavailable).
-  double? get rearRightTyrePressureBar =>
-      rearRightTyrePressure == null
-          ? null
-          : unit_utils.tyrePressureToBar(rearRightTyrePressure!);
+  double? get rearRightTyrePressureBar => rearRightTyrePressure == null
+      ? null
+      : unit_utils.tyrePressureToBar(rearRightTyrePressure!);
 
   /// Driver door state, or `null` if absent or unrecognised.
   DoorStatus? get driverDoorStatus => DoorStatus.fromRaw(driverDoor);
@@ -475,7 +471,8 @@ class BasicVehicleStatus {
       WindowStatus.fromRaw(passengerWindow);
 
   /// Rear-left window state, or `null` if absent or unrecognised.
-  WindowStatus? get rearLeftWindowStatus => WindowStatus.fromRaw(rearLeftWindow);
+  WindowStatus? get rearLeftWindowStatus =>
+      WindowStatus.fromRaw(rearLeftWindow);
 
   /// Rear-right window state, or `null` if absent or unrecognised.
   WindowStatus? get rearRightWindowStatus =>
@@ -699,6 +696,7 @@ class ExtendedVehicleStatus {
   ///   integer is stored as `VehicleAlertInfo(id: x, value: 0)`.
   final List<VehicleAlertInfo> alertDataSum;
 
+  /// Creates an [ExtendedVehicleStatus] with the given alert list.
   const ExtendedVehicleStatus({this.alertDataSum = const []});
 
   /// Parses an [ExtendedVehicleStatus] from the `extendedVehicleStatus` JSON object.
