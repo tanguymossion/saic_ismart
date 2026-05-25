@@ -559,6 +559,25 @@ class SaicClient {
         RvcParam(paramId: 255, paramValue: 'AAAAAA=='),
       ]);
 
+  /// Opens or closes the sunroof remotely.
+  ///
+  /// Not all SAIC vehicles have a sunroof — check `vehicleModelConfiguration`
+  /// from [getVehicles] for item code `S35` with `itemValue == '1'` before
+  /// calling. If the vehicle doesn't support it, the server will return an
+  /// error.
+  ///
+  /// Endpoint: `POST /vehicle/control`
+  /// Source: `api/vehicle/windows/__init__.py:control_sunroof()`
+  Future<VehicleControlResponse> controlSunroof(
+    String vin, {
+    bool open = true,
+  }) =>
+      _vehicleControl(vin, RvcReqType.windows, [
+        RvcParam(paramId: 8, paramValue: 'AQ=='),
+        RvcParam(paramId: 13, paramValue: open ? 'Aw==' : 'AA=='),
+        RvcParam(paramId: 255, paramValue: 'AAAAAA=='),
+      ]);
+
   /// Base64-encodes a single byte [v] (0–255).
   static String _b64Byte(int v) => base64Encode([v]);
 

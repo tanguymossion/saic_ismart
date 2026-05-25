@@ -838,6 +838,64 @@ void main() {
     });
   });
 
+  // ── controlSunroof ────────────────────────────────────────────────────────────
+
+  group('controlSunroof — open (default)', () {
+    late Map<String, dynamic> body;
+
+    setUp(() async {
+      final (client, requests) = await _makeClient(
+        onApi: (_) async => _controlResponse(),
+      );
+      await client.controlSunroof(_vin);
+      body = _decryptRequestBody(requests.first);
+    });
+
+    test('sends rvcReqType "3"', () {
+      expect(body['rvcReqType'], '3');
+    });
+
+    test('hashes VIN with SHA-256', () {
+      expect(body['vin'], sha256Hex(_vin));
+      expect(body['vin'], isNot(_vin));
+    });
+
+    test('sends exactly 3 params', () {
+      expect((body['rvcParams'] as List).length, 3);
+    });
+
+    test('paramId 8 has value "AQ=="', () {
+      final params = body['rvcParams'] as List;
+      expect(params[0]['paramId'], 8);
+      expect(params[0]['paramValue'], 'AQ==');
+    });
+
+    test('paramId 13 has value "Aw==" (open)', () {
+      final params = body['rvcParams'] as List;
+      expect(params[1]['paramId'], 13);
+      expect(params[1]['paramValue'], 'Aw==');
+    });
+
+    test('terminator paramId 255 has value "AAAAAA=="', () {
+      final params = body['rvcParams'] as List;
+      expect(params[2]['paramId'], 255);
+      expect(params[2]['paramValue'], 'AAAAAA==');
+    });
+  });
+
+  group('controlSunroof — close', () {
+    test('open: false sends "AA==" for paramId 13', () async {
+      final (client, requests) = await _makeClient(
+        onApi: (_) async => _controlResponse(),
+      );
+      await client.controlSunroof(_vin, open: false);
+      final params =
+          (_decryptRequestBody(requests.first)['rvcParams'] as List);
+      expect(params[1]['paramId'], 13);
+      expect(params[1]['paramValue'], 'AA==');
+    });
+  });
+
   // ── ClimateMode enum ──────────────────────────────────────────────────────────
 
   group('ClimateMode', () {
