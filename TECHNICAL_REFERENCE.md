@@ -468,14 +468,14 @@ All fields are `int | None`. Unless noted, units/encoding are undocumented in th
 | `frontRightSeatHeatLevel` | `int\|null` | Seat heat level 0-3? |
 | `frontRightTyrePressure` | `int\|null` | Tyre pressure (raw) |
 | `fuelLevelPrc` | `int\|null` | Fuel level percentage |
-| `fuelRange` | `int\|null` | ICE range (raw, likely meters or 0.1km) |
+| `fuelRange` | `int\|null` | ICE range in decameters (÷10 for km) |
 | `fuelRangeElec` | `int\|null` | Electric range (raw) |
 | `handBrake` | `int\|null` | `1` = handbrake applied (used in `is_parked`) |
 | `interiorTemperature` | `int\|null` | Interior temperature (raw) |
 | `lastKeySeen` | `int\|null` | Last key-fob detection (raw) |
 | `lockStatus` | `int\|null` | Lock state |
 | `mainBeamStatus` | `int\|null` | High-beam headlights |
-| `mileage` | `int\|null` | Total odometer (raw, unit unknown — likely meters or 0.1km) |
+| `mileage` | `int\|null` | Total odometer in decameters (÷10 for km) |
 | `passengerDoor` | `int\|null` | Passenger door state |
 | `passengerWindow` | `int\|null` | Passenger window state |
 | `powerMode` | `int\|null` | Vehicle power mode |
@@ -572,8 +572,8 @@ Confirmed by running against VIN `LSJXXXXXXXXXXXXXXX`.
 
 | Field | Observed value | Interpretation |
 |---|---|---|
-| `mileage` | `243790` | **Decimeters** — divide by 10 for meters, by 10,000 for km (= 24,379 km) |
-| `fuelRange` | `3870` | Likely also decimeters (= 387 km range) — same scale as `mileage` |
+| `mileage` | `243790` | **Decameters** (tens of metres) — divide by 10 for km (= 24,379 km) |
+| `fuelRange` | `3870` | Also decameters — divide by 10 for km (= 387 km range, plausible for a hybrid) |
 | `exteriorTemperature` | `-128` | **Sensor not available** sentinel on this model — treat as null |
 | `extendedData2` | `-128` | **Not available** sentinel — treat as null |
 | `elecRangeStdA`, `elecRangeStdB`, `elecRangeDspMode`, `fuelRangeElec` | `-128` | EV-only fields — `-128` is the null sentinel for fields absent on non-BEV powertrains |

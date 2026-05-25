@@ -1,14 +1,18 @@
 // Raw API units → human-readable values.
 // Sentinel -128 means "not available" for integer sensor fields.
 
-/// Converts raw mileage (decimeters) to kilometres.
-double mileageToKm(int raw) => raw / 10000;
+/// Converts raw mileage (decameters — tens of metres) to kilometres.
+///
+/// Confirmed: raw `243790` → `24379 km` on MG3 Hybrid EU (`243790 / 10`).
+double mileageToKm(int raw) => raw / 10.0;
 
-/// Converts raw mileage (decimeters) to miles.
-double mileageToMiles(int raw) => raw / 10000 * 0.621371;
+/// Converts raw mileage (decameters — tens of metres) to miles.
+double mileageToMiles(int raw) => raw / 10.0 * 0.621371;
 
-/// Converts raw fuel range (decimeters) to kilometres.
-double fuelRangeToKm(int raw) => raw / 10000;
+/// Converts raw fuel range (decameters — tens of metres) to kilometres.
+///
+/// Same unit as mileage. Confirmed: raw `3870` → `387 km` on MG3 Hybrid EU.
+double fuelRangeToKm(int raw) => raw / 10.0;
 
 /// Returns `null` when [raw] is the -128 sentinel, otherwise returns [raw].
 int? temperatureCelsius(int raw) => raw == -128 ? null : raw;

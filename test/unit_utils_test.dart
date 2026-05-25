@@ -6,9 +6,9 @@ void main() {
   // ── mileageToKm ───────────────────────────────────────────────────────────────
 
   group('mileageToKm', () {
-    test('converts decimeters to km', () {
-      expect(mileageToKm(10000), closeTo(1.0, 1e-9));
-      expect(mileageToKm(243790), closeTo(24.379, 1e-6));
+    test('converts decameters to km', () {
+      expect(mileageToKm(10), closeTo(1.0, 1e-9));
+      expect(mileageToKm(243790), closeTo(24379.0, 1e-6));
     });
 
     test('zero input returns zero', () {
@@ -19,8 +19,8 @@ void main() {
   // ── mileageToMiles ────────────────────────────────────────────────────────────
 
   group('mileageToMiles', () {
-    test('converts decimeters to miles', () {
-      expect(mileageToMiles(10000), closeTo(0.621371, 1e-6));
+    test('converts decameters to miles', () {
+      expect(mileageToMiles(10), closeTo(0.621371, 1e-6));
     });
 
     test('zero input returns zero', () {
@@ -31,8 +31,9 @@ void main() {
   // ── fuelRangeToKm ─────────────────────────────────────────────────────────────
 
   group('fuelRangeToKm', () {
-    test('converts decimeters to km', () {
-      expect(fuelRangeToKm(5000000), closeTo(500.0, 1e-9));
+    test('converts decameters to km', () {
+      expect(fuelRangeToKm(5000), closeTo(500.0, 1e-9));
+      expect(fuelRangeToKm(3870), closeTo(387.0, 1e-9));
     });
 
     test('zero input returns zero', () {
@@ -140,7 +141,7 @@ void main() {
         );
 
     test('mileageKm converts correctly', () {
-      expect(makeStatus(mileage: 10000).mileageKm, closeTo(1.0, 1e-9));
+      expect(makeStatus(mileage: 10).mileageKm, closeTo(1.0, 1e-9));
     });
 
     test('mileageKm is null when mileage is null', () {
@@ -148,7 +149,7 @@ void main() {
     });
 
     test('mileageMiles converts correctly', () {
-      expect(makeStatus(mileage: 10000).mileageMiles, closeTo(0.621371, 1e-6));
+      expect(makeStatus(mileage: 10).mileageMiles, closeTo(0.621371, 1e-6));
     });
 
     test('mileageMiles is null when mileage is null', () {
@@ -156,7 +157,7 @@ void main() {
     });
 
     test('fuelRangeKm converts correctly', () {
-      expect(makeStatus(fuelRange: 5000000).fuelRangeKm, closeTo(500.0, 1e-9));
+      expect(makeStatus(fuelRange: 5000).fuelRangeKm, closeTo(500.0, 1e-9));
     });
 
     test('fuelRangeKm is null when fuelRange is null', () {
