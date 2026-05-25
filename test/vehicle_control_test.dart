@@ -786,6 +786,58 @@ void main() {
     test('high → "Aw=="', () async => expect(await fetchDriverParam(HeatLevel.high), 'Aw=='));
   });
 
+  // ── controlRearWindowHeat ─────────────────────────────────────────────────────
+
+  group('controlRearWindowHeat — enable (default)', () {
+    late Map<String, dynamic> body;
+
+    setUp(() async {
+      final (client, requests) = await _makeClient(
+        onApi: (_) async => _controlResponse(),
+      );
+      await client.controlRearWindowHeat(_vin);
+      body = _decryptRequestBody(requests.first);
+    });
+
+    test('sends rvcReqType "32"', () {
+      expect(body['rvcReqType'], '32');
+    });
+
+    test('hashes VIN with SHA-256', () {
+      expect(body['vin'], sha256Hex(_vin));
+      expect(body['vin'], isNot(_vin));
+    });
+
+    test('sends exactly 2 params', () {
+      expect((body['rvcParams'] as List).length, 2);
+    });
+
+    test('paramId 23 has value "AQ==" (on)', () {
+      final params = body['rvcParams'] as List;
+      expect(params[0]['paramId'], 23);
+      expect(params[0]['paramValue'], 'AQ==');
+    });
+
+    test('terminator paramId 255 has value "AAAAAA=="', () {
+      final params = body['rvcParams'] as List;
+      expect(params[1]['paramId'], 255);
+      expect(params[1]['paramValue'], 'AAAAAA==');
+    });
+  });
+
+  group('controlRearWindowHeat — disable', () {
+    test('enable: false sends "AA==" for paramId 23', () async {
+      final (client, requests) = await _makeClient(
+        onApi: (_) async => _controlResponse(),
+      );
+      await client.controlRearWindowHeat(_vin, enable: false);
+      final params =
+          (_decryptRequestBody(requests.first)['rvcParams'] as List);
+      expect(params[0]['paramId'], 23);
+      expect(params[0]['paramValue'], 'AA==');
+    });
+  });
+
   // ── ClimateMode enum ──────────────────────────────────────────────────────────
 
   group('ClimateMode', () {

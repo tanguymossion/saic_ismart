@@ -543,6 +543,22 @@ class SaicClient {
         RvcParam(paramId: 255, paramValue: 'AAAAAA=='),
       ]);
 
+  /// Controls the rear window heating element.
+  ///
+  /// Useful in winter to clear condensation or ice. [enable] defaults to
+  /// `true`; pass `false` to turn the heater off.
+  ///
+  /// Endpoint: `POST /vehicle/control`
+  /// Source: `api/vehicle/climate/__init__.py:control_rear_window_heat()`
+  Future<VehicleControlResponse> controlRearWindowHeat(
+    String vin, {
+    bool enable = true,
+  }) =>
+      _vehicleControl(vin, RvcReqType.remoteHeatRearWindow, [
+        RvcParam(paramId: 23, paramValue: enable ? 'AQ==' : 'AA=='),
+        RvcParam(paramId: 255, paramValue: 'AAAAAA=='),
+      ]);
+
   /// Base64-encodes a single byte [v] (0–255).
   static String _b64Byte(int v) => base64Encode([v]);
 
