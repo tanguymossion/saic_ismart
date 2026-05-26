@@ -70,6 +70,8 @@ See the full [roadmap](#roadmap) below.
 
 ## Quick start
 
+> Prerequisites: You need an existing SAIC iSmart account. Account creation is only available through the official MG iSmart app.
+
 ```yaml
 # pubspec.yaml
 dependencies:
