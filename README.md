@@ -73,7 +73,7 @@ See the full [roadmap](#roadmap) below.
 ```yaml
 # pubspec.yaml
 dependencies:
-  saic_ismart: ^0.2.0
+  saic_ismart: ^1.0.0
 ```
 
 ```dart
