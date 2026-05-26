@@ -126,6 +126,14 @@ print(status.gpsPosition?.wayPoint?.position?.latitude); // raw integer ÷ 1,000
 
 ---
 
+## Example app
+
+| Login | Dashboard | Commands (1/2) | Commands (2/2) |
+|---|---|---|---|
+| <img src="example/screenshots/login.png" width="200" alt="Login screen"> | <img src="example/screenshots/dashboard.png" width="200" alt="Dashboard screen"> | <img src="example/screenshots/commands_1.png" width="200" alt="Commands screen 1"> | <img src="example/screenshots/commands_2.png" width="200" alt="Commands screen 2"> |
+
+---
+
 ## Roadmap
 
 ### ✅ v0.1.0 — Foundations · released 2026-05-23
