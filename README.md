@@ -3,6 +3,7 @@
 > Dart client for the SAIC iSmart API — MG, Roewe, Maxus/LDV connected vehicles.
 
 [![pub.dev](https://img.shields.io/badge/pub.dev-v1.0.0-blue?style=flat-square)](https://pub.dev/packages/saic_ismart)
+[![dart doc](https://img.shields.io/badge/dart%20doc-online-blue?style=flat-square)](https://tanguymossion.github.io/saic_ismart/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![Dart](https://img.shields.io/badge/Dart-pure-0553B1?style=flat-square&logo=dart)](https://dart.dev)
 
