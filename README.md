@@ -112,7 +112,7 @@ print(status.gpsPosition?.wayPoint?.position?.latitude); // raw integer ÷ 1,000
   Status time: 1779548697
 ```
 
-> Note: mileage is returned in decimeters (243790 = ~24 km). Use `status.basicVehicleStatus?.mileageKm` for a converted value.
+> Note: mileage is returned in decameters (243790 = ~24,379 km). Use `status.basicVehicleStatus?.mileageKm` for a converted value.
 
 ---
 
