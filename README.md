@@ -146,7 +146,7 @@ print(status.gpsPosition?.wayPoint?.position?.latitude); // raw integer ÷ 1,000
 ### ✅ v0.2.0 — Extended data & multi-region · released 2026-05-24
 - Tyre pressure, window & door state
 - Vehicle alert model (`VehicleAlertInfo`)
-- ✅ Multi-region (AU, IN, TR, Rest of World)
+- Multi-region (AU, IN, TR, Rest of World)
 - Structured errors — `SaicException`
 - Unit conversion helpers & convenience getters
 
