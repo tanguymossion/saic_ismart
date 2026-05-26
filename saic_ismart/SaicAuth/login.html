@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the login method from the SaicAuth class, for the Dart programming language.">
+  <title>login method - SaicAuth class - saic_ismart library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">saic_ismart</a></li>
+    <li><a href="../../saic_ismart/">saic_ismart.dart</a></li>
+    <li><a href="../../saic_ismart/SaicAuth-class.html">SaicAuth</a></li>
+    <li class="self-crumb">login method</li>
+  </ol>
+  <div class="self-name">login</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="saic_ismart&#47;SaicAuth-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">login</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+<span class="returntype"><a href="https://api.dart.dev/stable/3.12.0/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../../saic_ismart/LoginResponse-class.html">LoginResponse</a></span>&gt;</span></span>
+<span class="name ">login</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="login-param-config"><span class="type-annotation"><a href="../../saic_ismart/SaicConfig-class.html">SaicConfig</a></span> <span class="parameter-name">config</span></span></li>
+</ol>)
+
+      
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Authenticates <code>config</code> against the iSmart API and returns a <a href="../../saic_ismart/LoginResponse-class.html">LoginResponse</a>.</p>
+<p>Throws <a href="../../saic_ismart/SaicAuthException-class.html">SaicAuthException</a> when:</p>
+<ul>
+<li>The HTTP response status is 401 or 403.</li>
+<li>The JSON <code>code</code> field is 401 or 403.</li>
+<li><code>config</code> has <code>usernameIsEmail == false</code> but no <a href="../../saic_ismart/SaicConfig/phoneCountryCode.html">SaicConfig.phoneCountryCode</a>.</li>
+</ul>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">Future&lt;LoginResponse&gt; login(SaicConfig config) async {
+  final bodyMap = _buildFormBody(config);
+  final uri = Uri.parse(&#39;${config.region.baseUri}oauth&#47;token&#39;);
+  const requestPath = &#39;&#47;oauth&#47;token&#39;;
+  const contentType = &#39;application&#47;x-www-form-urlencoded&#39;;
+  final timestampMs = DateTime.now().millisecondsSinceEpoch.toString();
+
+  &#47;&#47; URL-encode the form fields, then apply the standard AES-CBC pipeline.
+  &#47;&#47; userToken is empty at login time — the key formula uses &#39;&#39; in its place.
+  final plainBody = Uri(queryParameters: bodyMap).query;
+  final keyHex = deriveRequestKey(
+    requestPath,
+    config.region.tenantId,
+    &#39;&#39;,
+    timestampMs,
+    contentType,
+  );
+  final ivHex = deriveRequestIv(timestampMs);
+  final encryptedBody = encryptBody(plainBody, keyHex, ivHex);
+  final hmac = computeHmac(
+    requestPath,
+    config.region.tenantId,
+    &#39;&#39;,
+    timestampMs,
+    contentType,
+    encryptedBody,
+  );
+
+  final http.Response response;
+  try {
+    response = await _client.post(
+      uri,
+      headers: {
+        &#39;Content-Type&#39;: contentType,
+        &#39;Accept&#39;: &#39;application&#47;json&#39;,
+        &#39;Authorization&#39;: _basicAuth,
+        &#39;tenant-id&#39;: config.region.tenantId,
+        &#39;User-Agent&#39;: &#39;Europe&#47;2.1.0 (iPad; iOS 18.5; Scale&#47;2.00)&#39;,
+        &#39;REGION&#39;: config.region.regionHeader,
+        &#39;APP-LANGUAGE-TYPE&#39;: &#39;en&#39;,
+        &#39;User-Type&#39;: &#39;app&#39;,
+        &#39;APP-SEND-DATE&#39;: timestampMs,
+        &#39;ORIGINAL-CONTENT-TYPE&#39;: contentType,
+        &#39;APP-CONTENT-ENCRYPTED&#39;: &#39;1&#39;,
+        &#39;APP-VERIFICATION-STRING&#39;: hmac,
+      },
+      body: encryptedBody,
+    );
+  } on SocketException catch (e) {
+    throw SaicNetworkException(message: e.message);
+  } on TimeoutException catch (e) {
+    throw SaicNetworkException(message: e.message ?? &#39;Request timed out&#39;);
+  }
+
+  if (response.statusCode == 401 || response.statusCode == 403) {
+    throw SaicAuthException(
+      code: response.statusCode,
+      message: &#39;HTTP ${response.statusCode}&#39;,
+    );
+  }
+
+  final String responseBody;
+  if (response.statusCode &gt;= 200 &amp;&amp; response.statusCode &lt; 300) {
+    final appSendDate = response.headers[&#39;app-send-date&#39;] ?? &#39;&#39;;
+    final originalCt =
+        response.headers[&#39;original-content-type&#39;] ?? &#39;application&#47;json&#39;;
+    responseBody = decryptBody(
+      response.body,
+      deriveResponseKey(appSendDate, originalCt),
+      deriveResponseIv(appSendDate),
+    );
+  } else {
+    responseBody = response.body;
+  }
+
+  final Map&lt;String, dynamic&gt; json;
+  try {
+    json = jsonDecode(responseBody) as Map&lt;String, dynamic&gt;;
+  } catch (_) {
+    throw SaicApiException(
+      code: response.statusCode,
+      message: &#39;Invalid JSON response: $responseBody&#39;,
+    );
+  }
+
+  final code = json[&#39;code&#39;];
+  if (code == 401 || code == 403) {
+    throw SaicAuthException(
+      code: code as int,
+      message: json[&#39;message&#39;] as String? ?? &#39;Authentication failed&#39;,
+    );
+  }
+  if (code != 0) {
+    throw SaicApiException(
+      code: code as int?,
+      message: json[&#39;message&#39;] as String? ?? &#39;API error&#39;,
+    );
+  }
+
+  return LoginResponse.fromJson(json[&#39;data&#39;] as Map&lt;String, dynamic&gt;);
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">saic_ismart</a></li>
+    <li><a href="../../saic_ismart/">saic_ismart</a></li>
+    <li><a href="../../saic_ismart/SaicAuth-class.html">SaicAuth</a></li>
+    <li class="self-crumb">login method</li>
+</ol>
+
+    <h5>SaicAuth class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    saic_ismart
+      1.0.0
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

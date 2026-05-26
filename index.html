@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="saic_ismart API docs, for the Dart programming language.">
+  <title>saic_ismart - Dart API docs</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="static-assets/github.css?v1">
+  <link rel="stylesheet" href="static-assets/styles.css?v1">
+  <link rel="icon" href="static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li class="self-crumb">saic_ismart package</li>
+  </ol>
+  <div class="self-name">saic_ismart</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+  <div id="dartdoc-main-content" class="main-content">
+      
+<section class="desc markdown">
+  <h1 id="saic_ismart">saic_ismart</h1>
+<blockquote>
+<p>Dart client for the SAIC iSmart API — MG, Roewe, Maxus/LDV connected vehicles.</p>
+</blockquote>
+<p><a href="https://pub.dev/packages/saic_ismart"><img src="https://img.shields.io/badge/pub.dev-v1.0.0-blue?style=flat-square" alt="pub.dev"></a>
+<a href="https://tanguymossion.github.io/saic_ismart/"><img src="https://img.shields.io/badge/dart%20doc-online-blue?style=flat-square" alt="dart doc"></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License: MIT"></a>
+<a href="https://dart.dev"><img src="https://img.shields.io/badge/Dart-pure-0553B1?style=flat-square&amp;logo=dart" alt="Dart"></a></p>
+<p><strong>v1.0.0 — ready for pub.dev.</strong></p>
+<hr>
+<h2 id="what-is-this">What is this?</h2>
+<p><code>saic_ismart</code> is a pure Dart package to interact with the SAIC iSmart connected vehicle API. It works for any vehicle compatible with the MG iSmart app — MG, Roewe, Maxus/LDV models.</p>
+<p>It is the <strong>first Dart/Flutter client</strong> in the <a href="https://github.com/SAIC-iSmart-API">SAIC-iSmart-API</a> open source ecosystem, alongside the existing Python and Java clients.</p>
+<p>Pure Dart — no Kotlin, no Swift, no native code. Works in Flutter mobile, Wear OS, desktop, or any Dart project.</p>
+<hr>
+<h2 id="supported-vehicles">Supported vehicles</h2>
+<table>
+<thead>
+<tr>
+<th>Brand</th>
+<th>Models</th>
+<th>Regions</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>MG</strong></td>
+<td>MG3 Hybrid, MG4 EV, MG5 EV, MG ZS EV, MG HS Plug-in…</td>
+<td>EU (tested), AU, IN, TR, Rest of World (untested — community welcome)</td>
+<td>MG3 Hybrid tested (dev device)</td>
+</tr>
+<tr>
+<td><strong>Roewe</strong></td>
+<td>RX5 eMax, ei6 MAX…</td>
+<td>EU, CN</td>
+<td>Expected — needs contributor</td>
+</tr>
+<tr>
+<td><strong>Maxus / LDV</strong></td>
+<td>eT60, eDeliver…</td>
+<td>EU</td>
+<td>Expected — needs contributor</td>
+</tr>
+</tbody>
+</table>
+<p>EV-specific features (SoC, charging management, climate) require a contributor with the right hardware. See <a href="#contributing">Contributing</a>.</p>
+<hr>
+<h2 id="features">Features</h2>
+<h3 id="v010">v0.1.0</h3>
+<ul>
+<li>✅ Authentication &amp; token refresh</li>
+<li>✅ List vehicles linked to account</li>
+<li>✅ <code>getVehicleStatus(vin)</code> — GPS location, lock state, mileage</li>
+<li>✅ Built-in cache with configurable TTL + 600 s cooldown enforcement</li>
+<li>✅ Single-session conflict detection &amp; handling</li>
+<li>✅ EU region support (<code>gateway-mg-eu.soimt.com</code>)</li>
+</ul>
+<h3 id="added-in-v020">Added in v0.2.0</h3>
+<ul>
+<li>✅ Tyre pressure conversion helpers (confirmed PSI×2 unit, MG3-validated)</li>
+<li>✅ Door, window, lock, bonnet and boot state enums</li>
+<li>✅ Typed <code>VehicleAlertInfo</code> model (ASN.1-confirmed schema)</li>
+<li>✅ Multi-region: <code>australia</code>, <code>india</code>, <code>turkey</code>, <code>restOfWorld</code></li>
+<li>✅ Structured exception hierarchy (<code>SaicException</code> and subclasses)</li>
+<li>✅ Unit conversion helpers (<code>mileageToKm</code>, <code>fuelRangeToKm</code>, <code>temperatureCelsius</code>…)</li>
+<li>✅ Convenience getters on <code>BasicVehicleStatus</code> (<code>mileageKm</code>, <code>lockState</code>, <code>driverDoorStatus</code>, <code>frontLeftTyrePressureBar</code>…)</li>
+</ul>
+<h3 id="added-in-v100">Added in v1.0.0</h3>
+<ul>
+<li>✅ <code>lockVehicle(vin)</code> / <code>unlockVehicle(vin)</code> — remote door lock/unlock</li>
+<li>✅ <code>openTailgate(vin)</code> — remote tailgate release</li>
+<li>✅ <code>findMyCar(vin)</code> / <code>stopFindMyCar(vin)</code> — horn + lights trigger and stop</li>
+<li>✅ <code>startClimate(vin, {mode, temperatureIndex})</code> / <code>stopClimate(vin)</code> — remote A/C or heating</li>
+<li>✅ <code>startBlowing(vin)</code> / <code>startDefrost(vin)</code> — fan-only and defrost convenience wrappers</li>
+<li>✅ <code>controlHeatedSeats(vin, {driverLevel, passengerLevel})</code> — heated seat control with <code>HeatLevel</code> enum</li>
+<li>✅ <code>controlRearWindowHeat(vin, {enable})</code> — rear window heating element</li>
+<li>✅ <code>controlSunroof(vin, {open})</code> — remote sunroof open/close</li>
+<li>✅ <code>logout()</code> — clear session and cache</li>
+<li>✅ <code>isLoggedIn</code> / <code>tokenExpiration</code> — session lifecycle inspection</li>
+</ul>
+<p>See the full <a href="#roadmap">roadmap</a> below.</p>
+<hr>
+<h2 id="quick-start">Quick start</h2>
+<pre class="language-yaml"><code class="language-yaml"># pubspec.yaml
+dependencies:
+  saic_ismart: ^0.2.0
+</code></pre>
+<pre class="language-dart"><code class="language-dart">import 'package:saic_ismart/saic_ismart.dart';
+
+final client = SaicClient(
+  SaicConfig(username: 'you@example.com', password: '••••••••'),
+);
+
+await client.login();
+
+final vehicles = await client.getVehicles();
+final status   = await client.getVehicleStatus(vehicles.first.vin);
+
+print(status.basicVehicleStatus?.lockStatus);            // 1 = locked
+print(status.basicVehicleStatus?.mileage);               // raw decimeters
+print(status.gpsPosition?.wayPoint?.position?.latitude); // raw integer ÷ 1,000,000 = degrees
+</code></pre>
+<hr>
+<h2 id="real-world-output">Real-world output</h2>
+<pre class="language-dart"><code>✓ Logged in as user@example.com, token expires at 2026-11-19 15:33:12
+✓ Found 1 vehicle(s)
+  - MG MG3 2023 (VIN: LSJXXXXXXXXXXXXXXX)
+✓ Vehicle status:
+  Locked: 1
+  Engine running: false
+  Parked: true
+  Mileage: 243790
+  Fuel level: 45%
+  Location: 47.XXXXXX, -1.XXXXXX
+  GPS status: GpsStatus.fix2d
+  Status time: 1779548697
+</code></pre>
+<blockquote>
+<p>Note: mileage is returned in decimeters (243790 = ~24 km). Use <code>status.basicVehicleStatus?.mileageKm</code> for a converted value.</p>
+</blockquote>
+<hr>
+<h2 id="important-api-constraints">Important: API constraints</h2>
+<p><strong>Single session</strong> — The SAIC API allows only one active session at a time. Calling this package will pause the official iSmart app for ~900 seconds. The client handles this automatically, but be aware of it if you use the official app alongside.</p>
+<p><strong>600 s cooldown</strong> — The API enforces a minimum delay between vehicle data requests to protect the 12V battery. The client includes a built-in cache that respects this limit. Do not bypass it.</p>
+<p><strong>No real-time data</strong> — Vehicle status is polled, not streamed. Data reflects a snapshot, not a live feed.</p>
+<hr>
+<h2 id="roadmap">Roadmap</h2>
+<h3 id="-v010--foundations--released-2026-05-23">✅ v0.1.0 — Foundations · released 2026-05-23</h3>
+<ul>
+<li>Auth + token refresh</li>
+<li><code>getVehicles()</code>, <code>getVehicleStatus(vin)</code></li>
+<li>Cache/cooldown + session conflict handling</li>
+<li>EU region</li>
+<li>Tested on MG3 Hybrid EU</li>
+</ul>
+<h3 id="-v020--extended-data--multi-region--released-2026-05-24">✅ v0.2.0 — Extended data &amp; multi-region · released 2026-05-24</h3>
+<ul>
+<li>Tyre pressure, window &amp; door state</li>
+<li>Vehicle alert model (<code>VehicleAlertInfo</code>)</li>
+<li>✅ Multi-region (AU, IN, TR, Rest of World)</li>
+<li>Structured errors — <code>SaicException</code></li>
+<li>Unit conversion helpers &amp; convenience getters</li>
+</ul>
+<h3 id="-v100--remote-actions--released-2026-05-25">✅ v1.0.0 — Remote actions · released 2026-05-25</h3>
+<ul>
+<li>Remote lock/unlock, tailgate</li>
+<li>Find my car (horn + lights)</li>
+<li>Remote climate: A/C, heat, blow, defrost, heated seats, rear window heat, sunroof</li>
+<li>Session lifecycle: <code>logout()</code>, <code>isLoggedIn</code>, <code>tokenExpiration</code></li>
+<li>Full docs + example Flutter app</li>
+<li>Published on pub.dev</li>
+</ul>
+<h3 id="v1x--ev-features-_community-driven_">v1.x — EV features <em>(community-driven)</em></h3>
+<ul>
+<li>Battery SoC (MG4, ZS EV…)</li>
+<li>Charge management — start/stop/schedule</li>
+<li>Remote climate control</li>
+<li>Battery heating</li>
+</ul>
+<hr>
+<h2 id="contributing">Contributing</h2>
+<p><strong>Own an MG4, ZS EV, Roewe or Maxus/LDV?</strong></p>
+<p>EV features can't be developed without the right hardware. If you want to contribute:</p>
+<ol>
+<li>Open an issue describing your vehicle model and region</li>
+<li>Check if the iSmart app works for your vehicle</li>
+<li>Let's build the feature together</li>
+</ol>
+<p>This project is based on the reverse engineering work by the <a href="https://github.com/SAIC-iSmart-API">SAIC-iSmart-API</a> community.</p>
+<hr>
+<h2 id="legal">Legal</h2>
+<p>This package uses the SAIC iSmart API for interoperability purposes, as permitted under the iSmart EULA and EU software directive 2009/24/CE. It is not affiliated with or endorsed by SAIC Motor.</p>
+<p>Do not use this package for commercial services that resell SAIC vehicle data without appropriate agreements.</p>
+<hr>
+<h2 id="acknowledgements">Acknowledgements</h2>
+<p>Built on top of the reverse engineering work done by the <a href="https://github.com/SAIC-iSmart-API">SAIC-iSmart-API</a> community — in particular the Python and Java clients which served as reference implementations.</p>
+</section>
+
+
+      <section class="summary">
+          <h2>Libraries</h2>
+        <dl>
+          <dt id="saic_ismart">
+  <span class="name"><a href="saic_ismart/">saic_ismart</a></span> 
+
+</dt>
+<dd>Dart client for the SAIC iSmart connected-vehicle API.
+</dd>
+
+        </dl>
+      </section>
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li class="self-crumb">saic_ismart package</li>
+</ol>
+
+    <h5 class="hidden-xs"><span class="package-name">saic_ismart</span> <span class="package-kind">package</span></h5>
+    <ol>
+      <li class="section-title">Libraries</li>
+      <li><a href="saic_ismart/">saic_ismart</a></li>
+</ol>
+
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div>
+</main>
+<footer>
+  <span class="no-break">
+    saic_ismart
+      1.0.0
+  </span>
+  
+</footer>
+
+
+<script src="static-assets/highlight.pack.js?v1"></script>
+<script src="static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+
