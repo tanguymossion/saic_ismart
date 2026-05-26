@@ -2,6 +2,8 @@
 
 A new Flutter project.
 
+This is a demonstration app for the saic_ismart package. It is intentionally minimal — no state guards are implemented (e.g. you can tap Lock even if the vehicle is already locked). For a production app, you would want to add these checks based on the vehicle status.
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
