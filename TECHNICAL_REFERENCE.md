@@ -417,6 +417,16 @@ Source: `base.py:__deserialize()`
 
 HTTP status codes `401` and `403` also trigger logout regardless of JSON body.
 
+**`code=8` error message format (observed in production):**
+
+The server returns a human-readable `message` field alongside `code=8`, e.g.:
+
+```
+"Request failed. Please check the vehicle status and try again.(255)"
+```
+
+The number in parentheses at the end (`255` here) appears to be an internal SAIC sub-code. Its meaning is undocumented — `255` may indicate "feature not available on this vehicle model". This pattern (human message + internal sub-code in parentheses) may apply to other error codes as well.
+
 ### No Session Conflict / Single-Session Logic
 
 There is no explicit session conflict detection or "kill previous session" logic in this library. The `SaicApiClient` maintains a single `httpx.AsyncClient` instance per `SaicApiConfiguration`. If you create two `SaicApi` instances with the same credentials, there is no coordination between them.
