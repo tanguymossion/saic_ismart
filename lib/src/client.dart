@@ -190,7 +190,7 @@ class _SaicHttpClient {
   /// - HTTP 401/403 with an active session → [SaicSessionConflictException].
   /// - HTTP 401/403 without a session → [SaicAuthException].
   /// - JSON code 401/403 → [SaicAuthException].
-  /// - JSON code 2/3/7 → [SaicApiException] (fatal, no retry).
+  /// - JSON code 2/3/7/8 → [SaicApiException] (fatal, no retry).
   /// - code 0 with no `data` key + `event-id` response header →
   ///   [_SaicEventIdRetryException] (caller retries with the new event-id).
   /// - **code != 0 while mid-event-id polling** ([currentEventId] != `'0'`) →
@@ -249,7 +249,8 @@ class _SaicHttpClient {
         message: json['message'] as String? ?? 'Auth error',
       );
     }
-    if (code == 2 || code == 3 || code == 7) {
+    // 8 = command rejected by vehicle (e.g. feature not available on this model)
+    if (code == 2 || code == 3 || code == 7 || code == 8) {
       throw SaicApiException(
         code: code as int,
         message: json['message'] as String? ?? 'Fatal API error',

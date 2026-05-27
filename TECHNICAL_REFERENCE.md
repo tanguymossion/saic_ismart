@@ -399,7 +399,7 @@ Certain endpoints require a polling loop. The client sends an initial request wi
 
 **No retry** conditions:
 - `SaicLogoutException` → stop immediately, do not retry
-- Generic `SaicApiException` (return codes 2, 3, 7) → stop immediately
+- Generic `SaicApiException` (return codes 2, 3, 7, 8) → stop immediately
 
 ### Response Code Handling
 
@@ -411,6 +411,7 @@ Source: `base.py:__deserialize()`
 | `2` | Fatal error — raise `SaicApiException` |
 | `3` | Fatal error — raise `SaicApiException` |
 | `7` | Fatal error — raise `SaicApiException` |
+| `8` | Fatal error — command rejected by vehicle (feature not available on this model) — raise `SaicApiException`, **never retry** |
 | `401` or `403` | Logout + raise `SaicLogoutException` |
 | Other non-zero | If event-id context: retry; else fatal `SaicApiException` |
 

@@ -428,6 +428,44 @@ void main() {
       expect(callCount, 4);
       expect(result.failureType, 0);
     });
+
+    test('first retry delay is applied before second request', () async {
+      // Verify that the controlRetryDelay fires before the retry by measuring
+      // elapsed time with a real (short) delay value.
+      var callCount = 0;
+      final (client, _) = await _makeClient(
+        controlRetryDelay: const Duration(milliseconds: 100),
+        onApi: (_) async {
+          callCount++;
+          if (callCount == 1) return _pendingResponse('evt-1');
+          return _controlResponse(failureType: 0);
+        },
+      );
+      final stopwatch = Stopwatch()..start();
+      await client.lockVehicle(_vin);
+      stopwatch.stop();
+      expect(callCount, 2);
+      expect(stopwatch.elapsedMilliseconds, greaterThanOrEqualTo(100));
+    });
+
+    test('code=8 mid-polling throws SaicApiException immediately', () async {
+      // Verifies that code=8 ("command rejected by vehicle") is treated as a
+      // fatal code even when received during event-id polling, preventing the
+      // client from hammering the server until the 30s timeout.
+      var callCount = 0;
+      final (client, _) = await _makeClient(
+        onApi: (_) async {
+          callCount++;
+          if (callCount == 1) return _pendingResponse('evt-1');
+          return _midPollingNonZeroResponse(code: 8);
+        },
+      );
+      await expectLater(
+        client.lockVehicle(_vin),
+        throwsA(isA<SaicApiException>()),
+      );
+      expect(callCount, 2); // pending + one code=8, then stops — no more retries
+    });
   });
 
   // ── error handling ────────────────────────────────────────────────────────────
@@ -438,6 +476,23 @@ void main() {
         onApi: (_) async => _encryptedResponse('{"code":7,"message":"Fatal"}'),
       );
       expect(client.lockVehicle(_vin), throwsA(isA<SaicApiException>()));
+    });
+
+    test('code=8 on fresh request throws SaicApiException immediately',
+        () async {
+      var callCount = 0;
+      final (client, _) = await _makeClient(
+        onApi: (_) async {
+          callCount++;
+          return _encryptedResponse(
+              '{"code":8,"message":"command not supported"}');
+        },
+      );
+      await expectLater(
+        client.lockVehicle(_vin),
+        throwsA(isA<SaicApiException>()),
+      );
+      expect(callCount, 1);
     });
 
     test('throws SaicAuthException on HTTP 401', () async {
