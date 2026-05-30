@@ -64,8 +64,12 @@ class VehicleFeatures {
 
   /// Whether the vehicle supports remote climate control.
   ///
-  /// Checks item code `T11` (Air conditioning). Returns `true` if `T11` is
-  /// present and `itemValue != "0"` and `itemValue != null`.
+  /// Checks vehicleModelConfiguration item code `T11` (Air conditioning).
+  /// Returns `true` if the item is present and its value is not `'0'`.
+  /// Returns `false` if the item is absent or its value is `'0'` or `null`.
+  ///
+  /// See also [hasRemoteControlledSunroof] and [VehicleFeatures] for other
+  /// feature detection helpers.
   bool get hasRemoteClimate {
     final item = vehicle.getConfigItem('T11');
     if (item == null) return false;
