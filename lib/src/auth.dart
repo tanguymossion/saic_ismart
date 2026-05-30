@@ -98,7 +98,15 @@ class SaicConfig {
   /// [usernameIsEmail] is `false`.
   final String? phoneCountryCode;
 
-  // ignore: public_member_api_docs
+  /// Creates a [SaicConfig].
+  ///
+  /// - [username]: iSmart account username (email address or phone number).
+  /// - [password]: iSmart account password.
+  /// - [region]: API region to connect to. Defaults to [SaicRegion.europe].
+  /// - [usernameIsEmail]: set to `false` when [username] is a phone number.
+  ///   Defaults to `true`.
+  /// - [phoneCountryCode]: phone country code (e.g. `"44"` for the UK).
+  ///   Required when [usernameIsEmail] is `false`.
   const SaicConfig({
     required this.username,
     required this.password,

@@ -307,7 +307,19 @@ class SaicClient {
   final Duration _statusRetryTimeout;
   LoginResponse? _session;
 
-  // ignore: public_member_api_docs
+  /// Creates a [SaicClient].
+  ///
+  /// - [config]: authentication credentials and region.
+  /// - [httpClient]: optional custom HTTP client. Inject a `MockClient` from
+  ///   `package:http/testing.dart` in tests to avoid real network calls.
+  /// - [cache]: optional custom [SaicCache]. Defaults to a `SaicCache()` with
+  ///   a 600 s TTL.
+  /// - [statusRetryDelay]: delay between vehicle status polling retries.
+  ///   Defaults to 3 s.
+  /// - [controlRetryDelay]: delay before the first vehicle control retry.
+  ///   Defaults to 1 s.
+  /// - [statusRetryTimeout]: maximum duration for vehicle status polling before
+  ///   a [SaicTimeoutException] is thrown. Defaults to 30 s.
   SaicClient(
     SaicConfig config, {
     http.Client? httpClient,

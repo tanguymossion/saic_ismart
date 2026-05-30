@@ -27,7 +27,13 @@ class SaicCache {
 
   final Map<String, _Entry> _entries = {};
 
-  // ignore: public_member_api_docs
+  /// Creates a [SaicCache].
+  ///
+  /// - [ttl]: how long a cached [VehicleStatus] is considered fresh. Defaults
+  ///   to 600 s (10 min) — chosen to protect the 12V battery from excessive
+  ///   wake-ups.
+  /// - [clock]: injectable time source for deterministic unit tests. Defaults
+  ///   to `DateTime.now`.
   SaicCache({
     this.ttl = const Duration(seconds: 600),
     DateTime Function()? clock,
