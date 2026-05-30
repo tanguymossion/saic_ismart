@@ -235,6 +235,15 @@ class VehicleFeatures {
     return item.itemValue != null && item.itemValue != '0';
   }
 
+  /// Whether the vehicle supports setting a target battery SoC.
+  ///
+  /// Based on `vehicleModelConfiguration` item `BType` — value `"1"` means NMC
+  /// battery chemistry, which supports target SoC configuration. LFP batteries
+  /// (`BType != "1"`) do not support this feature. Returns `false` if the
+  /// `BType` item is absent.
+  bool get supportsTargetSoc =>
+      vehicle.getConfigItem('BType')?.itemValue == '1';
+
   /// Whether the sunroof can be operated via remote control.
   ///
   /// Requires both [hasSunroof] and `vehicleModelConfiguration` item `S61`

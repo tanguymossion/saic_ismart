@@ -350,6 +350,27 @@ void main() {
     });
   });
 
+  // ── supportsTargetSoc ─────────────────────────────────────────────────────────
+
+  group('VehicleFeatures.supportsTargetSoc', () {
+    bool soc(String? itemValue) {
+      final config = itemValue == null
+          ? <Map<String, dynamic>>[]
+          : [{'itemCode': 'BType', 'itemName': 'Battery Type', 'itemValue': itemValue}];
+      return VehicleFeatures(_vehicle(config)).supportsTargetSoc;
+    }
+
+    test('BType="0" (MG3 EU) → false', () => expect(soc('0'), false));
+    test('BType="1" (NMC) → true', () => expect(soc('1'), true));
+    test('BType absent → false', () => expect(soc(null), false));
+    test('BType present with null itemValue → false', () {
+      final f = VehicleFeatures(_vehicle([
+        {'itemCode': 'BType', 'itemName': 'Battery Type', 'itemValue': null},
+      ]));
+      expect(f.supportsTargetSoc, false);
+    });
+  });
+
   // ── hasElectricVehicleFlag ────────────────────────────────────────────────────
 
   group('VehicleFeatures.hasElectricVehicleFlag', () {
