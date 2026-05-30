@@ -28,6 +28,14 @@ const _evConfig = [
   {'itemCode': 'S61', 'itemName': 'Remote Sunroof', 'itemValue': '1'},
 ];
 
+const _mg3EuHardwareConfig = [
+  {'itemCode': 'BONNUT', 'itemName': 'Bonnet Status', 'itemValue': '0'},
+  {'itemCode': 'BOOT', 'itemName': 'Boot Status', 'itemValue': '1'},
+  {'itemCode': 'ENGINE', 'itemName': 'Engine Status', 'itemValue': '1'},
+  {'itemCode': 'BTKEY', 'itemName': 'Bluetooth Key', 'itemValue': '0'},
+  {'itemCode': 'LRD', 'itemName': 'Left-Right Driving', 'itemValue': '0'},
+];
+
 const _mg3EuSensorConfig = [
   {'itemCode': 'J17', 'itemName': 'Tire pressure monitoring system', 'itemValue': '1'},
   {'itemCode': 'EXTEMP', 'itemName': 'Exterior Temperature', 'itemValue': '0'},
@@ -123,6 +131,47 @@ void main() {
       ]));
       expect(f.heatedSeatCapability, HeatedSeatCapability.none);
     });
+  });
+
+  // ── Hardware presence — MG3 EU profile ───────────────────────────────────────
+
+  group('VehicleFeatures — hardware presence (MG3 EU profile)', () {
+    late VehicleFeatures f;
+
+    setUp(() => f = VehicleFeatures(_vehicle(_mg3EuHardwareConfig)));
+
+    test('hasBonnet is false — BONNUT="0"',
+        () => expect(f.hasBonnet, false));
+
+    test('hasBoot is true — BOOT="1"',
+        () => expect(f.hasBoot, true));
+
+    test('hasEngine is true — ENGINE="1"',
+        () => expect(f.hasEngine, true));
+
+    test('hasBluetoothKey is false — BTKEY="0"',
+        () => expect(f.hasBluetoothKey, false));
+
+    test('isRightHandDrive is false — LRD="0"',
+        () => expect(f.isRightHandDrive, false));
+
+    test('isLeftHandDrive is true — LRD="0"',
+        () => expect(f.isLeftHandDrive, true));
+  });
+
+  // ── Hardware presence — empty config ──────────────────────────────────────────
+
+  group('VehicleFeatures — hardware presence (empty config)', () {
+    late VehicleFeatures f;
+
+    setUp(() => f = VehicleFeatures(_vehicle([])));
+
+    test('hasBonnet is false', () => expect(f.hasBonnet, false));
+    test('hasBoot is false', () => expect(f.hasBoot, false));
+    test('hasEngine is false', () => expect(f.hasEngine, false));
+    test('hasBluetoothKey is false', () => expect(f.hasBluetoothKey, false));
+    test('isRightHandDrive is false', () => expect(f.isRightHandDrive, false));
+    test('isLeftHandDrive is true', () => expect(f.isLeftHandDrive, true));
   });
 
   // ── Sensor presence — MG3 EU profile ─────────────────────────────────────────

@@ -82,6 +82,54 @@ class VehicleFeatures {
     return !s.startsWith('ZP22');
   }
 
+  /// Whether the vehicle has a bonnet sensor.
+  ///
+  /// Based on `vehicleModelConfiguration` item `BONNUT` with `itemValue != "0"`.
+  bool get hasBonnet {
+    final item = vehicle.getConfigItem('BONNUT');
+    if (item == null) return false;
+    return item.itemValue != '0';
+  }
+
+  /// Whether the vehicle has a boot/trunk sensor.
+  ///
+  /// Based on `vehicleModelConfiguration` item `BOOT` with `itemValue != "0"`.
+  bool get hasBoot {
+    final item = vehicle.getConfigItem('BOOT');
+    if (item == null) return false;
+    return item.itemValue != '0';
+  }
+
+  /// Whether the vehicle has an engine status sensor.
+  ///
+  /// Based on `vehicleModelConfiguration` item `ENGINE` with `itemValue != "0"`.
+  bool get hasEngine {
+    final item = vehicle.getConfigItem('ENGINE');
+    if (item == null) return false;
+    return item.itemValue != '0';
+  }
+
+  /// Whether the vehicle supports Bluetooth key.
+  ///
+  /// Based on `vehicleModelConfiguration` item `BTKEY` with `itemValue != "0"`.
+  bool get hasBluetoothKey {
+    final item = vehicle.getConfigItem('BTKEY');
+    if (item == null) return false;
+    return item.itemValue != '0';
+  }
+
+  /// Whether the vehicle is right-hand drive.
+  ///
+  /// Based on `vehicleModelConfiguration` item `LRD` with `itemValue == "1"`.
+  /// False means left-hand drive or unknown.
+  bool get isRightHandDrive =>
+      vehicle.getConfigItem('LRD')?.itemValue == '1';
+
+  /// Whether the vehicle is left-hand drive.
+  ///
+  /// Inverse of [isRightHandDrive].
+  bool get isLeftHandDrive => !isRightHandDrive;
+
   /// Whether the vehicle has a tyre pressure monitoring system (TPMS).
   ///
   /// Based on `vehicleModelConfiguration` item `J17` with `itemValue != "0"`.
