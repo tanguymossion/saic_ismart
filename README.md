@@ -33,39 +33,6 @@ EV-specific features (SoC, charging management, climate) require a contributor w
 
 ---
 
-## Features
-
-### v0.1.0
-- ✅ Authentication & token refresh
-- ✅ List vehicles linked to account
-- ✅ `getVehicleStatus(vin)` — GPS location, lock state, mileage
-- ✅ Built-in cache with configurable TTL + 600 s cooldown enforcement
-- ✅ Single-session conflict detection & handling
-- ✅ EU region support (`gateway-mg-eu.soimt.com`)
-
-### Added in v0.2.0
-- ✅ Tyre pressure conversion helpers (confirmed PSI×2 unit, MG3-validated)
-- ✅ Door, window, lock, bonnet and boot state enums
-- ✅ Typed `VehicleAlertInfo` model (ASN.1-confirmed schema)
-- ✅ Multi-region: `australia`, `india`, `turkey`, `restOfWorld`
-- ✅ Structured exception hierarchy (`SaicException` and subclasses)
-- ✅ Unit conversion helpers (`mileageToKm`, `fuelRangeToKm`, `temperatureCelsius`…)
-- ✅ Convenience getters on `BasicVehicleStatus` (`mileageKm`, `lockState`, `driverDoorStatus`, `frontLeftTyrePressureBar`…)
-
-### Added in v1.0.0
-- ✅ `lockVehicle(vin)` / `unlockVehicle(vin)` — remote door lock/unlock
-- ✅ `openTailgate(vin)` — remote tailgate release
-- ✅ `findMyCar(vin)` / `stopFindMyCar(vin)` — horn + lights trigger and stop
-- ✅ `startClimate(vin, {mode, temperatureIndex})` / `stopClimate(vin)` — remote A/C or heating
-- ✅ `startBlowing(vin)` / `startDefrost(vin)` — fan-only and defrost convenience wrappers
-- ✅ `controlHeatedSeats(vin, {driverLevel, passengerLevel})` — heated seat control with `HeatLevel` enum
-- ✅ `controlRearWindowHeat(vin, {enable})` — rear window heating element
-- ✅ `controlSunroof(vin, {open})` — remote sunroof open/close
-- ✅ `logout()` — clear session and cache
-- ✅ `isLoggedIn` / `tokenExpiration` — session lifecycle inspection
-
-See the full [roadmap](#roadmap) below.
-
 ---
 
 ## Quick start
@@ -161,6 +128,8 @@ try {
 
 ---
 
+See the full [CHANGELOG](CHANGELOG.md) for details.
+
 ## Roadmap
 
 ### ✅ v0.1.0 — Foundations · released 2026-05-23
@@ -177,7 +146,7 @@ try {
 - Structured errors — `SaicException`
 - Unit conversion helpers & convenience getters
 
-### ✅ v1.0.0 — Remote actions · released 2026-05-25
+### ✅ v1.0.0 — Remote actions · released 2026-05-30
 - Remote lock/unlock, tailgate
 - Find my car (horn + lights)
 - Remote climate: A/C, heat, blow, defrost, heated seats, rear window heat, sunroof
