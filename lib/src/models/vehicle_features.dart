@@ -65,8 +65,7 @@ class VehicleFeatures {
   /// Whether the vehicle supports remote climate control.
   ///
   /// Based on `vehicleModelConfiguration` item `AC` with `itemValue == "1"`.
-  bool get hasRemoteClimate =>
-      vehicle.getConfigItem('AC')?.itemValue == '1';
+  bool get hasRemoteClimate => vehicle.getConfigItem('AC')?.itemValue == '1';
 
   /// Whether the vehicle has airbags (regular airbags, item code `Q00`).
   ///
@@ -117,7 +116,13 @@ class VehicleFeatures {
   /// in the bitmask string represents one door sensor. MG3 EU returns `"1111"`
   /// = 4 doors. Returns `0` if the item is absent.
   int get doorSensorCount =>
-      vehicle.getConfigItem('DOOR')?.itemValue?.split('').where((c) => c == '1').length ?? 0;
+      vehicle
+          .getConfigItem('DOOR')
+          ?.itemValue
+          ?.split('')
+          .where((c) => c == '1')
+          .length ??
+      0;
 
   /// Number of window sensors reported by the vehicle.
   ///
@@ -125,7 +130,13 @@ class VehicleFeatures {
   /// in the bitmask string represents one window sensor. MG3 EU returns `"1000"`
   /// = 1 window sensor (driver only). Returns `0` if the item is absent.
   int get windowSensorCount =>
-      vehicle.getConfigItem('WINDOW')?.itemValue?.split('').where((c) => c == '1').length ?? 0;
+      vehicle
+          .getConfigItem('WINDOW')
+          ?.itemValue
+          ?.split('')
+          .where((c) => c == '1')
+          .length ??
+      0;
 
   /// Whether the vehicle has a bonnet sensor.
   ///
@@ -167,8 +178,7 @@ class VehicleFeatures {
   ///
   /// Based on `vehicleModelConfiguration` item `LRD` with `itemValue == "1"`.
   /// False means left-hand drive or unknown.
-  bool get isRightHandDrive =>
-      vehicle.getConfigItem('LRD')?.itemValue == '1';
+  bool get isRightHandDrive => vehicle.getConfigItem('LRD')?.itemValue == '1';
 
   /// Whether the vehicle is left-hand drive.
   ///
