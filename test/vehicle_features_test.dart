@@ -17,14 +17,14 @@ Vehicle _vehicle(List<Map<String, dynamic>> config, {String? series}) =>
 const _mg3Config = [
   {'itemCode': 'S35', 'itemName': 'Sunroof', 'itemValue': '0'},
   {'itemCode': 'HeatedSeat', 'itemName': 'Heated Seat', 'itemValue': '2'},
-  {'itemCode': 'AC', 'itemName': 'Remote Climate', 'itemValue': '1'},
+  {'itemCode': 'T11', 'itemName': 'Air conditioning', 'itemValue': '1'},
   {'itemCode': 'S61', 'itemName': 'Remote Sunroof', 'itemValue': '1'},
 ];
 
 const _evConfig = [
   {'itemCode': 'S35', 'itemName': 'Sunroof', 'itemValue': '1'},
   {'itemCode': 'HeatedSeat', 'itemName': 'Heated Seat', 'itemValue': '1'},
-  {'itemCode': 'AC', 'itemName': 'Remote Climate', 'itemValue': '1'},
+  {'itemCode': 'T11', 'itemName': 'Air conditioning', 'itemValue': '1'},
   {'itemCode': 'S61', 'itemName': 'Remote Sunroof', 'itemValue': '1'},
 ];
 
@@ -176,7 +176,7 @@ void main() {
   group('VehicleFeatures — edge cases', () {
     test('hasSunroof is false when S35 item is absent', () {
       final f = VehicleFeatures(_vehicle([
-        {'itemCode': 'AC', 'itemName': 'AC', 'itemValue': '1'},
+        {'itemCode': 'T11', 'itemName': 'Air conditioning', 'itemValue': '1'},
       ]));
       expect(f.hasSunroof, false);
     });

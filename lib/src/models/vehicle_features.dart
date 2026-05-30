@@ -64,8 +64,13 @@ class VehicleFeatures {
 
   /// Whether the vehicle supports remote climate control.
   ///
-  /// Based on `vehicleModelConfiguration` item `AC` with `itemValue == "1"`.
-  bool get hasRemoteClimate => vehicle.getConfigItem('AC')?.itemValue == '1';
+  /// Checks item code `T11` (Air conditioning). Returns `true` if `T11` is
+  /// present and `itemValue != "0"` and `itemValue != null`.
+  bool get hasRemoteClimate {
+    final item = vehicle.getConfigItem('T11');
+    if (item == null) return false;
+    return item.itemValue != null && item.itemValue != '0';
+  }
 
   /// Whether the vehicle has airbags (regular airbags, item code `Q00`).
   ///
