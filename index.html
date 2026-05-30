@@ -91,14 +91,13 @@
 </table>
 <p>EV-specific features (SoC, charging management, climate) require a contributor with the right hardware. See <a href="#contributing">Contributing</a>.</p>
 <hr>
-<hr>
 <h2 id="quick-start">Quick start</h2>
 <blockquote>
 <p>Prerequisites: You need an existing SAIC iSmart account. Account creation is only available through the official MG iSmart app.</p>
 </blockquote>
 <pre class="language-yaml"><code class="language-yaml"># pubspec.yaml
 dependencies:
-  saic_ismart: ^1.0.0
+  saic_ismart: ^1.0.2
 </code></pre>
 <pre class="language-dart"><code class="language-dart">import 'package:saic_ismart/saic_ismart.dart';
 
@@ -204,7 +203,6 @@ print(status.gpsPosition?.wayPoint?.position?.latitude); // raw integer ÷ 1,000
 <li>Remote climate: A/C, heat, blow, defrost, heated seats, rear window heat, sunroof</li>
 <li>Session lifecycle: <code>logout()</code>, <code>isLoggedIn</code>, <code>tokenExpiration</code></li>
 <li>Full docs + example Flutter app</li>
-<li>Published on pub.dev</li>
 </ul>
 <h3 id="v1x--ev-features-_community-driven_">v1.x — EV features <em>(community-driven)</em></h3>
 <ul>
