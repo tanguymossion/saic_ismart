@@ -68,6 +68,24 @@ class VehicleFeatures {
   bool get hasRemoteClimate =>
       vehicle.getConfigItem('AC')?.itemValue == '1';
 
+  /// Whether the vehicle has airbags (regular airbags, item code `Q00`).
+  ///
+  /// Based on `vehicleModelConfiguration` item `Q00` with `itemValue != "0"`.
+  bool get hasAirbags {
+    final item = vehicle.getConfigItem('Q00');
+    if (item == null) return false;
+    return item.itemValue != '0';
+  }
+
+  /// Whether the vehicle reports energy state.
+  ///
+  /// Based on `vehicleModelConfiguration` item `ENERGY` with `itemValue != "0"`.
+  bool get hasEnergyState {
+    final item = vehicle.getConfigItem('ENERGY');
+    if (item == null) return false;
+    return item.itemValue != '0';
+  }
+
   /// Official EV flag from the SAIC API (`EV` item code).
   ///
   /// Returns `null` if the item is absent — not all vehicles include this flag.

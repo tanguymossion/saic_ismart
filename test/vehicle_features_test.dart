@@ -263,6 +263,34 @@ void main() {
         () => expect(f.hasKeyPositionSensor, false));
   });
 
+  // ── hasAirbags / hasEnergyState ───────────────────────────────────────────────
+
+  group('VehicleFeatures — airbags and energy state', () {
+    test('Q00="1", ENERGY="1" → both true', () {
+      final f = VehicleFeatures(_vehicle([
+        {'itemCode': 'Q00', 'itemName': 'Regular airbags', 'itemValue': '1'},
+        {'itemCode': 'ENERGY', 'itemName': 'Energy state', 'itemValue': '1'},
+      ]));
+      expect(f.hasAirbags, true);
+      expect(f.hasEnergyState, true);
+    });
+
+    test('Q00="0", ENERGY="0" → both false', () {
+      final f = VehicleFeatures(_vehicle([
+        {'itemCode': 'Q00', 'itemName': 'Regular airbags', 'itemValue': '0'},
+        {'itemCode': 'ENERGY', 'itemName': 'Energy state', 'itemValue': '0'},
+      ]));
+      expect(f.hasAirbags, false);
+      expect(f.hasEnergyState, false);
+    });
+
+    test('empty config → both false', () {
+      final f = VehicleFeatures(_vehicle([]));
+      expect(f.hasAirbags, false);
+      expect(f.hasEnergyState, false);
+    });
+  });
+
   // ── hasElectricVehicleFlag ────────────────────────────────────────────────────
 
   group('VehicleFeatures.hasElectricVehicleFlag', () {
