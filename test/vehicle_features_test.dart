@@ -150,6 +150,10 @@ void main() {
     test('hasElectricVehicleFlag is false when EV itemValue is null', () {
       expect(VehicleFeatures(_vehicle([nullValue('EV')])).hasElectricVehicleFlag, false);
     });
+
+    test('hasRemoteClimate is false when T11 itemValue is null', () {
+      expect(VehicleFeatures(_vehicle([nullValue('T11')])).hasRemoteClimate, false);
+    });
   });
 
   // ── Empty config ──────────────────────────────────────────────────────────────
