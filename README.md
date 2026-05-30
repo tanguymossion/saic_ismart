@@ -2,7 +2,8 @@
 
 > Dart client for the SAIC iSmart API — MG, Roewe, Maxus/LDV connected vehicles.
 
-[![pub.dev](https://img.shields.io/badge/pub.dev-v1.0.0-blue?style=flat-square)](https://pub.dev/packages/saic_ismart)
+[![pub.dev](https://img.shields.io/pub/v/saic_ismart?style=flat-square)](https://pub.dev/packages/saic_ismart)
+[![pub points](https://img.shields.io/pub/points/saic_ismart?style=flat-square)](https://pub.dev/packages/saic_ismart/score)
 [![dart doc](https://img.shields.io/badge/dart%20doc-online-blue?style=flat-square)](https://tanguymossion.github.io/saic_ismart/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![Dart](https://img.shields.io/badge/Dart-pure-0553B1?style=flat-square&logo=dart)](https://dart.dev)
@@ -31,8 +32,6 @@ EV-specific features (SoC, charging management, climate) require a contributor w
 
 ---
 
----
-
 ## Quick start
 
 > Prerequisites: You need an existing SAIC iSmart account. Account creation is only available through the official MG iSmart app.
@@ -40,7 +39,7 @@ EV-specific features (SoC, charging management, climate) require a contributor w
 ```yaml
 # pubspec.yaml
 dependencies:
-  saic_ismart: ^1.0.0
+  saic_ismart: ^1.0.2
 ```
 
 ```dart
@@ -150,7 +149,6 @@ See the full [CHANGELOG](CHANGELOG.md) for details.
 - Remote climate: A/C, heat, blow, defrost, heated seats, rear window heat, sunroof
 - Session lifecycle: `logout()`, `isLoggedIn`, `tokenExpiration`
 - Full docs + example Flutter app
-- Published on pub.dev
 
 ### v1.x — EV features _(community-driven)_
 - Battery SoC (MG4, ZS EV…)
