@@ -1,6 +1,6 @@
 name: saic_ismart
 description: Dart client for the SAIC iSmart API — MG, Roewe, Maxus/LDV connected vehicles.
-version: 1.0.1
+version: 1.0.2
 repository: https://github.com/tanguymossion/saic_ismart
 
 topics:
