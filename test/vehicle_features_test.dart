@@ -4,9 +4,11 @@ import 'package:test/test.dart';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-Vehicle _vehicle(List<Map<String, dynamic>> config) => Vehicle(
+Vehicle _vehicle(List<Map<String, dynamic>> config, {String? series}) =>
+    Vehicle(
       vin: 'VIN',
       modelName: 'Test',
+      series: series,
       vehicleModelConfiguration: config
           .map(VehicleModelConfigItem.fromJson)
           .toList(),
@@ -113,6 +115,20 @@ void main() {
       ]));
       expect(f.heatedSeatCapability, HeatedSeatCapability.none);
     });
+  });
+
+  // ── isElectricVehicle ─────────────────────────────────────────────────────────
+
+  group('VehicleFeatures.isElectricVehicle', () {
+    bool? ev(String? series) =>
+        VehicleFeatures(_vehicle([], series: series)).isElectricVehicle;
+
+    test('ZP22 EU → false (confirmed ICE/hybrid)', () => expect(ev('ZP22 EU'), false));
+    test('ZP22 → false (prefix match)', () => expect(ev('ZP22'), false));
+    test('EH32 → true', () => expect(ev('EH32'), true));
+    test('EV01 → true', () => expect(ev('EV01'), true));
+    test('MG4 → true', () => expect(ev('MG4'), true));
+    test('null series → null', () => expect(ev(null), isNull));
   });
 
   // ── Vehicle.features extension getter ────────────────────────────────────────

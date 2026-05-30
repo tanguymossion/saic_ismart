@@ -68,6 +68,20 @@ class VehicleFeatures {
   bool get hasRemoteClimate =>
       vehicle.getConfigItem('AC')?.itemValue == '1';
 
+  /// Whether this vehicle is electric or electrified (BEV or PHEV).
+  ///
+  /// Based on the Python MQTT client's validated rule: series starting with
+  /// `"ZP22"` are ICE/hybrid (confirmed MG3 Hybrid EU); everything else is
+  /// considered electric or electrified. Cannot distinguish BEV from PHEV —
+  /// no validated series prefix exists yet.
+  ///
+  /// Returns `null` when [Vehicle.series] is absent.
+  bool? get isElectricVehicle {
+    final s = vehicle.series;
+    if (s == null) return null;
+    return !s.startsWith('ZP22');
+  }
+
   /// Whether the sunroof can be operated via remote control.
   ///
   /// Requires both [hasSunroof] and `vehicleModelConfiguration` item `S61`

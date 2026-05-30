@@ -69,6 +69,12 @@ class Vehicle {
   /// User-facing vehicle nickname set in the iSmart app, or `null` if absent.
   final String? vehicleName;
 
+  /// Model series code returned by the API (e.g. `"ZP22 EU"`, `"EH32"`), or
+  /// `null` if absent.
+  ///
+  /// Used to infer powertrain type — see [VehicleFeatures.isElectricVehicle].
+  final String? series;
+
   /// Hardware feature and configuration items returned by the API.
   ///
   /// Use [getConfigItem] to query a specific feature by its code. Known codes:
@@ -84,6 +90,7 @@ class Vehicle {
     this.modelYear,
     this.brandName,
     this.vehicleName,
+    this.series,
     this.vehicleModelConfiguration = const [],
   });
 
@@ -94,6 +101,7 @@ class Vehicle {
         modelYear: json['modelYear'] as String?,
         brandName: json['brandName'] as String?,
         vehicleName: json['vehicleName'] as String?,
+        series: json['series'] as String?,
         vehicleModelConfiguration:
             (json['vehicleModelConfiguration'] as List<dynamic>? ?? [])
                 .map((e) =>
