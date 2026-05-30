@@ -12,13 +12,14 @@ import 'package:test/test.dart';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-String _loginBody({String token = 'test_token'}) => jsonEncode({
+String _loginBody({String token = 'test_token', int expiresIn = 3600}) =>
+    jsonEncode({
       'code': 0,
       'message': 'success',
       'data': {
         'access_token': token,
         'token_type': 'bearer',
-        'expires_in': 3600,
+        'expires_in': expiresIn,
         'user_id': 'u1',
         'user_name': 'test@example.com',
       },
@@ -498,6 +499,36 @@ void main() {
       await client.login();
       client.logout();
       expect(client.tokenExpiration, isNull);
+    });
+  });
+
+  group('SaicClient.tokenExpiresIn', () {
+    test('null before login', () {
+      expect(SaicClient(_config).tokenExpiresIn, isNull);
+    });
+
+    test('positive Duration when token has not expired', () async {
+      final client = SaicClient(
+        _config,
+        httpClient: MockClient(
+          (_) async => _encryptedResponse(_loginBody()),
+        ),
+      );
+      await client.login();
+      final remaining = client.tokenExpiresIn;
+      expect(remaining, isNotNull);
+      expect(remaining!.inSeconds, greaterThan(0));
+    });
+
+    test('Duration.zero when token has already expired', () async {
+      final client = SaicClient(
+        _config,
+        httpClient: MockClient(
+          (_) async => _encryptedResponse(_loginBody(expiresIn: -3600)),
+        ),
+      );
+      await client.login();
+      expect(client.tokenExpiresIn, Duration.zero);
     });
   });
 

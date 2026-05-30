@@ -351,6 +351,19 @@ class SaicClient {
   /// in.
   DateTime? get tokenExpiration => _session?.tokenExpiration;
 
+  /// The time remaining until the current session token expires.
+  ///
+  /// Returns `null` if not logged in or if [tokenExpiration] is `null`.
+  /// Returns [Duration.zero] if the token has already expired.
+  /// Callers can use this to decide when to re-authenticate before making API
+  /// calls.
+  Duration? get tokenExpiresIn {
+    final expiration = tokenExpiration;
+    if (expiration == null) return null;
+    final remaining = expiration.difference(DateTime.now());
+    return remaining.isNegative ? Duration.zero : remaining;
+  }
+
   /// Clears the current session. The next API call will require a new
   /// [login].
   void logout() {
