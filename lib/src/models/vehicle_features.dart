@@ -44,7 +44,7 @@ class VehicleFeatures {
   bool get hasSunroof {
     final item = vehicle.getConfigItem('S35');
     if (item == null) return false;
-    return item.itemValue != '0';
+    return item.itemValue != null && item.itemValue != '0';
   }
 
   /// Heated seat capability for this vehicle.
@@ -73,7 +73,7 @@ class VehicleFeatures {
   bool get hasAirbags {
     final item = vehicle.getConfigItem('Q00');
     if (item == null) return false;
-    return item.itemValue != '0';
+    return item.itemValue != null && item.itemValue != '0';
   }
 
   /// Whether the vehicle reports energy state.
@@ -82,7 +82,7 @@ class VehicleFeatures {
   bool get hasEnergyState {
     final item = vehicle.getConfigItem('ENERGY');
     if (item == null) return false;
-    return item.itemValue != '0';
+    return item.itemValue != null && item.itemValue != '0';
   }
 
   /// Official EV flag from the SAIC API (`EV` item code).
@@ -93,7 +93,7 @@ class VehicleFeatures {
   bool? get hasElectricVehicleFlag {
     final item = vehicle.getConfigItem('EV');
     if (item == null) return null;
-    return item.itemValue != '0';
+    return item.itemValue != null && item.itemValue != '0';
   }
 
   /// Whether this vehicle is electric or electrified (BEV or PHEV).
@@ -144,7 +144,7 @@ class VehicleFeatures {
   bool get hasBonnet {
     final item = vehicle.getConfigItem('BONNUT');
     if (item == null) return false;
-    return item.itemValue != '0';
+    return item.itemValue != null && item.itemValue != '0';
   }
 
   /// Whether the vehicle has a boot/trunk sensor.
@@ -153,7 +153,7 @@ class VehicleFeatures {
   bool get hasBoot {
     final item = vehicle.getConfigItem('BOOT');
     if (item == null) return false;
-    return item.itemValue != '0';
+    return item.itemValue != null && item.itemValue != '0';
   }
 
   /// Whether the vehicle has an engine status sensor.
@@ -162,7 +162,7 @@ class VehicleFeatures {
   bool get hasEngine {
     final item = vehicle.getConfigItem('ENGINE');
     if (item == null) return false;
-    return item.itemValue != '0';
+    return item.itemValue != null && item.itemValue != '0';
   }
 
   /// Whether the vehicle supports Bluetooth key.
@@ -171,7 +171,7 @@ class VehicleFeatures {
   bool get hasBluetoothKey {
     final item = vehicle.getConfigItem('BTKEY');
     if (item == null) return false;
-    return item.itemValue != '0';
+    return item.itemValue != null && item.itemValue != '0';
   }
 
   /// Whether the vehicle is right-hand drive.
@@ -191,7 +191,7 @@ class VehicleFeatures {
   bool get hasTyrePressureMonitoring {
     final item = vehicle.getConfigItem('J17');
     if (item == null) return false;
-    return item.itemValue != '0';
+    return item.itemValue != null && item.itemValue != '0';
   }
 
   /// Whether the vehicle has an exterior temperature sensor.
@@ -200,7 +200,7 @@ class VehicleFeatures {
   bool get hasExteriorTemperatureSensor {
     final item = vehicle.getConfigItem('EXTEMP');
     if (item == null) return false;
-    return item.itemValue != '0';
+    return item.itemValue != null && item.itemValue != '0';
   }
 
   /// Whether the vehicle has an interior temperature sensor.
@@ -209,7 +209,7 @@ class VehicleFeatures {
   bool get hasInteriorTemperatureSensor {
     final item = vehicle.getConfigItem('INTEMP');
     if (item == null) return false;
-    return item.itemValue != '0';
+    return item.itemValue != null && item.itemValue != '0';
   }
 
   /// Whether the vehicle reports 12V battery voltage.
@@ -218,7 +218,7 @@ class VehicleFeatures {
   bool get hasBatteryVoltageSensor {
     final item = vehicle.getConfigItem('BATTERY');
     if (item == null) return false;
-    return item.itemValue != '0';
+    return item.itemValue != null && item.itemValue != '0';
   }
 
   /// Whether the vehicle reports key position.
@@ -227,7 +227,7 @@ class VehicleFeatures {
   bool get hasKeyPositionSensor {
     final item = vehicle.getConfigItem('KEYPOS');
     if (item == null) return false;
-    return item.itemValue != '0';
+    return item.itemValue != null && item.itemValue != '0';
   }
 
   /// Whether the sunroof can be operated via remote control.

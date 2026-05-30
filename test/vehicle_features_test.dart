@@ -93,6 +93,65 @@ void main() {
         () => expect(f.hasRemoteControlledSunroof, true));
   });
 
+  // ── null itemValue handling ───────────────────────────────────────────────────
+
+  group('VehicleFeatures — null itemValue treated as absent/unsupported', () {
+    Map<String, dynamic> nullValue(String code) =>
+        {'itemCode': code, 'itemName': code, 'itemValue': null};
+
+    test('hasSunroof is false when S35 itemValue is null', () {
+      expect(VehicleFeatures(_vehicle([nullValue('S35')])).hasSunroof, false);
+    });
+
+    test('hasAirbags is false when Q00 itemValue is null', () {
+      expect(VehicleFeatures(_vehicle([nullValue('Q00')])).hasAirbags, false);
+    });
+
+    test('hasBonnet is false when BONNUT itemValue is null', () {
+      expect(VehicleFeatures(_vehicle([nullValue('BONNUT')])).hasBonnet, false);
+    });
+
+    test('hasBoot is false when BOOT itemValue is null', () {
+      expect(VehicleFeatures(_vehicle([nullValue('BOOT')])).hasBoot, false);
+    });
+
+    test('hasEngine is false when ENGINE itemValue is null', () {
+      expect(VehicleFeatures(_vehicle([nullValue('ENGINE')])).hasEngine, false);
+    });
+
+    test('hasBluetoothKey is false when BTKEY itemValue is null', () {
+      expect(VehicleFeatures(_vehicle([nullValue('BTKEY')])).hasBluetoothKey, false);
+    });
+
+    test('hasTyrePressureMonitoring is false when J17 itemValue is null', () {
+      expect(VehicleFeatures(_vehicle([nullValue('J17')])).hasTyrePressureMonitoring, false);
+    });
+
+    test('hasExteriorTemperatureSensor is false when EXTEMP itemValue is null', () {
+      expect(VehicleFeatures(_vehicle([nullValue('EXTEMP')])).hasExteriorTemperatureSensor, false);
+    });
+
+    test('hasInteriorTemperatureSensor is false when INTEMP itemValue is null', () {
+      expect(VehicleFeatures(_vehicle([nullValue('INTEMP')])).hasInteriorTemperatureSensor, false);
+    });
+
+    test('hasBatteryVoltageSensor is false when BATTERY itemValue is null', () {
+      expect(VehicleFeatures(_vehicle([nullValue('BATTERY')])).hasBatteryVoltageSensor, false);
+    });
+
+    test('hasKeyPositionSensor is false when KEYPOS itemValue is null', () {
+      expect(VehicleFeatures(_vehicle([nullValue('KEYPOS')])).hasKeyPositionSensor, false);
+    });
+
+    test('hasEnergyState is false when ENERGY itemValue is null', () {
+      expect(VehicleFeatures(_vehicle([nullValue('ENERGY')])).hasEnergyState, false);
+    });
+
+    test('hasElectricVehicleFlag is false when EV itemValue is null', () {
+      expect(VehicleFeatures(_vehicle([nullValue('EV')])).hasElectricVehicleFlag, false);
+    });
+  });
+
   // ── Empty config ──────────────────────────────────────────────────────────────
 
   group('VehicleFeatures — empty config', () {
