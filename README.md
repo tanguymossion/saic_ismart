@@ -7,8 +7,6 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![Dart](https://img.shields.io/badge/Dart-pure-0553B1?style=flat-square&logo=dart)](https://dart.dev)
 
-**v1.0.0 — ready for pub.dev.**
-
 ---
 
 ## What is this?
