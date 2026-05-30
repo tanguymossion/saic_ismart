@@ -564,6 +564,10 @@ class SaicClient {
   /// Pass [driverLevel] and/or [passengerLevel] to set each seat independently.
   /// Both default to [HeatLevel.off].
   ///
+  /// Before calling, check [VehicleFeatures.heatedSeatCapability] to verify
+  /// the vehicle supports heated seats and to determine which [HeatLevel]
+  /// values are valid.
+  ///
   /// Endpoint: `POST /vehicle/control`
   /// Source: `api/vehicle/climate/__init__.py:control_heated_seats()`
   Future<VehicleControlResponse> controlHeatedSeats(
@@ -595,10 +599,9 @@ class SaicClient {
 
   /// Opens or closes the sunroof remotely.
   ///
-  /// Not all SAIC vehicles have a sunroof — check `vehicleModelConfiguration`
-  /// from [getVehicles] for item code `S35` with `itemValue == '1'` before
-  /// calling. If the vehicle doesn't support it, the server will return an
-  /// error.
+  /// Before calling, check [VehicleFeatures.hasSunroof] to verify the vehicle
+  /// has a sunroof. If the vehicle doesn't support it, the server will return
+  /// an error.
   ///
   /// Endpoint: `POST /vehicle/control`
   /// Source: `api/vehicle/windows/__init__.py:control_sunroof()`
