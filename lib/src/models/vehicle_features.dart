@@ -82,6 +82,51 @@ class VehicleFeatures {
     return !s.startsWith('ZP22');
   }
 
+  /// Whether the vehicle has a tyre pressure monitoring system (TPMS).
+  ///
+  /// Based on `vehicleModelConfiguration` item `J17` with `itemValue != "0"`.
+  bool get hasTyrePressureMonitoring {
+    final item = vehicle.getConfigItem('J17');
+    if (item == null) return false;
+    return item.itemValue != '0';
+  }
+
+  /// Whether the vehicle has an exterior temperature sensor.
+  ///
+  /// Based on `vehicleModelConfiguration` item `EXTEMP` with `itemValue != "0"`.
+  bool get hasExteriorTemperatureSensor {
+    final item = vehicle.getConfigItem('EXTEMP');
+    if (item == null) return false;
+    return item.itemValue != '0';
+  }
+
+  /// Whether the vehicle has an interior temperature sensor.
+  ///
+  /// Based on `vehicleModelConfiguration` item `INTEMP` with `itemValue != "0"`.
+  bool get hasInteriorTemperatureSensor {
+    final item = vehicle.getConfigItem('INTEMP');
+    if (item == null) return false;
+    return item.itemValue != '0';
+  }
+
+  /// Whether the vehicle reports 12V battery voltage.
+  ///
+  /// Based on `vehicleModelConfiguration` item `BATTERY` with `itemValue != "0"`.
+  bool get hasBatteryVoltageSensor {
+    final item = vehicle.getConfigItem('BATTERY');
+    if (item == null) return false;
+    return item.itemValue != '0';
+  }
+
+  /// Whether the vehicle reports key position.
+  ///
+  /// Based on `vehicleModelConfiguration` item `KEYPOS` with `itemValue != "0"`.
+  bool get hasKeyPositionSensor {
+    final item = vehicle.getConfigItem('KEYPOS');
+    if (item == null) return false;
+    return item.itemValue != '0';
+  }
+
   /// Whether the sunroof can be operated via remote control.
   ///
   /// Requires both [hasSunroof] and `vehicleModelConfiguration` item `S61`

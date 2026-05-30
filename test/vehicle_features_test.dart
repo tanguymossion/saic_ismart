@@ -28,6 +28,14 @@ const _evConfig = [
   {'itemCode': 'S61', 'itemName': 'Remote Sunroof', 'itemValue': '1'},
 ];
 
+const _mg3EuSensorConfig = [
+  {'itemCode': 'J17', 'itemName': 'Tire pressure monitoring system', 'itemValue': '1'},
+  {'itemCode': 'EXTEMP', 'itemName': 'Exterior Temperature', 'itemValue': '0'},
+  {'itemCode': 'INTEMP', 'itemName': 'Interior Temperature', 'itemValue': '1'},
+  {'itemCode': 'BATTERY', 'itemName': 'Battery Voltage', 'itemValue': '1'},
+  {'itemCode': 'KEYPOS', 'itemName': 'Key Position', 'itemValue': '1'},
+];
+
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
 void main() {
@@ -115,6 +123,52 @@ void main() {
       ]));
       expect(f.heatedSeatCapability, HeatedSeatCapability.none);
     });
+  });
+
+  // ── Sensor presence — MG3 EU profile ─────────────────────────────────────────
+
+  group('VehicleFeatures — sensor presence (MG3 EU profile)', () {
+    late VehicleFeatures f;
+
+    setUp(() => f = VehicleFeatures(_vehicle(_mg3EuSensorConfig)));
+
+    test('hasTyrePressureMonitoring is true — J17="1"',
+        () => expect(f.hasTyrePressureMonitoring, true));
+
+    test('hasExteriorTemperatureSensor is false — EXTEMP="0"',
+        () => expect(f.hasExteriorTemperatureSensor, false));
+
+    test('hasInteriorTemperatureSensor is true — INTEMP="1"',
+        () => expect(f.hasInteriorTemperatureSensor, true));
+
+    test('hasBatteryVoltageSensor is true — BATTERY="1"',
+        () => expect(f.hasBatteryVoltageSensor, true));
+
+    test('hasKeyPositionSensor is true — KEYPOS="1"',
+        () => expect(f.hasKeyPositionSensor, true));
+  });
+
+  // ── Sensor presence — empty config ────────────────────────────────────────────
+
+  group('VehicleFeatures — sensor presence (empty config)', () {
+    late VehicleFeatures f;
+
+    setUp(() => f = VehicleFeatures(_vehicle([])));
+
+    test('hasTyrePressureMonitoring is false',
+        () => expect(f.hasTyrePressureMonitoring, false));
+
+    test('hasExteriorTemperatureSensor is false',
+        () => expect(f.hasExteriorTemperatureSensor, false));
+
+    test('hasInteriorTemperatureSensor is false',
+        () => expect(f.hasInteriorTemperatureSensor, false));
+
+    test('hasBatteryVoltageSensor is false',
+        () => expect(f.hasBatteryVoltageSensor, false));
+
+    test('hasKeyPositionSensor is false',
+        () => expect(f.hasKeyPositionSensor, false));
   });
 
   // ── isElectricVehicle ─────────────────────────────────────────────────────────
