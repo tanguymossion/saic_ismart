@@ -90,8 +90,8 @@ await client.login();
 final vehicles = await client.getVehicles();
 final status   = await client.getVehicleStatus(vehicles.first.vin);
 
-print(status.basicVehicleStatus?.lockStatus);            // 1 = locked
-print(status.basicVehicleStatus?.mileage);               // raw decimeters
+print(status.basicVehicleStatus?.lockState);             // LockStatus.locked / .unlocked
+print(status.basicVehicleStatus?.mileageKm);             // kilometers
 print(status.gpsPosition?.wayPoint?.position?.latitude); // raw integer ÷ 1,000,000 = degrees
 ```
 
@@ -113,8 +113,6 @@ print(status.gpsPosition?.wayPoint?.position?.latitude); // raw integer ÷ 1,000
   GPS status: GpsStatus.fix2d
   Status time: 1779548697
 ```
-
-> Note: mileage is returned in decameters (243790 = ~24,379 km). Use `status.basicVehicleStatus?.mileageKm` for a converted value.
 
 ---
 
