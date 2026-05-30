@@ -53,6 +53,9 @@ class VehicleFeatures {
   /// - `"1"` → [HeatedSeatCapability.multiLevel]
   /// - `"2"` → [HeatedSeatCapability.onOffOnly]
   /// - absent or other → [HeatedSeatCapability.none]
+  ///
+  /// If the `HeatedSeat` item is present but its value is `null` or
+  /// unrecognised, returns [HeatedSeatCapability.none].
   HeatedSeatCapability get heatedSeatCapability {
     final value = vehicle.getConfigItem('HeatedSeat')?.itemValue;
     return switch (value) {
