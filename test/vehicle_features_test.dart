@@ -28,6 +28,11 @@ const _evConfig = [
   {'itemCode': 'S61', 'itemName': 'Remote Sunroof', 'itemValue': '1'},
 ];
 
+const _mg3EuDoorWindowConfig = [
+  {'itemCode': 'DOOR', 'itemName': 'Door Status', 'itemValue': '1111'},
+  {'itemCode': 'WINDOW', 'itemName': 'Window Status', 'itemValue': '1000'},
+];
+
 const _mg3EuHardwareConfig = [
   {'itemCode': 'BONNUT', 'itemName': 'Bonnet Status', 'itemValue': '0'},
   {'itemCode': 'BOOT', 'itemName': 'Boot Status', 'itemValue': '1'},
@@ -130,6 +135,44 @@ void main() {
         {'itemCode': 'HeatedSeat', 'itemName': 'Heated Seat', 'itemValue': '9'},
       ]));
       expect(f.heatedSeatCapability, HeatedSeatCapability.none);
+    });
+  });
+
+  // ── Door and window sensors ───────────────────────────────────────────────────
+
+  group('VehicleFeatures — door and window sensors (MG3 EU profile)', () {
+    late VehicleFeatures f;
+
+    setUp(() => f = VehicleFeatures(_vehicle(_mg3EuDoorWindowConfig)));
+
+    test('doorSensorCount is 4 — DOOR="1111"',
+        () => expect(f.doorSensorCount, 4));
+
+    test('windowSensorCount is 1 — WINDOW="1000"',
+        () => expect(f.windowSensorCount, 1));
+  });
+
+  group('VehicleFeatures — door and window sensors (edge cases)', () {
+    test('doorSensorCount is 3 — DOOR="1110"', () {
+      final f = VehicleFeatures(_vehicle([
+        {'itemCode': 'DOOR', 'itemName': 'Door Status', 'itemValue': '1110'},
+      ]));
+      expect(f.doorSensorCount, 3);
+    });
+
+    test('windowSensorCount is 0 — WINDOW="0000"', () {
+      final f = VehicleFeatures(_vehicle([
+        {'itemCode': 'WINDOW', 'itemName': 'Window Status', 'itemValue': '0000'},
+      ]));
+      expect(f.windowSensorCount, 0);
+    });
+
+    test('doorSensorCount is 0 — absent', () {
+      expect(VehicleFeatures(_vehicle([])).doorSensorCount, 0);
+    });
+
+    test('windowSensorCount is 0 — absent', () {
+      expect(VehicleFeatures(_vehicle([])).windowSensorCount, 0);
     });
   });
 

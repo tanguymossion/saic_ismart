@@ -82,6 +82,22 @@ class VehicleFeatures {
     return !s.startsWith('ZP22');
   }
 
+  /// Number of door sensors reported by the vehicle.
+  ///
+  /// Based on `vehicleModelConfiguration` item `DOOR` — each `'1'` character
+  /// in the bitmask string represents one door sensor. MG3 EU returns `"1111"`
+  /// = 4 doors. Returns `0` if the item is absent.
+  int get doorSensorCount =>
+      vehicle.getConfigItem('DOOR')?.itemValue?.split('').where((c) => c == '1').length ?? 0;
+
+  /// Number of window sensors reported by the vehicle.
+  ///
+  /// Based on `vehicleModelConfiguration` item `WINDOW` — each `'1'` character
+  /// in the bitmask string represents one window sensor. MG3 EU returns `"1000"`
+  /// = 1 window sensor (driver only). Returns `0` if the item is absent.
+  int get windowSensorCount =>
+      vehicle.getConfigItem('WINDOW')?.itemValue?.split('').where((c) => c == '1').length ?? 0;
+
   /// Whether the vehicle has a bonnet sensor.
   ///
   /// Based on `vehicleModelConfiguration` item `BONNUT` with `itemValue != "0"`.
