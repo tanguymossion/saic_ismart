@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
-  <meta name="description" content="API docs for the startBlowing method from the SaicClient class, for the Dart programming language.">
-  <title>startBlowing method - SaicClient class - saic_ismart library - Dart API</title>
+  <meta name="description" content="API docs for the getConfigItem method from the Vehicle class, for the Dart programming language.">
+  <title>getConfigItem method - Vehicle class - saic_ismart library - Dart API</title>
 
 
   
@@ -26,10 +26,10 @@
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="../../index.html">saic_ismart</a></li>
     <li><a href="../../saic_ismart/">saic_ismart.dart</a></li>
-    <li><a href="../../saic_ismart/SaicClient-class.html">SaicClient</a></li>
-    <li class="self-crumb">startBlowing method</li>
+    <li><a href="../../saic_ismart/Vehicle-class.html">Vehicle</a></li>
+    <li class="self-crumb">getConfigItem method</li>
   </ol>
-  <div class="self-name">startBlowing</div>
+  <div class="self-name">getConfigItem</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
@@ -46,16 +46,16 @@
 <div
     id="dartdoc-main-content"
     class="main-content"
-    data-above-sidebar="saic_ismart&#47;SaicClient-class-sidebar.html"
+    data-above-sidebar="saic_ismart&#47;Vehicle-class-sidebar.html"
     data-below-sidebar="">
     <div>
-<h1><span class="kind-method">startBlowing</span> method 
+<h1><span class="kind-method">getConfigItem</span> method 
 </h1></div>
 
     <section class="multi-line-signature">
       
-<span class="returntype"><a href="https://api.dart.dev/stable/3.12.1/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../../saic_ismart/VehicleControlResponse-class.html">VehicleControlResponse</a></span>&gt;</span></span>
-<span class="name ">startBlowing</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="startBlowing-param-vin"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a></span> <span class="parameter-name">vin</span></span></li>
+<span class="returntype"><a href="../../saic_ismart/VehicleModelConfigItem-class.html">VehicleModelConfigItem</a>?</span>
+<span class="name ">getConfigItem</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="getConfigItem-param-itemCode"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a></span> <span class="parameter-name">itemCode</span></span></li>
 </ol>)
 
       
@@ -63,18 +63,18 @@
     </section>
     
 <section class="desc markdown">
-  <p>Starts ventilation without A/C.</p>
-<p>Equivalent to <code>startClimate(vin, mode: ClimateMode.blow)</code>.</p>
-<p><strong>Note:</strong> while climate is active, all other vehicle control commands will
-fail with <a href="../../saic_ismart/SaicApiException-class.html">SaicApiException</a> (code: 3). Call <a href="../../saic_ismart/SaicClient/stopClimate.html">stopClimate</a> first.</p>
+  <p>Returns the first <a href="../../saic_ismart/VehicleModelConfigItem-class.html">VehicleModelConfigItem</a> whose <a href="../../saic_ismart/VehicleModelConfigItem/itemCode.html">VehicleModelConfigItem.itemCode</a>
+matches <code>itemCode</code>, or <code>null</code> if no matching item exists.</p>
 </section>
 
 
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">Future&lt;VehicleControlResponse&gt; startBlowing(String vin) =&gt;
-    startClimate(vin, mode: ClimateMode.blow);</code></pre>
+  <pre class="language-dart"><code class="language-dart">VehicleModelConfigItem? getConfigItem(String itemCode) =&gt;
+    vehicleModelConfiguration
+        .where((item) =&gt; item.itemCode == itemCode)
+        .firstOrNull;</code></pre>
 </section>
 
 
@@ -89,11 +89,11 @@ fail with <a href="../../saic_ismart/SaicApiException-class.html">SaicApiExcepti
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
     <li><a href="../../index.html">saic_ismart</a></li>
     <li><a href="../../saic_ismart/">saic_ismart</a></li>
-    <li><a href="../../saic_ismart/SaicClient-class.html">SaicClient</a></li>
-    <li class="self-crumb">startBlowing method</li>
+    <li><a href="../../saic_ismart/Vehicle-class.html">Vehicle</a></li>
+    <li class="self-crumb">getConfigItem method</li>
 </ol>
 
-    <h5>SaicClient class</h5>
+    <h5>Vehicle class</h5>
     <div id="dartdoc-sidebar-left-content"></div>
   </div><!--/.sidebar-offcanvas-->
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">

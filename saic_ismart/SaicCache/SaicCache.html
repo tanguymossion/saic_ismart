@@ -59,6 +59,16 @@
 </ol>})
     </section>
     
+<section class="desc markdown">
+  <p>Creates a <a href="../../saic_ismart/SaicCache-class.html">SaicCache</a>.</p>
+<ul>
+<li><code>ttl</code>: how long a cached <a href="../../saic_ismart/VehicleStatus-class.html">VehicleStatus</a> is considered fresh. Defaults
+to 600 s (10 min) — chosen to protect the 12V battery from excessive
+wake-ups.</li>
+<li><code>clock</code>: injectable time source for deterministic unit tests. Defaults
+to <code>DateTime.now</code>.</li>
+</ul>
+</section>
 
 
     

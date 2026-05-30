@@ -58,13 +58,31 @@
 </section>
 
 
+    <section>
+      <dl class="dl-horizontal">
+        
+
+        
+        
+
+
+        
+  <dt>Available extensions</dt>
+  <dd><ul class="comma-separated clazz-relationships">
+      <li><a href="../saic_ismart/VehicleFeaturesExtension.html">VehicleFeaturesExtension</a></li>
+  </ul></dd>
+        
+
+
+      </dl>
+    </section>
 
     
   <section class="summary offset-anchor" id="constructors">
     <h2>Constructors</h2>
     <dl class="constructor-summary-list">
         <dt id="Vehicle.new" class="callable">
-          <span class="name"><a href="../saic_ismart/Vehicle/Vehicle.html">Vehicle</a></span><span class="signature">({<span class="parameter" id="param-vin"><span>required</span> <span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a></span> <span class="parameter-name">vin</span>, </span><span class="parameter" id="param-modelName"><span>required</span> <span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a></span> <span class="parameter-name">modelName</span>, </span><span class="parameter" id="param-modelYear"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">modelYear</span>, </span><span class="parameter" id="param-brandName"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">brandName</span>, </span><span class="parameter" id="param-vehicleName"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">vehicleName</span></span>})</span>
+          <span class="name"><a href="../saic_ismart/Vehicle/Vehicle.html">Vehicle</a></span><span class="signature">({<span class="parameter" id="param-vin"><span>required</span> <span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a></span> <span class="parameter-name">vin</span>, </span><span class="parameter" id="param-modelName"><span>required</span> <span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a></span> <span class="parameter-name">modelName</span>, </span><span class="parameter" id="param-modelYear"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">modelYear</span>, </span><span class="parameter" id="param-brandName"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">brandName</span>, </span><span class="parameter" id="param-vehicleName"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">vehicleName</span>, </span><span class="parameter" id="param-series"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">series</span>, </span><span class="parameter" id="param-vehicleModelConfiguration"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../saic_ismart/VehicleModelConfigItem-class.html">VehicleModelConfigItem</a></span>&gt;</span></span> <span class="parameter-name">vehicleModelConfiguration</span> = <span class="default-value">const []</span></span>})</span>
         </dt>
         <dd>
           
@@ -94,6 +112,22 @@
 <dd>
   Brand name (e.g. <code>"MG"</code>, <code>"Maxus"</code>, <code>"Roewe"</code>), or <code>null</code> if absent.
   <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="features" class="property">
+  <span class="name"><a href="../saic_ismart/VehicleFeaturesExtension/features.html">features</a></span>
+  <span class="signature">&#8594; <a href="../saic_ismart/VehicleFeatures-class.html">VehicleFeatures</a></span>
+  
+
+</dt>
+<dd>
+      <p class="from-extension">
+        <span>Available on <a href="../saic_ismart/Vehicle-class.html">Vehicle</a>,
+        provided by the <a href="../saic_ismart/VehicleFeaturesExtension.html">VehicleFeaturesExtension</a> extension</span>
+      </p>
+  Returns a <a href="../saic_ismart/VehicleFeatures-class.html">VehicleFeatures</a> wrapper for this vehicle.
+  <div class="features"><span class="feature">no setter</span></div>
 
 </dd>
 
@@ -146,6 +180,31 @@ absent from the response.
 
 </dd>
 
+        <dt id="series" class="property">
+  <span class="name"><a href="../saic_ismart/Vehicle/series.html">series</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a>?</span>
+  
+
+</dt>
+<dd>
+  Model series code returned by the API (e.g. <code>"ZP22 EU"</code>, <code>"EH32"</code>), or
+<code>null</code> if absent.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="vehicleModelConfiguration" class="property">
+  <span class="name"><a href="../saic_ismart/Vehicle/vehicleModelConfiguration.html">vehicleModelConfiguration</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.12.1/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../saic_ismart/VehicleModelConfigItem-class.html">VehicleModelConfigItem</a></span>&gt;</span></span>
+  
+
+</dt>
+<dd>
+  Hardware feature and configuration items returned by the API.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
         <dt id="vehicleName" class="property">
   <span class="name"><a href="../saic_ismart/Vehicle/vehicleName.html">vehicleName</a></span>
   <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a>?</span>
@@ -175,10 +234,24 @@ absent from the response.
 
     
   <section
-      class="summary offset-anchor inherited"
+      class="summary offset-anchor"
       id="instance-methods">
     <h2>Methods</h2>
     <dl class="callables">
+        <dt id="getConfigItem" class="callable">
+  <span class="name"><a href="../saic_ismart/Vehicle/getConfigItem.html">getConfigItem</a></span><span class="signature">(<wbr><span class="parameter" id="getConfigItem-param-itemCode"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a></span> <span class="parameter-name">itemCode</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../saic_ismart/VehicleModelConfigItem-class.html">VehicleModelConfigItem</a>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns the first <a href="../saic_ismart/VehicleModelConfigItem-class.html">VehicleModelConfigItem</a> whose <a href="../saic_ismart/VehicleModelConfigItem/itemCode.html">VehicleModelConfigItem.itemCode</a>
+matches <code>itemCode</code>, or <code>null</code> if no matching item exists.
+  
+
+</dd>
+
         <dt id="noSuchMethod" class="callable inherited">
   <span class="name"><a href="https://api.dart.dev/stable/3.12.1/dart-core/Object/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/Invocation-class.html">Invocation</a></span> <span class="parameter-name">invocation</span></span>)
     <span class="returntype parameter">&#8594; dynamic</span>

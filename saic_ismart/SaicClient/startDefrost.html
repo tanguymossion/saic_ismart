@@ -66,6 +66,8 @@
   <p>Starts defrost mode.</p>
 <p>Equivalent to <code>startClimate(vin, mode: ClimateMode.defrost)</code>. Useful in
 winter to clear windscreen before driving.</p>
+<p><strong>Note:</strong> while climate is active, all other vehicle control commands will
+fail with <a href="../../saic_ismart/SaicApiException-class.html">SaicApiException</a> (code: 3). Call <a href="../../saic_ismart/SaicClient/stopClimate.html">stopClimate</a> first.</p>
 </section>
 
 

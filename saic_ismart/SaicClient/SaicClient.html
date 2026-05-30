@@ -63,6 +63,22 @@
 </ol>})
     </section>
     
+<section class="desc markdown">
+  <p>Creates a <a href="../../saic_ismart/SaicClient-class.html">SaicClient</a>.</p>
+<ul>
+<li><code>config</code>: authentication credentials and region.</li>
+<li><code>httpClient</code>: optional custom HTTP client. Inject a <code>MockClient</code> from
+<code>package:http/testing.dart</code> in tests to avoid real network calls.</li>
+<li><code>cache</code>: optional custom <a href="../../saic_ismart/SaicCache-class.html">SaicCache</a>. Defaults to a <code>SaicCache()</code> with
+a 600 s TTL.</li>
+<li><code>statusRetryDelay</code>: delay between vehicle status polling retries.
+Defaults to 3 s.</li>
+<li><code>controlRetryDelay</code>: delay before the first vehicle control retry.
+Defaults to 1 s.</li>
+<li><code>statusRetryTimeout</code>: maximum duration for vehicle status polling before
+a <a href="../../saic_ismart/SaicTimeoutException-class.html">SaicTimeoutException</a> is thrown. Defaults to 30 s.</li>
+</ul>
+</section>
 
 
     

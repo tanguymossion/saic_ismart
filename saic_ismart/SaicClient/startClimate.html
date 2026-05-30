@@ -68,6 +68,8 @@
   <p>Starts remote climate control on <code>vin</code>.</p>
 <p><code>temperatureIndex</code> is 0–15. Meaning of each index is undocumented —
 index 8 is the observed default in the Python client.</p>
+<p><strong>Note:</strong> while climate is active, all other vehicle control commands will
+fail with <a href="../../saic_ismart/SaicApiException-class.html">SaicApiException</a> (code: 3). Call <a href="../../saic_ismart/SaicClient/stopClimate.html">stopClimate</a> first.</p>
 <p>Endpoint: <code>POST /vehicle/control</code>
 Source: <code>api/vehicle/climate/__init__.py:start_ac()</code></p>
 </section>

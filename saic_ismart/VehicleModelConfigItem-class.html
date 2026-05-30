@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
-  <meta name="description" content="API docs for the SaicConfig class from the saic_ismart library, for the Dart programming language.">
-  <title>SaicConfig class - saic_ismart library - Dart API</title>
+  <meta name="description" content="API docs for the VehicleModelConfigItem class from the saic_ismart library, for the Dart programming language.">
+  <title>VehicleModelConfigItem class - saic_ismart library - Dart API</title>
 
 
   
@@ -26,9 +26,9 @@
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="../index.html">saic_ismart</a></li>
     <li><a href="../saic_ismart/">saic_ismart.dart</a></li>
-    <li class="self-crumb">SaicConfig class</li>
+    <li class="self-crumb">VehicleModelConfigItem class</li>
   </ol>
-  <div class="self-name">SaicConfig</div>
+  <div class="self-name">VehicleModelConfigItem</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
@@ -46,15 +46,18 @@
     id="dartdoc-main-content"
     class="main-content"
     data-above-sidebar="saic_ismart&#47;saic_ismart-library-sidebar.html"
-    data-below-sidebar="saic_ismart&#47;SaicConfig-class-sidebar.html">
+    data-below-sidebar="saic_ismart&#47;VehicleModelConfigItem-class-sidebar.html">
     <div>
-<h1><span class="kind-class">SaicConfig</span> class 
+<h1><span class="kind-class">VehicleModelConfigItem</span> class 
  
 </h1></div>
 
     
 <section class="desc markdown">
-  <p>Immutable configuration for a single iSmart user session.</p>
+  <p>A single entry in the vehicle model configuration array.</p>
+<p>Used to detect optional hardware features (e.g. sunroof, heated seats)
+and battery chemistry. Retrieve items with <a href="../saic_ismart/Vehicle/getConfigItem.html">Vehicle.getConfigItem</a>.</p>
+<p>Source: <code>api/vehicle/schema.py:VehicleModelConfiguration</code></p>
 </section>
 
 
@@ -63,12 +66,19 @@
   <section class="summary offset-anchor" id="constructors">
     <h2>Constructors</h2>
     <dl class="constructor-summary-list">
-        <dt id="SaicConfig.new" class="callable">
-          <span class="name"><a href="../saic_ismart/SaicConfig/SaicConfig.html">SaicConfig</a></span><span class="signature">({<span class="parameter" id="param-username"><span>required</span> <span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a></span> <span class="parameter-name">username</span>, </span><span class="parameter" id="param-password"><span>required</span> <span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a></span> <span class="parameter-name">password</span>, </span><span class="parameter" id="param-region"><span class="type-annotation"><a href="../saic_ismart/SaicRegion.html">SaicRegion</a></span> <span class="parameter-name">region</span> = <span class="default-value">SaicRegion.europe</span>, </span><span class="parameter" id="param-usernameIsEmail"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">usernameIsEmail</span> = <span class="default-value">true</span>, </span><span class="parameter" id="param-phoneCountryCode"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">phoneCountryCode</span></span>})</span>
+        <dt id="VehicleModelConfigItem.new" class="callable">
+          <span class="name"><a href="../saic_ismart/VehicleModelConfigItem/VehicleModelConfigItem.html">VehicleModelConfigItem</a></span><span class="signature">({<span class="parameter" id="param-itemCode"><span>required</span> <span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a></span> <span class="parameter-name">itemCode</span>, </span><span class="parameter" id="param-itemName"><span>required</span> <span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a></span> <span class="parameter-name">itemName</span>, </span><span class="parameter" id="param-itemValue"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">itemValue</span></span>})</span>
         </dt>
         <dd>
-          Creates a <a href="../saic_ismart/SaicConfig-class.html">SaicConfig</a>.
+          Creates a <a href="../saic_ismart/VehicleModelConfigItem-class.html">VehicleModelConfigItem</a>.
             <div class="constructor-modifier features">const</div>
+        </dd>
+        <dt id="VehicleModelConfigItem.fromJson" class="callable">
+          <span class="name"><a href="../saic_ismart/VehicleModelConfigItem/VehicleModelConfigItem.fromJson.html">VehicleModelConfigItem.fromJson</a></span><span class="signature">(<span class="parameter" id="fromJson-param-json"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a></span>, <span class="type-parameter">dynamic</span>&gt;</span></span> <span class="parameter-name">json</span></span>)</span>
+        </dt>
+        <dd>
+          Parses a <a href="../saic_ismart/VehicleModelConfigItem-class.html">VehicleModelConfigItem</a> from a JSON map.
+            <div class="constructor-modifier features">factory</div>
         </dd>
     </dl>
   </section>
@@ -78,51 +88,50 @@
       id="instance-properties">
     <h2>Properties</h2>
     <dl class="properties">
-        <dt id="hashCode" class="property inherited">
-  <span class="name"><a href="https://api.dart.dev/stable/3.12.1/dart-core/Object/hashCode.html">hashCode</a></span>
+        <dt id="hashCode" class="property">
+  <span class="name"><a href="../saic_ismart/VehicleModelConfigItem/hashCode.html">hashCode</a></span>
   <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.12.1/dart-core/int-class.html">int</a></span>
   
 
 </dt>
-<dd class="inherited">
+<dd>
   The hash code for this object.
-  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+  <div class="features"><span class="feature">no setter</span><span class="feature">override</span></div>
 
 </dd>
 
-        <dt id="password" class="property">
-  <span class="name"><a href="../saic_ismart/SaicConfig/password.html">password</a></span>
+        <dt id="itemCode" class="property">
+  <span class="name"><a href="../saic_ismart/VehicleModelConfigItem/itemCode.html">itemCode</a></span>
   <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a></span>
   
 
 </dt>
 <dd>
-  Plaintext password. SHA-1 hashed before being sent to the API.
+  Machine-readable feature code (e.g. <code>"S35"</code>, <code>"HeatedSeat"</code>, <code>"BType"</code>).
   <div class="features"><span class="feature">final</span></div>
 
 </dd>
 
-        <dt id="phoneCountryCode" class="property">
-  <span class="name"><a href="../saic_ismart/SaicConfig/phoneCountryCode.html">phoneCountryCode</a></span>
+        <dt id="itemName" class="property">
+  <span class="name"><a href="../saic_ismart/VehicleModelConfigItem/itemName.html">itemName</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a></span>
+  
+
+</dt>
+<dd>
+  Human-readable feature name as returned by the API.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="itemValue" class="property">
+  <span class="name"><a href="../saic_ismart/VehicleModelConfigItem/itemValue.html">itemValue</a></span>
   <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a>?</span>
   
 
 </dt>
 <dd>
-  Phone country code (e.g. <code>"44"</code> for the UK). Required when
-<a href="../saic_ismart/SaicConfig/usernameIsEmail.html">usernameIsEmail</a> is <code>false</code>.
-  <div class="features"><span class="feature">final</span></div>
-
-</dd>
-
-        <dt id="region" class="property">
-  <span class="name"><a href="../saic_ismart/SaicConfig/region.html">region</a></span>
-  <span class="signature">&#8594; <a href="../saic_ismart/SaicRegion.html">SaicRegion</a></span>
-  
-
-</dt>
-<dd>
-  API region. Defaults to <a href="../saic_ismart/SaicRegion.html">SaicRegion.europe</a>.
+  Feature value, or <code>null</code> if absent in the response.
   <div class="features"><span class="feature">final</span></div>
 
 </dd>
@@ -136,32 +145,6 @@
 <dd class="inherited">
   A representation of the runtime type of the object.
   <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
-
-</dd>
-
-        <dt id="username" class="property">
-  <span class="name"><a href="../saic_ismart/SaicConfig/username.html">username</a></span>
-  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a></span>
-  
-
-</dt>
-<dd>
-  iSmart account username — email address or phone number.
-  <div class="features"><span class="feature">final</span></div>
-
-</dd>
-
-        <dt id="usernameIsEmail" class="property">
-  <span class="name"><a href="../saic_ismart/SaicConfig/usernameIsEmail.html">usernameIsEmail</a></span>
-  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.12.1/dart-core/bool-class.html">bool</a></span>
-  
-
-</dt>
-<dd>
-  When <code>true</code>, <a href="../saic_ismart/SaicConfig/username.html">username</a> is treated as an email and <code>loginType: "2"</code> is
-sent. When <code>false</code>, <code>loginType: "1"</code> is sent and <a href="../saic_ismart/SaicConfig/phoneCountryCode.html">phoneCountryCode</a> is
-required. (<code>base.py:login()</code>)
-  <div class="features"><span class="feature">final</span></div>
 
 </dd>
 
@@ -204,20 +187,20 @@ required. (<code>base.py:login()</code>)
   </section>
     
   <section
-      class="summary offset-anchor inherited"
+      class="summary offset-anchor"
       id="operators">
     <h2>Operators</h2>
     <dl class="callables">
-        <dt id="operator ==" class="callable inherited">
-  <span class="name"><a href="https://api.dart.dev/stable/3.12.1/dart-core/Object/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
+        <dt id="operator ==" class="callable">
+  <span class="name"><a href="../saic_ismart/VehicleModelConfigItem/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.12.1/dart-core/bool-class.html">bool</a></span>
   </span>
   
 
 </dt>
-<dd class="inherited">
+<dd>
   The equality operator.
-  <div class="features"><span class="feature">inherited</span></div>
+  <div class="features"><span class="feature">override</span></div>
 
 </dd>
 
@@ -238,7 +221,7 @@ required. (<code>base.py:login()</code>)
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
     <li><a href="../index.html">saic_ismart</a></li>
     <li><a href="../saic_ismart/">saic_ismart</a></li>
-    <li class="self-crumb">SaicConfig class</li>
+    <li class="self-crumb">VehicleModelConfigItem class</li>
 </ol>
 
     <h5>saic_ismart library</h5>

@@ -65,10 +65,9 @@
     
 <section class="desc markdown">
   <p>Opens or closes the sunroof remotely.</p>
-<p>Not all SAIC vehicles have a sunroof — check <code>vehicleModelConfiguration</code>
-from <a href="../../saic_ismart/SaicClient/getVehicles.html">getVehicles</a> for item code <code>S35</code> with <code>itemValue == '1'</code> before
-calling. If the vehicle doesn't support it, the server will return an
-error.</p>
+<p>Before calling, check <a href="../../saic_ismart/VehicleFeatures/hasSunroof.html">VehicleFeatures.hasSunroof</a> to verify the vehicle
+has a sunroof. If the vehicle doesn't support it, the server will return
+an error.</p>
 <p>Endpoint: <code>POST /vehicle/control</code>
 Source: <code>api/vehicle/windows/__init__.py:control_sunroof()</code></p>
 </section>

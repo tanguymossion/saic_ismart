@@ -72,6 +72,12 @@
       modelYear: json[&#39;modelYear&#39;] as String?,
       brandName: json[&#39;brandName&#39;] as String?,
       vehicleName: json[&#39;vehicleName&#39;] as String?,
+      series: json[&#39;series&#39;] as String?,
+      vehicleModelConfiguration:
+          (json[&#39;vehicleModelConfiguration&#39;] as List&lt;dynamic&gt;? ?? [])
+              .map((e) =&gt;
+                  VehicleModelConfigItem.fromJson(e as Map&lt;String, dynamic&gt;))
+              .toList(),
     );</code></pre>
 </section>
 

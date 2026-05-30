@@ -68,6 +68,9 @@
   <p>Controls the heated seats on <code>vin</code>.</p>
 <p>Pass <code>driverLevel</code> and/or <code>passengerLevel</code> to set each seat independently.
 Both default to <a href="../../saic_ismart/HeatLevel.html">HeatLevel.off</a>.</p>
+<p>Before calling, check <a href="../../saic_ismart/VehicleFeatures/heatedSeatCapability.html">VehicleFeatures.heatedSeatCapability</a> to verify
+the vehicle supports heated seats and to determine which <a href="../../saic_ismart/HeatLevel.html">HeatLevel</a>
+values are valid.</p>
 <p>Endpoint: <code>POST /vehicle/control</code>
 Source: <code>api/vehicle/climate/__init__.py:control_heated_seats()</code></p>
 </section>
