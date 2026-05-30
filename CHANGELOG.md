@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] — 2026-05-30
+
+### Documentation
+- Remove redundant Features section from README — Roadmap already covers version history
+- Complete CHANGELOG v1.0.0 entries — all added models, enums, VehicleFeatures getters and fixes now listed
+- Update v1.0.0 release date to 2026-05-30
+
 ## [1.0.0] — 2026-05-30
 
 ### Added
