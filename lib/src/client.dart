@@ -249,6 +249,7 @@ class _SaicHttpClient {
         message: json['message'] as String? ?? 'Auth error',
       );
     }
+    // 3 = another remote command in progress (e.g. climate active)
     // 8 = command rejected by vehicle (e.g. feature not available on this model)
     if (code == 2 || code == 3 || code == 7 || code == 8) {
       throw SaicApiException(
@@ -501,6 +502,9 @@ class SaicClient {
   /// [temperatureIndex] is 0–15. Meaning of each index is undocumented —
   /// index 8 is the observed default in the Python client.
   ///
+  /// **Note:** while climate is active, all other vehicle control commands will
+  /// fail with [SaicApiException] (code: 3). Call [stopClimate] first.
+  ///
   /// Endpoint: `POST /vehicle/control`
   /// Source: `api/vehicle/climate/__init__.py:start_ac()`
   Future<VehicleControlResponse> startClimate(
@@ -527,6 +531,9 @@ class SaicClient {
   /// Starts ventilation without A/C.
   ///
   /// Equivalent to `startClimate(vin, mode: ClimateMode.blow)`.
+  ///
+  /// **Note:** while climate is active, all other vehicle control commands will
+  /// fail with [SaicApiException] (code: 3). Call [stopClimate] first.
   Future<VehicleControlResponse> startBlowing(String vin) =>
       startClimate(vin, mode: ClimateMode.blow);
 
@@ -534,6 +541,9 @@ class SaicClient {
   ///
   /// Equivalent to `startClimate(vin, mode: ClimateMode.defrost)`. Useful in
   /// winter to clear windscreen before driving.
+  ///
+  /// **Note:** while climate is active, all other vehicle control commands will
+  /// fail with [SaicApiException] (code: 3). Call [stopClimate] first.
   Future<VehicleControlResponse> startDefrost(String vin) =>
       startClimate(vin, mode: ClimateMode.defrost);
 

@@ -466,6 +466,24 @@ void main() {
       );
       expect(callCount, 2); // pending + one code=8, then stops — no more retries
     });
+
+    test('code=3 mid-polling throws SaicApiException immediately', () async {
+      // Verifies that code=3 ("another remote command in progress") is treated
+      // as a fatal code mid-polling and does not trigger infinite retries.
+      var callCount = 0;
+      final (client, _) = await _makeClient(
+        onApi: (_) async {
+          callCount++;
+          if (callCount == 1) return _pendingResponse('evt-1');
+          return _midPollingNonZeroResponse(code: 3);
+        },
+      );
+      await expectLater(
+        client.lockVehicle(_vin),
+        throwsA(isA<SaicApiException>()),
+      );
+      expect(callCount, 2); // pending + one code=3, then stops — no more retries
+    });
   });
 
   // ── error handling ────────────────────────────────────────────────────────────
@@ -486,6 +504,23 @@ void main() {
           callCount++;
           return _encryptedResponse(
               '{"code":8,"message":"command not supported"}');
+        },
+      );
+      await expectLater(
+        client.lockVehicle(_vin),
+        throwsA(isA<SaicApiException>()),
+      );
+      expect(callCount, 1);
+    });
+
+    test('code=3 on fresh request throws SaicApiException immediately',
+        () async {
+      var callCount = 0;
+      final (client, _) = await _makeClient(
+        onApi: (_) async {
+          callCount++;
+          return _encryptedResponse(
+              '{"code":3,"message":"Other remote command in progress. Please try again later.(3)"}');
         },
       );
       await expectLater(

@@ -409,7 +409,7 @@ Source: `base.py:__deserialize()`
 |---|---|
 | `0` | Success — deserialize `data` field |
 | `2` | Fatal error — raise `SaicApiException` |
-| `3` | Fatal error — raise `SaicApiException` |
+| `3` | Fatal error — another remote command already in progress (e.g. climate active) — raise `SaicApiException`, **never retry** |
 | `7` | Fatal error — raise `SaicApiException` |
 | `8` | Fatal error — command rejected by vehicle (feature not available on this model) — raise `SaicApiException`, **never retry** |
 | `401` or `403` | Logout + raise `SaicLogoutException` |
@@ -426,6 +426,16 @@ The server returns a human-readable `message` field alongside `code=8`, e.g.:
 ```
 
 The number in parentheses at the end (`255` here) appears to be an internal SAIC sub-code. Its meaning is undocumented — `255` may indicate "feature not available on this vehicle model". This pattern (human message + internal sub-code in parentheses) may apply to other error codes as well.
+
+**`code=3` climate constraint (observed in production):**
+
+When a climate command (`startClimate`, `startBlowing`, `startDefrost`) is active, any subsequent vehicle control command returns `code=3` with message:
+
+```
+"Other remote command in progress. Please try again later.(3)"
+```
+
+This is a server-side constraint enforcing single-command exclusivity — not a client bug. Call `stopClimate()` before issuing other commands. The sub-code `(3)` in the message matches the JSON `code` field.
 
 ### No Session Conflict / Single-Session Logic
 
