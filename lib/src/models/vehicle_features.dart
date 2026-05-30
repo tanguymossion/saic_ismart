@@ -68,6 +68,17 @@ class VehicleFeatures {
   bool get hasRemoteClimate =>
       vehicle.getConfigItem('AC')?.itemValue == '1';
 
+  /// Official EV flag from the SAIC API (`EV` item code).
+  ///
+  /// Returns `null` if the item is absent — not all vehicles include this flag.
+  /// See also [isElectricVehicle] which uses the Python-validated ZP22 series
+  /// rule as a fallback.
+  bool? get hasElectricVehicleFlag {
+    final item = vehicle.getConfigItem('EV');
+    if (item == null) return null;
+    return item.itemValue != '0';
+  }
+
   /// Whether this vehicle is electric or electrified (BEV or PHEV).
   ///
   /// Based on the Python MQTT client's validated rule: series starting with

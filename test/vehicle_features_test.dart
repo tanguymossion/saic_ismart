@@ -263,6 +263,23 @@ void main() {
         () => expect(f.hasKeyPositionSensor, false));
   });
 
+  // ── hasElectricVehicleFlag ────────────────────────────────────────────────────
+
+  group('VehicleFeatures.hasElectricVehicleFlag', () {
+    bool? ev(String? itemValue) {
+      final config = itemValue == null
+          ? <Map<String, dynamic>>[]
+          : [{'itemCode': 'EV', 'itemName': 'Electric Vehicle', 'itemValue': itemValue}];
+      return VehicleFeatures(_vehicle(config)).hasElectricVehicleFlag;
+    }
+
+    test('EV absent (MG3 EU) → null', () => expect(ev(null), isNull));
+    test('EV="1" → true', () => expect(ev('1'), true));
+    test('EV="0" → false', () => expect(ev('0'), false));
+    test('empty config → null',
+        () => expect(VehicleFeatures(_vehicle([])).hasElectricVehicleFlag, isNull));
+  });
+
   // ── isElectricVehicle ─────────────────────────────────────────────────────────
 
   group('VehicleFeatures.isElectricVehicle', () {
