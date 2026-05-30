@@ -14,6 +14,7 @@ Source repository: `SAIC-iSmart-API/saic-python-client-ng` (branch: `master`, v0
 6. [Charging Status & Control Schema](#6-charging-status--control-schema)
 7. [Vehicle Control Commands](#7-vehicle-control-commands)
 8. [Known Quirks](#8-known-quirks)
+9. [vehicleModelConfiguration Item Codes](#9-vehiclemodelconfiguration-item-codes)
 
 ---
 
@@ -1087,3 +1088,43 @@ body = ChargingSettingRequest(
     vin=sha256_hex_digest(vin),
 )
 ```
+
+---
+
+## 9. vehicleModelConfiguration Item Codes
+
+Each vehicle returned by `GET /vehicle/list` carries a `vehicleModelConfiguration` array. Every element has three fields: `itemCode`, `itemName`, and `itemValue`. The `itemCode` is the machine-readable key; `itemName` is a human-readable label returned by the SAIC server itself.
+
+Item names sourced from real API response payloads captured via mitmproxy and published in the community reverse engineering repository `https://github.com/SAIC-iSmart-API/documentation` (file `docs/examples/v1_1/501_513_response.json`). This is not official SAIC documentation, but item names are returned by the SAIC server itself in the `itemName` field of each configuration item.
+
+The MG3 EU values below are from a real device running firmware at the time of writing and are included for reference.
+
+| `itemCode` | `itemName` (from API response) | MG3 EU value | Notes |
+|---|---|---|---|
+| `J17` | Tire pressure monitoring system | `1` | |
+| `Q00` | Regular airbags | `1` | |
+| `S35` | Sun Roof | `0` | `0` = absent, any other value = present. Used in `VehicleFeatures.hasSunroof` |
+| `S61` | Remote control | `1` | |
+| `T11` | Air conditioning | `1` | Used in `VehicleFeatures.hasRemoteClimate` |
+| `EPS` | Electric Power Steering | `1` | |
+| `BONNUT` | Bonnet Status | `0` | `0` = absent on MG3 EU |
+| `DOOR` | Door Status | `1111` | 4-digit bitmask, one digit per door |
+| `BOOT` | Boot Status | `1` | |
+| `ENGINE` | Engine Status | `1` | |
+| `EV` | Electric Vehicle | not present on MG3 EU | Official EV flag — not confirmed on BEV hardware yet. `VehicleFeatures.isElectricVehicle` currently uses the Python-validated `ZP22` series rule instead |
+| `HeatedSeat` | HeatedSeat | `2` | `1` = multi-level (4 levels), `2` = on/off only. Used in `VehicleFeatures.heatedSeatCapability` |
+| `KEYPOS` | Key Position | `1` | |
+| `ENERGY` | Energy state | `1` | |
+| `BATTERY` | Battery Voltage | `1` | |
+| `INTEMP` | Interior Temperature | `1` | |
+| `EXTEMP` | Exterior Temperature | `0` | `0` = absent on MG3 EU |
+| `WINDOW` | Window Status | `1000` | 4-digit bitmask — meaning of individual digit positions unconfirmed |
+| `LRD` | Left-Right Driving | `0` | `0` = LHD (left-hand drive) |
+| `BTKEY` | Bluetooth Key | `0` | `0` = absent |
+| `BType` | Battery Type | `0` | `1` = NMC (supports target SoC), other = LFP. Used in `VehicleFeatures.supportsTargetSoc` |
+| `SBH` | Unknown | `0` | Not found in any source — device-specific or firmware-specific |
+| `BHI` | Unknown | `0` | Not found in any source — device-specific or firmware-specific |
+| `SWH` | Unknown | `0` | Not found in any source — device-specific or firmware-specific |
+| `SS` | Unknown | `0` | Not found in any source — device-specific or firmware-specific |
+| `SC` | Unknown | `1` | Not found in any source — device-specific or firmware-specific |
+| `ROV` | Unknown | `25857` | Possibly protocol version (matches ASN.1 constant `OTA_RVMVehicleStatusResp25857`) — unconfirmed |
