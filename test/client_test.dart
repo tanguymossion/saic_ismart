@@ -6,6 +6,7 @@ import 'package:http/testing.dart';
 import 'package:saic_ismart/src/auth.dart';
 import 'package:saic_ismart/src/client.dart';
 import 'package:saic_ismart/src/exceptions.dart';
+import 'package:saic_ismart/src/models/vehicle.dart';
 import 'package:saic_ismart/src/utils/crypto_utils.dart';
 import 'package:test/test.dart';
 
@@ -140,6 +141,115 @@ void main() {
       expect(v.modelYear, isNull);
       expect(v.brandName, isNull);
       expect(v.vehicleName, isNull);
+    });
+
+    test('defaults vehicleModelConfiguration to empty list when absent',
+        () async {
+      final client = SaicClient(
+        _config,
+        httpClient: _mockWith(
+          onApi: (_) async => _encryptedApiResponse({
+            'vinList': [
+              {'vin': 'VIN1', 'modelName': 'MG3'},
+            ],
+          }),
+        ),
+      );
+      await client.login();
+      final v = (await client.getVehicles()).first;
+      expect(v.vehicleModelConfiguration, isEmpty);
+    });
+  });
+
+  // ── vehicleModelConfiguration parsing ────────────────────────────────────────
+
+  group('Vehicle.vehicleModelConfiguration', () {
+    // Real-world MG3 Hybrid EU configuration items observed in production.
+    const mg3Config = [
+      {'itemCode': 'S35', 'itemName': 'Sunroof', 'itemValue': '0'},
+      {'itemCode': 'HeatedSeat', 'itemName': 'Heated Seat', 'itemValue': '1'},
+      {'itemCode': 'ENGINE', 'itemName': 'Engine Type', 'itemValue': '1'},
+      {'itemCode': 'ENERGY', 'itemName': 'Energy Type', 'itemValue': '1'},
+    ];
+
+    Future<Vehicle> vehicleWith(List<Map<String, dynamic>> config) async {
+      final client = SaicClient(
+        _config,
+        httpClient: _mockWith(
+          onApi: (_) async => _encryptedApiResponse({
+            'vinList': [
+              {
+                'vin': 'LSJXXXXXXXXXXXXXXX',
+                'modelName': 'MG3',
+                'vehicleModelConfiguration': config,
+              },
+            ],
+          }),
+        ),
+      );
+      await client.login();
+      return (await client.getVehicles()).first;
+    }
+
+    test('parses all items from real-world MG3 payload', () async {
+      final v = await vehicleWith(mg3Config);
+      expect(v.vehicleModelConfiguration, hasLength(4));
+      expect(
+        v.vehicleModelConfiguration.first,
+        const VehicleModelConfigItem(
+          itemCode: 'S35',
+          itemName: 'Sunroof',
+          itemValue: '0',
+        ),
+      );
+    });
+
+    test('getConfigItem returns matching item', () async {
+      final v = await vehicleWith(mg3Config);
+      final item = v.getConfigItem('S35');
+      expect(item, isNotNull);
+      expect(item!.itemCode, 'S35');
+      expect(item.itemValue, '0');
+    });
+
+    test('getConfigItem S35 itemValue is "0" — no sunroof on MG3', () async {
+      final v = await vehicleWith(mg3Config);
+      expect(v.getConfigItem('S35')?.itemValue, '0');
+    });
+
+    test('getConfigItem HeatedSeat itemValue is "1" — level-controlled',
+        () async {
+      final v = await vehicleWith(mg3Config);
+      expect(v.getConfigItem('HeatedSeat')?.itemValue, '1');
+    });
+
+    test('getConfigItem returns null for unknown code', () async {
+      final v = await vehicleWith(mg3Config);
+      expect(v.getConfigItem('BType'), isNull);
+    });
+
+    test('tolerates missing itemValue (null)', () async {
+      final v = await vehicleWith([
+        {'itemCode': 'S35', 'itemName': 'Sunroof'},
+      ]);
+      expect(v.getConfigItem('S35')?.itemValue, isNull);
+    });
+
+    test('VehicleModelConfigItem equality holds for identical items', () {
+      const a = VehicleModelConfigItem(
+          itemCode: 'S35', itemName: 'Sunroof', itemValue: '0');
+      const b = VehicleModelConfigItem(
+          itemCode: 'S35', itemName: 'Sunroof', itemValue: '0');
+      expect(a, equals(b));
+      expect(a.hashCode, b.hashCode);
+    });
+
+    test('VehicleModelConfigItem inequality on different itemValue', () {
+      const a = VehicleModelConfigItem(
+          itemCode: 'S35', itemName: 'Sunroof', itemValue: '0');
+      const b = VehicleModelConfigItem(
+          itemCode: 'S35', itemName: 'Sunroof', itemValue: '1');
+      expect(a, isNot(equals(b)));
     });
   });
 
