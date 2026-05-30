@@ -95,6 +95,33 @@ print(status.basicVehicleStatus?.mileageKm);             // kilometers
 print(status.gpsPosition?.wayPoint?.position?.latitude); // raw integer ÷ 1,000,000 = degrees
 ```
 
+### Exception handling
+
+All client methods throw typed exceptions — `SaicAuthException` for bad credentials or expired sessions, `SaicSessionConflictException` when another session is already active, `SaicTimeoutException` when the vehicle does not respond in time, `SaicNetworkException` for connectivity failures, and `SaicApiException` for API-level errors (e.g. code 3 = climate active, code 8 = feature unavailable).
+
+```dart
+try {
+  await client.login();
+  final vehicles = await client.getVehicles();
+  final status = await client.getVehicleStatus(vehicles.first.vin);
+} on SaicAuthException catch (e) {
+  // Invalid credentials or session expired
+  print('Auth error: ${e.message}');
+} on SaicSessionConflictException {
+  // Another session is active (e.g. official iSmart app)
+  print('Session conflict — try again in a few minutes');
+} on SaicTimeoutException {
+  // Vehicle did not respond in time
+  print('Vehicle timeout');
+} on SaicNetworkException catch (e) {
+  // Network error
+  print('Network error: ${e.message}');
+} on SaicApiException catch (e) {
+  // API error (e.g. code=3 climate active, code=8 feature not available)
+  print('API error code ${e.code}: ${e.message}');
+}
+```
+
 ---
 
 ## Real-world output
