@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] — 2026-06-04
+
+### Removed
+- Built-in status cache (`SaicCache`, `clearCache()`, `clearCacheFor()`, `cache:` constructor parameter) — polling frequency is now the caller's responsibility
+
 ## [1.0.2] — 2026-05-30
 
 ### Documentation

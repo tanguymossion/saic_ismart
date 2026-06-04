@@ -39,7 +39,7 @@ EV-specific features (SoC, charging management, climate) require a contributor w
 ```yaml
 # pubspec.yaml
 dependencies:
-  saic_ismart: ^1.0.2
+  saic_ismart: ^2.0.0
 ```
 
 ```dart
