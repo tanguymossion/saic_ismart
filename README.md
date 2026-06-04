@@ -148,7 +148,10 @@ See the full [CHANGELOG](CHANGELOG.md) for details.
 - Session lifecycle: `logout()`, `isLoggedIn`, `tokenExpiration`
 - Full docs + example Flutter app
 
-### v1.x — EV features _(community-driven)_
+### ✅ v2.0.0 — API cleanup · released 2026-06-04
+- Removed built-in status cache — polling frequency is caller's responsibility
+
+### v2.x — EV features _(community-driven)_
 - Battery SoC (MG4, ZS EV…)
 - Charge management — start/stop/schedule
 - Remote climate control
