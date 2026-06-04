@@ -62,8 +62,7 @@ await client.login();
 final vehicles = await client.getVehicles();
 final status  = await client.getVehicleStatus(vehicles.first.vin);
 </code></pre>
-<p>Inject <code>httpClient</code> to use a <code>MockClient</code> (from <code>package:http/testing.dart</code>) in tests.
-Inject <code>cache</code> to override the default 600 s cooldown TTL.</p>
+<p>Inject <code>httpClient</code> to use a <code>MockClient</code> (from <code>package:http/testing.dart</code>) in tests.</p>
 </section>
 
 
@@ -73,7 +72,7 @@ Inject <code>cache</code> to override the default 600 s cooldown TTL.</p>
     <h2>Constructors</h2>
     <dl class="constructor-summary-list">
         <dt id="SaicClient.new" class="callable">
-          <span class="name"><a href="../saic_ismart/SaicClient/SaicClient.html">SaicClient</a></span><span class="signature">(<span class="parameter" id="param-config"><span class="type-annotation"><a href="../saic_ismart/SaicConfig-class.html">SaicConfig</a></span> <span class="parameter-name">config</span>, {</span><span class="parameter" id="param-httpClient"><span class="type-annotation"><a href="https://pub.dev/documentation/http/1.6.0/http/Client-class.html">Client</a>?</span> <span class="parameter-name">httpClient</span>, </span><span class="parameter" id="param-cache"><span class="type-annotation"><a href="../saic_ismart/SaicCache-class.html">SaicCache</a>?</span> <span class="parameter-name">cache</span>, </span><span class="parameter" id="param-statusRetryDelay"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/Duration-class.html">Duration</a></span> <span class="parameter-name">statusRetryDelay</span> = <span class="default-value">const Duration(seconds: 3)</span>, </span><span class="parameter" id="param-controlRetryDelay"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/Duration-class.html">Duration</a></span> <span class="parameter-name">controlRetryDelay</span> = <span class="default-value">const Duration(seconds: 1)</span>, </span><span class="parameter" id="param-statusRetryTimeout"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/Duration-class.html">Duration</a></span> <span class="parameter-name">statusRetryTimeout</span> = <span class="default-value">const Duration(seconds: 30)</span></span>})</span>
+          <span class="name"><a href="../saic_ismart/SaicClient/SaicClient.html">SaicClient</a></span><span class="signature">(<span class="parameter" id="param-config"><span class="type-annotation"><a href="../saic_ismart/SaicConfig-class.html">SaicConfig</a></span> <span class="parameter-name">config</span>, {</span><span class="parameter" id="param-httpClient"><span class="type-annotation"><a href="https://pub.dev/documentation/http/1.6.0/http/Client-class.html">Client</a>?</span> <span class="parameter-name">httpClient</span>, </span><span class="parameter" id="param-statusRetryDelay"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/Duration-class.html">Duration</a></span> <span class="parameter-name">statusRetryDelay</span> = <span class="default-value">const Duration(seconds: 3)</span>, </span><span class="parameter" id="param-controlRetryDelay"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/Duration-class.html">Duration</a></span> <span class="parameter-name">controlRetryDelay</span> = <span class="default-value">const Duration(seconds: 1)</span>, </span><span class="parameter" id="param-statusRetryTimeout"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/Duration-class.html">Duration</a></span> <span class="parameter-name">statusRetryTimeout</span> = <span class="default-value">const Duration(seconds: 30)</span></span>})</span>
         </dt>
         <dd>
           Creates a <a href="../saic_ismart/SaicClient-class.html">SaicClient</a>.
@@ -169,33 +168,6 @@ in.
       id="instance-methods">
     <h2>Methods</h2>
     <dl class="callables">
-        <dt id="clearCache" class="callable">
-  <span class="name"><a href="../saic_ismart/SaicClient/clearCache.html">clearCache</a></span><span class="signature">(<wbr>)
-    <span class="returntype parameter">&#8594; void</span>
-  </span>
-  
-
-</dt>
-<dd>
-  Clears all cached vehicle status entries, forcing fresh fetches.
-  
-
-</dd>
-
-        <dt id="clearCacheFor" class="callable">
-  <span class="name"><a href="../saic_ismart/SaicClient/clearCacheFor.html">clearCacheFor</a></span><span class="signature">(<wbr><span class="parameter" id="clearCacheFor-param-vin"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a></span> <span class="parameter-name">vin</span></span>)
-    <span class="returntype parameter">&#8594; void</span>
-  </span>
-  
-
-</dt>
-<dd>
-  Clears the cached status for <code>vin</code> only, forcing a fresh fetch for
-that vehicle on the next call to <a href="../saic_ismart/SaicClient/getVehicleStatus.html">getVehicleStatus</a>.
-  
-
-</dd>
-
         <dt id="controlHeatedSeats" class="callable">
   <span class="name"><a href="../saic_ismart/SaicClient/controlHeatedSeats.html">controlHeatedSeats</a></span><span class="signature">(<wbr><span class="parameter" id="controlHeatedSeats-param-vin"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/String-class.html">String</a></span> <span class="parameter-name">vin</span>, {</span><span class="parameter" id="controlHeatedSeats-param-driverLevel"><span class="type-annotation"><a href="../saic_ismart/HeatLevel.html">HeatLevel</a></span> <span class="parameter-name">driverLevel</span> = <span class="default-value">HeatLevel.off</span>, </span><span class="parameter" id="controlHeatedSeats-param-passengerLevel"><span class="type-annotation"><a href="../saic_ismart/HeatLevel.html">HeatLevel</a></span> <span class="parameter-name">passengerLevel</span> = <span class="default-value">HeatLevel.off</span></span>})
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.12.1/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../saic_ismart/VehicleControlResponse-class.html">VehicleControlResponse</a></span>&gt;</span></span>
@@ -269,8 +241,7 @@ that vehicle on the next call to <a href="../saic_ismart/SaicClient/getVehicleSt
 
 </dt>
 <dd>
-  Returns a real-time status snapshot for <code>vin</code>, serving from the cache
-when the last fetch was less than the configured TTL ago.
+  Returns a real-time status snapshot for <code>vin</code>.
   
 
 </dd>

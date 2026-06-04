@@ -63,12 +63,7 @@
     </section>
     
 <section class="desc markdown">
-  <p>Returns a real-time status snapshot for <code>vin</code>, serving from the cache
-when the last fetch was less than the configured TTL ago.</p>
-<p><strong>Cache behaviour:</strong> if <a href="../../saic_ismart/SaicCache/isCoolingDown.html">SaicCache.isCoolingDown</a> is true for <code>vin</code>,
-the cached <a href="../../saic_ismart/VehicleStatus-class.html">VehicleStatus</a> is returned immediately and no HTTP call is
-made. Otherwise a fresh value is fetched, stored in the cache, and
-returned.</p>
+  <p>Returns a real-time status snapshot for <code>vin</code>.</p>
 <p>The <code>vin</code> is hashed with SHA-256 before being sent — the raw VIN is never
 transmitted (TECHNICAL_REFERENCE.md §2 — VIN hashing).</p>
 <p><code>vehStatusReqType=2</code> is always hardcoded (quirk #11).</p>
@@ -85,10 +80,6 @@ Source: <code>api/vehicle/__init__.py:get_vehicle_status()</code></p>
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">Future&lt;VehicleStatus&gt; getVehicleStatus(String vin) async {
-  if (_cache.isCoolingDown(vin)) {
-    return _cache.get(vin)!; &#47;&#47; guaranteed non-null when isCoolingDown
-  }
-
   var eventId = &#39;0&#39;;
   final deadline = DateTime.now().add(_statusRetryTimeout);
 
@@ -100,9 +91,7 @@ Source: <code>api/vehicle/__init__.py:get_vehicle_status()</code></p>
         eventId: eventId,
       );
       final data = rawData as Map&lt;String, dynamic&gt;;
-      final status = VehicleStatus.fromJson(data);
-      _cache.set(vin, status);
-      return status;
+      return VehicleStatus.fromJson(data);
     } on _SaicEventIdRetryException catch (e) {
       if (DateTime.now().isAfter(deadline)) {
         throw SaicTimeoutException(

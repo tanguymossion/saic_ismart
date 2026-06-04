@@ -56,7 +56,6 @@
       
       <span class="name ">SaicClient</span>(<wbr><ol class="parameter-list"> <li><span class="parameter" id="param-config"><span class="type-annotation"><a href="../../saic_ismart/SaicConfig-class.html">SaicConfig</a></span> <span class="parameter-name">config</span>, {</span></li>
 <li><span class="parameter" id="param-httpClient"><span class="type-annotation"><a href="https://pub.dev/documentation/http/1.6.0/http/Client-class.html">Client</a>?</span> <span class="parameter-name">httpClient</span>, </span></li>
-<li><span class="parameter" id="param-cache"><span class="type-annotation"><a href="../../saic_ismart/SaicCache-class.html">SaicCache</a>?</span> <span class="parameter-name">cache</span>, </span></li>
 <li><span class="parameter" id="param-statusRetryDelay"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/Duration-class.html">Duration</a></span> <span class="parameter-name">statusRetryDelay</span> = <span class="default-value">const Duration(seconds: 3)</span>, </span></li>
 <li><span class="parameter" id="param-controlRetryDelay"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/Duration-class.html">Duration</a></span> <span class="parameter-name">controlRetryDelay</span> = <span class="default-value">const Duration(seconds: 1)</span>, </span></li>
 <li><span class="parameter" id="param-statusRetryTimeout"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.12.1/dart-core/Duration-class.html">Duration</a></span> <span class="parameter-name">statusRetryTimeout</span> = <span class="default-value">const Duration(seconds: 30)</span>, </span></li>
@@ -69,8 +68,6 @@
 <li><code>config</code>: authentication credentials and region.</li>
 <li><code>httpClient</code>: optional custom HTTP client. Inject a <code>MockClient</code> from
 <code>package:http/testing.dart</code> in tests to avoid real network calls.</li>
-<li><code>cache</code>: optional custom <a href="../../saic_ismart/SaicCache-class.html">SaicCache</a>. Defaults to a <code>SaicCache()</code> with
-a 600 s TTL.</li>
 <li><code>statusRetryDelay</code>: delay between vehicle status polling retries.
 Defaults to 3 s.</li>
 <li><code>controlRetryDelay</code>: delay before the first vehicle control retry.
@@ -87,7 +84,6 @@ a <a href="../../saic_ismart/SaicTimeoutException-class.html">SaicTimeoutExcepti
   <pre class="language-dart"><code class="language-dart">SaicClient(
   SaicConfig config, {
   http.Client? httpClient,
-  SaicCache? cache,
   Duration statusRetryDelay = const Duration(seconds: 3),
   Duration controlRetryDelay = const Duration(seconds: 1),
   Duration statusRetryTimeout = const Duration(seconds: 30),
@@ -96,7 +92,6 @@ a <a href="../../saic_ismart/SaicTimeoutException-class.html">SaicTimeoutExcepti
         httpClient ?? http.Client(),
         config.region,
       ),
-      _cache = cache ?? SaicCache(),
       _statusRetryDelay = statusRetryDelay,
       _controlRetryDelay = controlRetryDelay,
       _statusRetryTimeout = statusRetryTimeout;</code></pre>

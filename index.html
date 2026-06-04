@@ -155,7 +155,6 @@ print(status.gpsPosition?.wayPoint?.position?.latitude); // raw integer ÷ 1,000
 <hr>
 <h2 id="important-api-constraints">Important: API constraints</h2>
 <p><strong>Single session</strong> — The SAIC API allows only one active session at a time. Calling this package will pause the official iSmart app for ~900 seconds. The client handles this automatically, but be aware of it if you use the official app alongside.</p>
-<p><strong>600 s cooldown</strong> — The API enforces a minimum delay between vehicle data requests to protect the 12V battery. The client includes a built-in cache that respects this limit. Do not bypass it.</p>
 <p><strong>No real-time data</strong> — Vehicle status is polled, not streamed. Data reflects a snapshot, not a live feed.</p>
 <hr>
 <h2 id="example-app">Example app</h2>
