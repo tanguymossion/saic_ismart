@@ -97,7 +97,7 @@
 </blockquote>
 <pre class="language-yaml"><code class="language-yaml"># pubspec.yaml
 dependencies:
-  saic_ismart: ^2.0.0
+  saic_ismart: ^2.0.1
 </code></pre>
 <pre class="language-dart"><code class="language-dart">import 'package:saic_ismart/saic_ismart.dart';
 
@@ -203,7 +203,11 @@ print(status.gpsPosition?.wayPoint?.position?.latitude); // raw integer ÷ 1,000
 <li>Session lifecycle: <code>logout()</code>, <code>isLoggedIn</code>, <code>tokenExpiration</code></li>
 <li>Full docs + example Flutter app</li>
 </ul>
-<h3 id="v1x--ev-features-_community-driven_">v1.x — EV features <em>(community-driven)</em></h3>
+<h3 id="-v200--api-cleanup--released-2026-06-04">✅ v2.0.0 — API cleanup · released 2026-06-04</h3>
+<ul>
+<li>Removed built-in status cache — polling frequency is caller's responsibility</li>
+</ul>
+<h3 id="v2x--ev-features-_community-driven_">v2.x — EV features <em>(community-driven)</em></h3>
 <ul>
 <li>Battery SoC (MG4, ZS EV…)</li>
 <li>Charge management — start/stop/schedule</li>
@@ -267,7 +271,7 @@ print(status.gpsPosition?.wayPoint?.position?.latitude); // raw integer ÷ 1,000
 <footer>
   <span class="no-break">
     saic_ismart
-      2.0.0
+      2.0.1
   </span>
   
 </footer>
