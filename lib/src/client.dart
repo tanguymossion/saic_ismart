@@ -14,7 +14,6 @@ import 'dart:io' show SocketException;
 import 'package:http/http.dart' as http;
 
 import 'auth.dart';
-import 'cache.dart';
 import 'exceptions.dart';
 import 'models/vehicle.dart';
 import 'models/vehicle_control.dart';
@@ -297,11 +296,9 @@ class _SaicHttpClient {
 /// ```
 ///
 /// Inject [httpClient] to use a `MockClient` (from `package:http/testing.dart`) in tests.
-/// Inject [cache] to override the default 600 s cooldown TTL.
 class SaicClient {
   final SaicConfig _config;
   final _SaicHttpClient _http;
-  final SaicCache _cache;
   final Duration _statusRetryDelay;
   final Duration _controlRetryDelay;
   final Duration _statusRetryTimeout;
@@ -312,8 +309,6 @@ class SaicClient {
   /// - [config]: authentication credentials and region.
   /// - [httpClient]: optional custom HTTP client. Inject a `MockClient` from
   ///   `package:http/testing.dart` in tests to avoid real network calls.
-  /// - [cache]: optional custom [SaicCache]. Defaults to a `SaicCache()` with
-  ///   a 600 s TTL.
   /// - [statusRetryDelay]: delay between vehicle status polling retries.
   ///   Defaults to 3 s.
   /// - [controlRetryDelay]: delay before the first vehicle control retry.
@@ -323,7 +318,6 @@ class SaicClient {
   SaicClient(
     SaicConfig config, {
     http.Client? httpClient,
-    SaicCache? cache,
     Duration statusRetryDelay = const Duration(seconds: 3),
     Duration controlRetryDelay = const Duration(seconds: 1),
     Duration statusRetryTimeout = const Duration(seconds: 30),
@@ -332,7 +326,6 @@ class SaicClient {
           httpClient ?? http.Client(),
           config.region,
         ),
-        _cache = cache ?? SaicCache(),
         _statusRetryDelay = statusRetryDelay,
         _controlRetryDelay = controlRetryDelay,
         _statusRetryTimeout = statusRetryTimeout;
@@ -369,7 +362,6 @@ class SaicClient {
   void logout() {
     _session = null;
     _http.userToken = '';
-    _cache.clear();
   }
 
   /// Authenticates and stores the session token.
@@ -394,13 +386,7 @@ class SaicClient {
         .toList();
   }
 
-  /// Returns a real-time status snapshot for [vin], serving from the cache
-  /// when the last fetch was less than the configured TTL ago.
-  ///
-  /// **Cache behaviour:** if [SaicCache.isCoolingDown] is true for [vin],
-  /// the cached [VehicleStatus] is returned immediately and no HTTP call is
-  /// made. Otherwise a fresh value is fetched, stored in the cache, and
-  /// returned.
+  /// Returns a real-time status snapshot for [vin].
   ///
   /// The [vin] is hashed with SHA-256 before being sent — the raw VIN is never
   /// transmitted (TECHNICAL_REFERENCE.md §2 — VIN hashing).
@@ -415,10 +401,6 @@ class SaicClient {
   /// Endpoint: `GET /vehicle/status?vin={sha256Hex(vin)}&vehStatusReqType=2`
   /// Source: `api/vehicle/__init__.py:get_vehicle_status()`
   Future<VehicleStatus> getVehicleStatus(String vin) async {
-    if (_cache.isCoolingDown(vin)) {
-      return _cache.get(vin)!; // guaranteed non-null when isCoolingDown
-    }
-
     var eventId = '0';
     final deadline = DateTime.now().add(_statusRetryTimeout);
 
@@ -430,9 +412,7 @@ class SaicClient {
           eventId: eventId,
         );
         final data = rawData as Map<String, dynamic>;
-        final status = VehicleStatus.fromJson(data);
-        _cache.set(vin, status);
-        return status;
+        return VehicleStatus.fromJson(data);
       } on _SaicEventIdRetryException catch (e) {
         if (DateTime.now().isAfter(deadline)) {
           throw SaicTimeoutException(
@@ -445,13 +425,6 @@ class SaicClient {
       }
     }
   }
-
-  /// Clears all cached vehicle status entries, forcing fresh fetches.
-  void clearCache() => _cache.clear();
-
-  /// Clears the cached status for [vin] only, forcing a fresh fetch for
-  /// that vehicle on the next call to [getVehicleStatus].
-  void clearCacheFor(String vin) => _cache.clearFor(vin);
 
   /// Locks all doors on [vin].
   ///

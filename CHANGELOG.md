@@ -29,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `controlHeatedSeats(vin, {driverLevel, passengerLevel})` — sets seat heat level via new `HeatLevel` enum (`off`, `low`, `medium`, `high`)
 - `controlRearWindowHeat(vin, {enable})` — turns the rear window heating element on or off
 - `controlSunroof(vin, {open})` — opens or closes the sunroof remotely
-- `logout()` — clears the current session token and cache; next API call requires a new `login()`
+- `logout()` — clears the current session token; next API call requires a new `login()`
 - `isLoggedIn` — returns `true` when a non-expired session is active
 - `tokenExpiration` — exposes the current session token's expiry time
 - `tokenExpiresIn` — `Duration?` convenience getter for time remaining until token expiry; returns `Duration.zero` if already expired
@@ -63,7 +63,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Authentication & token refresh (EU region)
 - `getVehicles()` — list vehicles linked to account
 - `getVehicleStatus(vin)` — GPS, lock state, mileage, full vehicle status
-- Built-in cache with configurable TTL + 600s cooldown enforcement
 - Single-session conflict detection
 - Full AES-128-CBC + HMAC-SHA-256 crypto pipeline
 - Tested in production on MG3 Hybrid EU

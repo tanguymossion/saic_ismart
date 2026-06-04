@@ -544,44 +544,6 @@ void main() {
       expect(client.isLoggedIn, isFalse);
     });
 
-    test('clears cache — getVehicleStatus makes a fresh call after re-login',
-        () async {
-      var apiCallCount = 0;
-      final vinListResponse = _encryptedApiResponse({
-        'vinList': [
-          {'vin': 'VIN123', 'vehicleModelConfiguration': []},
-        ],
-      });
-      final statusResponse = _encryptedApiResponse(
-        {'basicVehicleStatus': null, 'gpsPosition': null, 'statusTime': null},
-        appSendDate: '1700000000001',
-      );
-      final client = SaicClient(
-        _config,
-        httpClient: MockClient((req) async {
-          if (req.url.path.endsWith('/oauth/token')) {
-            return _encryptedResponse(_loginBody());
-          }
-          if (req.url.path.endsWith('/vehicle/list')) return vinListResponse;
-          apiCallCount++;
-          return statusResponse;
-        }),
-      );
-
-      await client.login();
-      await client.getVehicleStatus('VIN123');
-      expect(apiCallCount, 1);
-
-      // Status is now cached — second call should NOT hit the API.
-      await client.getVehicleStatus('VIN123');
-      expect(apiCallCount, 1);
-
-      // After logout + re-login, cache is cleared — next call must hit API.
-      client.logout();
-      await client.login();
-      await client.getVehicleStatus('VIN123');
-      expect(apiCallCount, 2);
-    });
   });
 
   // ── Request URL ───────────────────────────────────────────────────────────────

@@ -111,8 +111,6 @@ try {
 
 **Single session** — The SAIC API allows only one active session at a time. Calling this package will pause the official iSmart app for ~900 seconds. The client handles this automatically, but be aware of it if you use the official app alongside.
 
-**600 s cooldown** — The API enforces a minimum delay between vehicle data requests to protect the 12V battery. The client includes a built-in cache that respects this limit. Do not bypass it.
-
 **No real-time data** — Vehicle status is polled, not streamed. Data reflects a snapshot, not a live feed.
 
 ---

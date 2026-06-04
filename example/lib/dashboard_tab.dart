@@ -27,15 +27,12 @@ class _DashboardTabState extends State<DashboardTab> {
     _fetchStatus();
   }
 
-  Future<void> _fetchStatus({bool forceRefresh = false}) async {
+  Future<void> _fetchStatus() async {
     setState(() {
       _loading = true;
       _error = null;
     });
     try {
-      if (forceRefresh) {
-        widget.client.clearCacheFor(widget.vehicle.vin);
-      }
       final status = await widget.client.getVehicleStatus(widget.vehicle.vin);
       if (!mounted) return;
       setState(() {
@@ -91,7 +88,7 @@ class _DashboardTabState extends State<DashboardTab> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () => _fetchStatus(forceRefresh: true),
+        onRefresh: () => _fetchStatus(),
         child: _buildBody(),
       ),
     );
@@ -190,7 +187,7 @@ class _DashboardTabState extends State<DashboardTab> {
         const SizedBox(height: 24),
         Center(
           child: FilledButton.tonal(
-            onPressed: () => _fetchStatus(forceRefresh: true),
+            onPressed: () => _fetchStatus(),
             child: const Text('Retry'),
           ),
         ),

@@ -15,7 +15,6 @@
 library;
 
 export 'src/auth.dart';
-export 'src/cache.dart';
 export 'src/client.dart';
 export 'src/exceptions.dart';
 export 'src/models/vehicle.dart';
